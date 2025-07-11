@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { WeddingData, WeddingCouple, FamilyMember, WeddingEvent, PhotoGalleryItem, ContactPerson } from '@/types/wedding';
 import { defaultWeddingData } from '@/placeholders';
+import { usePlatform } from './PlatformContext';
 
 interface WeddingContextType {
   weddingData: WeddingData;
@@ -19,105 +20,132 @@ interface WeddingContextType {
 const WeddingContext = createContext<WeddingContextType | undefined>(undefined);
 
 export const WeddingProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [weddingData, setWeddingData] = useState<WeddingData>(defaultWeddingData);
+  const [staticWeddingData, setStaticWeddingData] = useState<WeddingData>(defaultWeddingData);
+  const { weddingData: platformWeddingData, isPlatformMode } = usePlatform();
+  
+  // Use platform data if available, otherwise fall back to static data
+  const weddingData = isPlatformMode && platformWeddingData ? platformWeddingData : staticWeddingData;
 
   const setAllWeddingData = (data: WeddingData) => {
-    setWeddingData(data);
+    // Only update static data when not in platform mode
+    if (!isPlatformMode) {
+      setStaticWeddingData(data);
+    } else {
+      console.warn('Cannot update wedding data in platform mode - data is controlled by platform');
+    }
   };
 
   const updateCouple = (couple: Partial<WeddingCouple>) => {
-    setWeddingData(prev => ({
-      ...prev,
-      couple: { ...prev.couple, ...couple }
-    }));
+    if (!isPlatformMode) {
+      setStaticWeddingData(prev => ({
+        ...prev,
+        couple: { ...prev.couple, ...couple }
+      }));
+    }
   };
 
   const addFamilyMember = (type: 'groom' | 'bride', member: Omit<FamilyMember, 'id'>) => {
-    const newMember: FamilyMember = {
-      ...member,
-      id: `${type}-${Date.now()}`
-    };
-    
-    setWeddingData(prev => ({
-      ...prev,
-      family: {
-        ...prev.family,
-        [type === 'groom' ? 'groomFamily' : 'brideFamily']: {
-          ...prev.family[type === 'groom' ? 'groomFamily' : 'brideFamily'],
-          members: [...prev.family[type === 'groom' ? 'groomFamily' : 'brideFamily'].members, newMember]
+    if (!isPlatformMode) {
+      const newMember: FamilyMember = {
+        ...member,
+        id: `${type}-${Date.now()}`
+      };
+      
+      setStaticWeddingData(prev => ({
+        ...prev,
+        family: {
+          ...prev.family,
+          [type === 'groom' ? 'groomFamily' : 'brideFamily']: {
+            ...prev.family[type === 'groom' ? 'groomFamily' : 'brideFamily'],
+            members: [...prev.family[type === 'groom' ? 'groomFamily' : 'brideFamily'].members, newMember]
+          }
         }
-      }
-    }));
+      }));
+    }
   };
 
   const removeFamilyMember = (type: 'groom' | 'bride', memberId: string) => {
-    setWeddingData(prev => ({
-      ...prev,
-      family: {
-        ...prev.family,
-        [type === 'groom' ? 'groomFamily' : 'brideFamily']: {
-          ...prev.family[type === 'groom' ? 'groomFamily' : 'brideFamily'],
-          members: prev.family[type === 'groom' ? 'groomFamily' : 'brideFamily'].members.filter(m => m.id !== memberId)
+    if (!isPlatformMode) {
+      setStaticWeddingData(prev => ({
+        ...prev,
+        family: {
+          ...prev.family,
+          [type === 'groom' ? 'groomFamily' : 'brideFamily']: {
+            ...prev.family[type === 'groom' ? 'groomFamily' : 'brideFamily'],
+            members: prev.family[type === 'groom' ? 'groomFamily' : 'brideFamily'].members.filter(m => m.id !== memberId)
+          }
         }
-      }
-    }));
+      }));
+    }
   };
 
   const addEvent = (event: Omit<WeddingEvent, 'id'>) => {
-    const newEvent: WeddingEvent = {
-      ...event,
-      id: `event-${Date.now()}`
-    };
-    
-    setWeddingData(prev => ({
-      ...prev,
-      events: [...prev.events, newEvent]
-    }));
+    if (!isPlatformMode) {
+      const newEvent: WeddingEvent = {
+        ...event,
+        id: `event-${Date.now()}`
+      };
+      
+      setStaticWeddingData(prev => ({
+        ...prev,
+        events: [...prev.events, newEvent]
+      }));
+    }
   };
 
   const removeEvent = (eventId: string) => {
-    setWeddingData(prev => ({
-      ...prev,
-      events: prev.events.filter(e => e.id !== eventId)
-    }));
+    if (!isPlatformMode) {
+      setStaticWeddingData(prev => ({
+        ...prev,
+        events: prev.events.filter(e => e.id !== eventId)
+      }));
+    }
   };
 
   const addPhoto = (photo: Omit<PhotoGalleryItem, 'id'>) => {
-    const newPhoto: PhotoGalleryItem = {
-      ...photo,
-      id: `photo-${Date.now()}`
-    };
-    
-    setWeddingData(prev => ({
-      ...prev,
-      photoGallery: [...prev.photoGallery, newPhoto]
-    }));
+    if (!isPlatformMode) {
+      const newPhoto: PhotoGalleryItem = {
+        ...photo,
+        id: `photo-${Date.now()}`
+      };
+      
+      setStaticWeddingData(prev => ({
+        ...prev,
+        photoGallery: [...prev.photoGallery, newPhoto]
+      }));
+    }
   };
 
   const removePhoto = (photoId: string) => {
-    setWeddingData(prev => ({
-      ...prev,
-      photoGallery: prev.photoGallery.filter(p => p.id !== photoId)
-    }));
+    if (!isPlatformMode) {
+      setStaticWeddingData(prev => ({
+        ...prev,
+        photoGallery: prev.photoGallery.filter(p => p.id !== photoId)
+      }));
+    }
   };
 
   const addContact = (contact: Omit<ContactPerson, 'id'>) => {
-    const newContact: ContactPerson = {
-      ...contact,
-      id: `contact-${Date.now()}`
-    };
-    
-    setWeddingData(prev => ({
-      ...prev,
-      contacts: [...prev.contacts, newContact]
-    }));
+    if (!isPlatformMode) {
+      const newContact: ContactPerson = {
+        ...contact,
+        id: `contact-${Date.now()}`
+      };
+      
+      setStaticWeddingData(prev => ({
+        ...prev,
+        contacts: [...prev.contacts, newContact]
+      }));
+    }
   };
 
   const removeContact = (contactId: string) => {
-    setWeddingData(prev => ({
-      ...prev,
-      contacts: prev.contacts.filter(c => c.id !== contactId)
-    }));
+    if (!isPlatformMode) {
+      setStaticWeddingData(prev => ({
+        ...prev,
+        contacts: prev.contacts.filter(c => c.id !== contactId)
+      }));
+    }
   };
 
   return (

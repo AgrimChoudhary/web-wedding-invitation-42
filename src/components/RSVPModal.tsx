@@ -1,142 +1,182 @@
-import React, { useState } from 'react';
-import { X, Check, X as XIcon } from 'lucide-react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { toast } from '@/hooks/use-toast';
-import { useGuest } from '@/context/GuestContext';
+import { useState } from "react";
+import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { Card, CardContent } from "./ui/card";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
+import { Heart, CheckCircle, XCircle } from "lucide-react";
+import { useToast } from "../hooks/use-toast";
+import { usePlatformRSVP } from "../hooks/usePlatformRSVP";
 
-interface RSVPModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
+const RSVPModal = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [attendees, setAttendees] = useState("");
+  const [dietaryRequirements, setDietaryRequirements] = useState("");
+  const [specialRequests, setSpecialRequests] = useState("");
+  const [rsvpStatus, setRsvpStatus] = useState<'pending' | 'accepted'>('pending');
+  const { toast } = useToast();
+  const { submitRSVP, isPlatformMode } = usePlatformRSVP();
 
-export const RSVPModal: React.FC<RSVPModalProps> = ({ open, onOpenChange }) => {
-  const [message, setMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { guestName, guestStatus, updateGuestStatus, guestId } = useGuest();
-  
-  const handleClose = () => {
-    onOpenChange(false);
-    setMessage('');
-  };
-  
-  const handleSubmit = async (status: 'accepted' | 'declined') => {
-    setIsSubmitting(true);
+  const handleAccept = () => {
+    const attendeesCount = parseInt(attendees);
     
-    try {
-      await updateGuestStatus(status);
-      
-      // Send additional RSVP data to platform
-      window.parent.postMessage({
-        type: 'RSVP_ADDITIONAL_DATA',
-        payload: {
-          guestId: guestId,
-          status: status,
-          message: message.trim() || null,
-          timestamp: new Date().toISOString()
-        }
-      }, '*');
-      
+    if (!attendees || attendeesCount < 1) {
       toast({
-        title: status === 'accepted' ? "RSVP Confirmed" : "RSVP Response Received",
-        description: status === 'accepted' 
-          ? "Thank you for accepting our invitation!" 
-          : "Thank you for letting us know. We'll miss you!",
-      });
-      
-      handleClose();
-    } catch (error) {
-      console.error('Error updating RSVP status:', error);
-      toast({
-        title: "Error",
-        description: "Failed to submit your RSVP. Please try again.",
+        title: "Invalid input",
+        description: "Please enter the number of attendees.",
         variant: "destructive",
       });
-    } finally {
-      setIsSubmitting(false);
+      return;
+    }
+
+    const rsvpData = {
+      attendees: attendeesCount,
+      dietary_requirements: dietaryRequirements || undefined,
+      special_requests: specialRequests || undefined
+    };
+
+    const success = submitRSVP(rsvpData);
+    
+    if (success) {
+      setRsvpStatus('accepted');
+      // Additional success handling is done in usePlatformRSVP hook
     }
   };
-  
-  // Don't show RSVP button if the guest has already responded
-  if (guestStatus === 'accepted' || guestStatus === 'declined') {
-    return null;
-  }
+
+  const resetForm = () => {
+    setAttendees("");
+    setDietaryRequirements("");
+    setSpecialRequests("");
+    setRsvpStatus('pending');
+  };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-wedding-cream/95 sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-dancing-script text-wedding-maroon relative">
-            <span className="before:content-[''] before:absolute before:h-1 before:w-12 before:bg-wedding-gold/50 before:-bottom-2 before:left-0">
-              RSVP
-            </span>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      setIsOpen(open);
+      if (!open) {
+        resetForm();
+      }
+    }}>
+      <DialogTrigger asChild>
+        <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold px-8 py-3 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+          <Heart className="w-5 h-5 mr-2" />
+          RSVP Now
+        </Button>
+      </DialogTrigger>
+      
+      <DialogContent className="sm:max-w-md bg-gradient-to-br from-background via-background/95 to-primary/5 border-2 border-primary/20">
+        <DialogHeader className="text-center pb-4">
+          <DialogTitle className="text-3xl font-bold text-primary mb-2">
+            Join Our Celebration
           </DialogTitle>
-          <DialogDescription className="pt-4">
-            <p className="font-playfair text-gray-600">
-              We're excited to celebrate with you, {guestName || 'Guest'}!
-            </p>
-          </DialogDescription>
+          <p className="text-muted-foreground text-lg">
+            Your presence would make our day even more special
+          </p>
         </DialogHeader>
-        
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="rsvp-message">Would you like to share a message? (optional)</Label>
-            <Textarea
-              id="rsvp-message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message here..."
-              className="border-wedding-gold/30 focus:border-wedding-gold/50 focus-visible:ring-wedding-gold/20"
-            />
-          </div>
-        </div>
-        
-        <DialogFooter className="mt-4 flex-col sm:flex-row gap-2">
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={handleClose}
-            className="border-wedding-gold/30 hover:bg-wedding-gold/10 text-wedding-maroon w-full sm:w-auto"
-          >
-            <X size={16} className="mr-2" /> Cancel
-          </Button>
-          
-          <div className="flex gap-2 w-full sm:w-auto">
-            <Button 
-              type="button"
-              onClick={() => handleSubmit('declined')}
-              variant="outline"
-              className="border-red-300 hover:bg-red-50 text-red-600 flex-1 sm:flex-auto"
-            >
-              <XIcon size={16} className="mr-2" />
-              Decline
-            </Button>
-            
-            <Button 
-              type="button"
-              onClick={() => handleSubmit('accepted')}
-              disabled={isSubmitting}
-              className="bg-wedding-gold hover:bg-wedding-deep-gold text-white flex-1 sm:flex-auto"
-            >
-              {isSubmitting ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Submitting...
-                </>
-              ) : (
-                <>
-                  <Check size={16} className="mr-2" />
-                  Accept
-                </>
+
+        {rsvpStatus === 'pending' && (
+          <Card className="border-2 border-primary/20">
+            <CardContent className="p-6 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="attendees" className="text-base font-semibold">
+                  Number of Attendees
+                </Label>
+                <Input
+                  id="attendees"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={attendees}
+                  onChange={(e) => setAttendees(e.target.value)}
+                  placeholder="Enter number of guests"
+                  className="text-lg"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="dietary" className="text-base font-semibold">
+                  Dietary Requirements (Optional)
+                </Label>
+                <Input
+                  id="dietary"
+                  value={dietaryRequirements}
+                  onChange={(e) => setDietaryRequirements(e.target.value)}
+                  placeholder="Vegetarian, Vegan, Allergies, etc."
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="requests" className="text-base font-semibold">
+                  Special Requests (Optional)
+                </Label>
+                <Textarea
+                  id="requests"
+                  value={specialRequests}
+                  onChange={(e) => setSpecialRequests(e.target.value)}
+                  placeholder="Accessibility needs, seating preferences, etc."
+                  className="min-h-[100px]"
+                />
+              </div>
+
+              <div className="flex gap-4 pt-4">
+                <Button 
+                  onClick={handleAccept}
+                  className="flex-1 bg-primary hover:bg-primary/90 text-white font-semibold py-3"
+                >
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  Accept with Joy
+                </Button>
+                
+                {!isPlatformMode && (
+                  <Button 
+                    onClick={() => setRsvpStatus('accepted')}
+                    variant="outline"
+                    className="flex-1 border-destructive text-destructive hover:bg-destructive hover:text-white font-semibold py-3"
+                  >
+                    <XCircle className="w-5 h-5 mr-2" />
+                    Regretfully Decline
+                  </Button>
+                )}
+              </div>
+              
+              {isPlatformMode && (
+                <p className="text-sm text-muted-foreground text-center">
+                  Note: Only RSVP acceptance is available in platform mode.
+                </p>
               )}
-            </Button>
-          </div>
-        </DialogFooter>
+            </CardContent>
+          </Card>
+        )}
+
+        {rsvpStatus === 'accepted' && (
+          <Card className="border-2 border-green-200 bg-green-50">
+            <CardContent className="p-6 text-center">
+              <CheckCircle className="w-16 h-16 text-green-600 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold text-green-800 mb-2">
+                RSVP Confirmed!
+              </h3>
+              <p className="text-green-700 mb-4">
+                Thank you for confirming your attendance for {attendees} guest{parseInt(attendees) > 1 ? 's' : ''}.
+              </p>
+              {(dietaryRequirements || specialRequests) && (
+                <div className="text-sm text-green-600 bg-white p-3 rounded-lg space-y-2">
+                  {dietaryRequirements && (
+                    <p><strong>Dietary Requirements:</strong> {dietaryRequirements}</p>
+                  )}
+                  {specialRequests && (
+                    <p><strong>Special Requests:</strong> {specialRequests}</p>
+                  )}
+                </div>
+              )}
+              {isPlatformMode && (
+                <p className="text-xs text-green-600 mt-2">
+                  Your RSVP has been sent to the wedding organizers.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </DialogContent>
     </Dialog>
   );

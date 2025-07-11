@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useGuest } from '@/context/GuestContext';
 import { useWedding } from '@/context/WeddingContext';
 import { useAudio } from '@/context/AudioContext';
+import { usePlatform } from '@/context/PlatformContext';
 import { Button } from '@/components/ui/button';
 import InvitationHeader from '@/components/InvitationHeader';
 import CoupleSection from '@/components/CoupleSection';
@@ -46,12 +47,16 @@ const Invitation = () => {
   const { guestName, isLoading: isGuestLoading, updateGuestStatus, guestId, hasAccepted, setGuestName, setGuestId } = useGuest();
   const { weddingData, setAllWeddingData } = useWedding();
   const { isPlaying, toggleMusic } = useAudio();
+  const { isPlatformMode, trackInvitationViewed } = usePlatform();
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
 
   // Read URL parameters and update contexts
   useEffect(() => {
+    // Track invitation view start time for analytics
+    const startTime = Date.now();
+    
     const params = new URLSearchParams(location.search);
 
     // Guest Data
@@ -193,7 +198,13 @@ const Invitation = () => {
     }
 
     console.log('Final wedding data:', updatedWeddingData);
-  }, [location.search, setGuestName, setGuestId, setAllWeddingData]);
+
+    // Track invitation viewed analytics on cleanup
+    return () => {
+      const viewDuration = Date.now() - startTime;
+      trackInvitationViewed(viewDuration);
+    };
+  }, [location.search, setGuestName, setGuestId, setAllWeddingData, trackInvitationViewed]);
 
   // Set up message listener for platform communication
   useEffect(() => {
@@ -522,7 +533,7 @@ const Invitation = () => {
           
           <Footer />
           
-          <RSVPModal open={showRSVP} onOpenChange={() => setShowRSVP(false)} />
+          <RSVPModal />
           <WishesModal open={showWishesModal} onOpenChange={setShowWishesModal} />
         </div>
       )}
