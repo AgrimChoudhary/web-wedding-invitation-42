@@ -8,14 +8,14 @@ export const useUrlParams = () => {
 
   // Parse RSVP configuration
   const parseRsvpConfig = (rsvpConfigParam: string | null): 'simple' | 'detailed' => {
-    if (!rsvpConfigParam) return 'detailed'; // Default to detailed
+    if (!rsvpConfigParam) return 'simple'; // Default to simple as per platform
     
     try {
       const config = JSON.parse(rsvpConfigParam);
       return config.type === 'simple' ? 'simple' : 'detailed';
     } catch (error) {
       console.warn('Failed to parse rsvpConfig parameter:', error);
-      return 'detailed';
+      return 'simple';
     }
   };
 
