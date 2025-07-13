@@ -52,7 +52,15 @@ export const usePostMessage = () => {
         if (message.type === 'WEDDING_DATA_TRANSFER') {
           console.log('Wedding data received:', message.data);
         } else if (message.type === 'LOAD_INVITATION_DATA') {
-          console.log('Load invitation data received:', message.data);
+          console.log('=== LOAD_INVITATION_DATA RECEIVED ===');
+          console.log('Full message data:', message.data);
+          
+          if (message.data?.event?.rsvp_config) {
+            console.log('RSVP Config from postMessage:', message.data.event.rsvp_config);
+            console.log('RSVP Type:', message.data.event.rsvp_config.type);
+          }
+          
+          console.log('=== END LOAD_INVITATION_DATA ===');
         } else if (message.type === 'INVITATION_LOADED') {
           console.log('Invitation loaded:', message.data);
         }

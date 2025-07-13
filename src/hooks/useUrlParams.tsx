@@ -6,23 +6,50 @@ export const useUrlParams = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Parse RSVP configuration
+  // Parse RSVP configuration with enhanced debugging
   const parseRsvpConfig = (rsvpConfigParam: string | null): 'simple' | 'detailed' => {
-    if (!rsvpConfigParam) return 'simple'; // Default to simple as per platform
+    console.log('=== RSVP CONFIG PARSING DEBUG ===');
+    console.log('Raw rsvpConfig parameter:', rsvpConfigParam);
+    
+    if (!rsvpConfigParam) {
+      console.log('No rsvpConfig parameter found, defaulting to simple');
+      return 'simple'; // Default to simple as per platform
+    }
     
     try {
-      const config = JSON.parse(rsvpConfigParam);
+      // Handle URL encoded parameters
+      const decoded = decodeURIComponent(rsvpConfigParam);
+      console.log('Decoded rsvpConfig:', decoded);
+      
+      const config = JSON.parse(decoded);
+      console.log('Parsed rsvpConfig object:', config);
+      
       // Handle both {"type":"simple"} and direct "simple" formats
-      return (config.type || config) === 'simple' ? 'simple' : 'detailed';
+      const rsvpType = (config.type || config) === 'simple' ? 'simple' : 'detailed';
+      console.log('Final RSVP type:', rsvpType);
+      console.log('=== END RSVP CONFIG DEBUG ===');
+      
+      return rsvpType;
     } catch (error) {
       console.warn('Failed to parse rsvpConfig parameter:', error);
+      console.log('=== END RSVP CONFIG DEBUG ===');
       return 'simple';
     }
   };
 
   useEffect(() => {
     try {
+      console.log('=== URL PARAMETERS DEBUG ===');
+      console.log('Current URL:', window.location.href);
+      console.log('URL Search Params:', window.location.search);
+      
       const urlParams = new URLSearchParams(window.location.search);
+      
+      // Log all URL parameters for debugging
+      console.log('All URL Parameters:');
+      for (let [key, value] of urlParams) {
+        console.log(`${key}: ${value}`);
+      }
       
       // Try to parse the main data parameter first (recommended method)
       const dataParam = urlParams.get('data');
