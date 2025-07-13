@@ -13,6 +13,7 @@ const TRUSTED_ORIGINS = [
   'https://utsavy-invitations.vercel.app',
   'http://localhost:3000',
   'http://localhost:5173',
+  'https://preview--utsavy-46.lovable.app/',
   'http://localhost:8080'
 ];
 
