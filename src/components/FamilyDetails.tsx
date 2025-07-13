@@ -78,7 +78,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
                 src={family.familyPhotoUrl} 
                 alt={`${family.title} Photo`}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="lazy"
+                  loading="eager"
                 decoding="async"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
@@ -185,7 +185,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
                           src={member.image || "/placeholder.svg"} 
                           alt={member.name} 
                           className="w-full h-full object-cover"
-                          loading="lazy"
+                          loading="eager"
                           decoding="async"
                         />
                       </AspectRatio>

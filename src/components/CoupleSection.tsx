@@ -45,7 +45,7 @@ const CoupleSection: React.FC = () => {
                   src={coupleImage} 
                   alt={`${firstPersonName} and ${secondPersonName} Wedding`} 
                   className={`w-full h-full object-cover transition-transform duration-10000 ${isHovered ? 'scale-105' : 'scale-100'}`}
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                 />
                 <div className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-700 ${isHovered ? 'opacity-30' : 'opacity-60'}`}></div>

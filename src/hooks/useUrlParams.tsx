@@ -77,12 +77,12 @@ export const useUrlParams = () => {
               weddingDate: urlParams.get('weddingDate') || '',
               weddingTime: urlParams.get('weddingTime') || '',
               groomFirst: urlParams.get('groomFirst') === 'true',
-              coupleImage: urlParams.get('coupleImage') || ''
+              coupleImage: urlParams.get('couplePhoto') || urlParams.get('coupleImage') || ''
             },
             venue: {
               name: urlParams.get('venueName') || '',
               address: urlParams.get('venueAddress') || '',
-              mapLink: urlParams.get('venueMapLink') || ''
+              mapLink: urlParams.get('venueMapLink') || urlParams.get('mapLink') || ''
             },
             family: {
               bride: {

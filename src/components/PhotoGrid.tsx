@@ -296,7 +296,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({
                       "w-full h-full object-cover transition-opacity duration-300",
                       imageLoadingStates[currentIndex] ? "opacity-100" : "opacity-0"
                     )}
-                    loading="lazy"
+                    loading="eager"
                     onLoad={() => handleImageLoad(currentIndex)}
                   />
                   
