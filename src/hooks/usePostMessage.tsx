@@ -53,8 +53,6 @@ export const usePostMessage = () => {
           console.log('Wedding data received:', message.data);
         } else if (message.type === 'INVITATION_LOADED') {
           console.log('Invitation loaded:', message.data);
-        } else {
-          console.log('Unknown message type:', message.type);
         }
         
       } catch (error) {
