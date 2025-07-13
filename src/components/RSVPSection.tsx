@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, Sparkles } from 'lucide-react';
 import { usePlatform } from '../context/PlatformContext';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
@@ -7,6 +7,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { useToast } from '../hooks/use-toast';
+import { Confetti } from './AnimatedElements';
 
 export const RSVPSection: React.FC = () => {
   const { hasResponded, rsvpConfig, sendRSVP, isPlatformMode, platformData } = usePlatform();
@@ -16,6 +17,7 @@ export const RSVPSection: React.FC = () => {
   const [dietaryRequirements, setDietaryRequirements] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
   const [justAccepted, setJustAccepted] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   // Get guest name from platform data or fallback
   const guestName = platformData?.guestName || platformData?.structuredData?.guestName || "Guest";
@@ -23,51 +25,81 @@ export const RSVPSection: React.FC = () => {
   // If guest has already responded or just accepted, show thank you message
   if (hasResponded || justAccepted) {
     return (
-      <section className="w-full py-12 md:py-20 bg-gradient-to-br from-wedding-cream/60 via-wedding-blush/10 to-wedding-cream/60 relative overflow-hidden">
-        {/* Royal background elements */}
-        <div className="absolute inset-0 bg-gradient-to-br from-wedding-gold/5 via-transparent to-wedding-maroon/5"></div>
-        <div className="absolute top-10 md:top-20 left-10 md:left-20 w-2 h-2 md:w-3 md:h-3 bg-wedding-gold/40 rounded-full animate-pulse"></div>
-        <div className="absolute bottom-12 md:bottom-24 right-12 md:right-24 w-3 h-3 md:w-4 md:h-4 bg-wedding-maroon/30 rounded-full animate-pulse" style={{ animationDelay: '1.5s' }}></div>
-        <div className="absolute top-16 md:top-32 right-16 md:right-32 w-1 h-1 md:w-2 md:h-2 bg-wedding-gold/50 rounded-full animate-pulse" style={{ animationDelay: '2.5s' }}></div>
-        
-        <div className="w-full max-w-4xl mx-auto px-4 md:px-6 relative z-10">
-          <div className="bg-white/95 backdrop-blur-lg rounded-2xl md:rounded-3xl p-6 md:p-12 shadow-2xl border border-wedding-gold/20 text-center">
-            <div className="mb-6 md:mb-8">
-              <Heart className="w-12 h-12 md:w-16 md:h-16 text-wedding-gold mx-auto mb-4 md:mb-6 animate-pulse" />
+      <>
+        <Confetti isActive={showConfetti} />
+        <section className="w-full py-8 md:py-12 bg-gradient-to-br from-wedding-cream/60 via-wedding-blush/10 to-wedding-cream/60 relative overflow-hidden">
+          {/* Elegant royal pattern background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-wedding-gold/5 via-transparent to-wedding-maroon/5"></div>
+          <div className="absolute top-0 left-0 w-full h-full opacity-10" 
+               style={{
+                 backgroundImage: `radial-gradient(circle at 25% 25%, hsl(var(--wedding-gold)) 2px, transparent 2px), 
+                                   radial-gradient(circle at 75% 75%, hsl(var(--wedding-maroon)) 1px, transparent 1px)`,
+                 backgroundSize: '60px 60px'
+               }}>
+          </div>
+          
+          <div className="w-full max-w-6xl mx-auto px-4 md:px-8 relative z-10">
+            <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-2xl border-2 border-wedding-gold/20 text-center relative overflow-hidden">
+              {/* Luxury gold accent borders */}
+              <div className="absolute top-0 left-0 w-20 h-20 border-l-4 border-t-4 border-wedding-gold/40 rounded-tl-3xl"></div>
+              <div className="absolute top-0 right-0 w-20 h-20 border-r-4 border-t-4 border-wedding-gold/40 rounded-tr-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-20 h-20 border-l-4 border-b-4 border-wedding-gold/40 rounded-bl-3xl"></div>
+              <div className="absolute bottom-0 right-0 w-20 h-20 border-r-4 border-b-4 border-wedding-gold/40 rounded-br-3xl"></div>
               
-              {/* Personalized Thank You Message */}
-              <div className="mb-4 md:mb-6">
-                <h2 className="font-great-vibes text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-2 md:mb-4">
-                  Dear <span className="text-wedding-gold">{guestName}</span>,
-                </h2>
-                <h3 className="font-great-vibes text-xl md:text-3xl lg:text-4xl text-wedding-maroon">
-                  Thank You for Accepting!
-                </h3>
+              <div className="relative z-10">
+                <div className="flex justify-center items-center mb-4 md:mb-6">
+                  <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-wedding-gold animate-pulse mr-3" />
+                  <Heart className="w-10 h-10 md:w-14 md:h-14 text-wedding-gold animate-pulse" />
+                  <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-wedding-gold animate-pulse ml-3" />
+                </div>
+                
+                {/* Personalized Thank You Message */}
+                <div className="mb-5 md:mb-6">
+                  <h2 className="font-great-vibes text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-2 md:mb-3">
+                    Dear <span className="text-wedding-gold bg-gradient-to-r from-wedding-gold to-wedding-gold/80 bg-clip-text text-transparent">{guestName}</span>,
+                  </h2>
+                  <h3 className="font-great-vibes text-xl md:text-3xl lg:text-4xl text-wedding-maroon mb-3">
+                    Thank You for Accepting!
+                  </h3>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto text-left">
+                  <div className="bg-wedding-gold/5 p-4 md:p-6 rounded-2xl border border-wedding-gold/20">
+                    <p className="text-base md:text-lg text-gray-700 font-medium mb-2">
+                      🎉 We are absolutely thrilled!
+                    </p>
+                    <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                      Your presence will make our special day even more memorable and joyful.
+                    </p>
+                  </div>
+                  
+                  <div className="bg-wedding-maroon/5 p-4 md:p-6 rounded-2xl border border-wedding-maroon/20">
+                    <p className="text-base md:text-lg text-wedding-maroon font-medium mb-2">
+                      💝 Save the Date!
+                    </p>
+                    <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                      Get ready for an unforgettable celebration of love, tradition, and togetherness.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="mt-6 pt-5 border-t border-wedding-gold/20">
+                  <p className="font-great-vibes text-lg md:text-2xl text-wedding-gold italic">
+                    "Your presence will make our celebration complete"
+                  </p>
+                </div>
               </div>
-              
-              <p className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed mb-4">
-                We are extremely excited to celebrate our special day with you!
-              </p>
-              
-              <p className="text-sm md:text-base text-wedding-maroon italic font-medium max-w-xl mx-auto leading-relaxed">
-                We are truly honored to have you join us in our celebration of love and commitment.
-              </p>
-            </div>
-            
-            <div className="pt-4 md:pt-6 border-t border-wedding-gold/20">
-              <p className="font-great-vibes text-lg md:text-xl text-wedding-gold italic">
-                "Your presence will make our celebration complete"
-              </p>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </>
     );
   }
 
   const handleSimpleAccept = () => {
     sendRSVP();
     setJustAccepted(true);
+    setShowConfetti(true);
     toast({
       title: "RSVP Confirmed",
       description: `Thank you ${guestName} for accepting the invitation!`,
@@ -99,6 +131,7 @@ export const RSVPSection: React.FC = () => {
     sendRSVP(rsvpData);
     setShowDetailedForm(false);
     setJustAccepted(true);
+    setShowConfetti(true);
     
     toast({
       title: "RSVP Submitted",
@@ -115,46 +148,68 @@ export const RSVPSection: React.FC = () => {
   };
 
   return (
-    <section className="w-full py-12 md:py-20 bg-gradient-to-br from-wedding-cream/60 via-wedding-blush/10 to-wedding-cream/60 relative overflow-hidden">
-      {/* Royal background elements */}
+    <section className="w-full py-8 md:py-12 bg-gradient-to-br from-wedding-cream/60 via-wedding-blush/10 to-wedding-cream/60 relative overflow-hidden">
+      {/* Luxury royal pattern background */}
       <div className="absolute inset-0 bg-gradient-to-br from-wedding-gold/5 via-transparent to-wedding-maroon/5"></div>
-      <div className="absolute top-10 md:top-20 left-10 md:left-20 w-2 h-2 md:w-3 md:h-3 bg-wedding-gold/40 rounded-full animate-pulse"></div>
-      <div className="absolute bottom-12 md:bottom-24 right-12 md:right-24 w-3 h-3 md:w-4 md:h-4 bg-wedding-maroon/30 rounded-full animate-pulse" style={{ animationDelay: '1.5s' }}></div>
-      <div className="absolute top-16 md:top-32 right-16 md:right-32 w-1 h-1 md:w-2 md:h-2 bg-wedding-gold/50 rounded-full animate-pulse" style={{ animationDelay: '2.5s' }}></div>
+      <div className="absolute inset-0 opacity-5" 
+           style={{
+             backgroundImage: `radial-gradient(circle at 20% 20%, hsl(var(--wedding-gold)) 2px, transparent 2px), 
+                               radial-gradient(circle at 80% 80%, hsl(var(--wedding-maroon)) 1px, transparent 1px)`,
+             backgroundSize: '80px 80px'
+           }}>
+      </div>
       
-      <div className="w-full max-w-4xl mx-auto px-4 md:px-6 relative z-10">
-        <div className="bg-white/95 backdrop-blur-lg rounded-2xl md:rounded-3xl p-6 md:p-12 shadow-2xl border border-wedding-gold/20 text-center">
-          <div className="mb-6 md:mb-8">
-            <h2 className="font-great-vibes text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-4 md:mb-6">
-              Your Presence is Our Present
-            </h2>
-            <p className="text-base md:text-lg text-wedding-gold font-medium mb-6 md:mb-8 max-w-2xl mx-auto">
-              Please confirm your attendance to make our day complete
-            </p>
-          </div>
+      <div className="w-full max-w-6xl mx-auto px-4 md:px-8 relative z-10">
+        <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-2xl border-2 border-wedding-gold/20 text-center relative overflow-hidden">
+          {/* Elegant corner decorations */}
+          <div className="absolute top-0 left-0 w-16 h-16 border-l-3 border-t-3 border-wedding-gold/30 rounded-tl-3xl"></div>
+          <div className="absolute top-0 right-0 w-16 h-16 border-r-3 border-t-3 border-wedding-gold/30 rounded-tr-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-16 h-16 border-l-3 border-b-3 border-wedding-gold/30 rounded-bl-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-16 h-16 border-r-3 border-b-3 border-wedding-gold/30 rounded-br-3xl"></div>
+          
+          <div className="relative z-10">
+            <div className="mb-5 md:mb-6">
+              <div className="flex justify-center items-center mb-3 md:mb-4">
+                <Sparkles className="w-5 h-5 md:w-7 md:h-7 text-wedding-gold animate-pulse mr-3" />
+                <Heart className="w-8 h-8 md:w-12 md:h-12 text-wedding-gold animate-pulse" />
+                <Sparkles className="w-5 h-5 md:w-7 md:h-7 text-wedding-gold animate-pulse ml-3" />
+              </div>
+              
+              <h2 className="font-great-vibes text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-3 md:mb-4">
+                Your Presence is Our Present
+              </h2>
+              <p className="text-base md:text-lg text-wedding-gold font-medium mb-5 md:mb-6 max-w-3xl mx-auto">
+                Please confirm your attendance to make our day complete
+              </p>
+            </div>
 
-          {rsvpConfig === 'simple' ? (
-            <Button
-              onClick={handleSimpleAccept}
-              className="bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-8 md:px-12 py-3 md:py-4 text-base md:text-lg rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-wedding-gold/30 w-full max-w-xs mx-auto"
-            >
-              <Heart className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-              Accept Invitation
-            </Button>
-          ) : (
-            <Button
-              onClick={handleDetailedAccept}
-              className="bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-8 md:px-12 py-3 md:py-4 text-base md:text-lg rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border border-wedding-gold/30 w-full max-w-xs mx-auto"
-            >
-              <Heart className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-              Yes, I'll attend
-            </Button>
-          )}
+            <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto mb-6">
+              {rsvpConfig === 'simple' ? (
+                <Button
+                  onClick={handleSimpleAccept}
+                  className="flex-1 bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-6 md:px-10 py-3 md:py-4 text-base md:text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[56px] group"
+                >
+                  <Heart className="w-5 h-5 md:w-6 md:h-6 mr-2 group-hover:animate-pulse" />
+                  Accept Invitation
+                  <Sparkles className="w-4 h-4 ml-2 opacity-70" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleDetailedAccept}
+                  className="flex-1 bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-6 md:px-10 py-3 md:py-4 text-base md:text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[56px] group"
+                >
+                  <Heart className="w-5 h-5 md:w-6 md:h-6 mr-2 group-hover:animate-pulse" />
+                  Yes, I'll attend
+                  <Sparkles className="w-4 h-4 ml-2 opacity-70" />
+                </Button>
+              )}
+            </div>
 
-          <div className="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-wedding-gold/20">
-            <p className="font-great-vibes text-base md:text-xl text-wedding-maroon italic">
-              "A wedding is a celebration of love, and we want to celebrate with you"
-            </p>
+            <div className="pt-4 border-t border-wedding-gold/20">
+              <p className="font-great-vibes text-base md:text-xl text-wedding-maroon italic">
+                "A wedding is a celebration of love, and we want to celebrate with you"
+              </p>
+            </div>
           </div>
         </div>
       </div>
