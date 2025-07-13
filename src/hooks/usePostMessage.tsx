@@ -78,16 +78,20 @@ export const usePostMessage = () => {
 
   // Send RSVP acceptance
   const sendRSVPAccepted = useCallback((rsvpData: {
-    attendees: number;
+    attendees?: number;
     dietary_requirements?: string;
     special_requests?: string;
-  }) => {
+  } = {}) => {
+    const messageData: any = { accepted: true };
+    
+    // Only include rsvpData if there are actual values
+    if (Object.keys(rsvpData).length > 0) {
+      messageData.rsvpData = rsvpData;
+    }
+    
     const message: TemplateMessage = {
       type: 'RSVP_ACCEPTED',
-      data: {
-        accepted: true,
-        rsvpData
-      },
+      data: messageData,
       timestamp: Date.now(),
       source: 'TEMPLATE'
     };

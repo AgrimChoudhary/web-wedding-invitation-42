@@ -6,6 +6,19 @@ export const useUrlParams = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Parse RSVP configuration
+  const parseRsvpConfig = (rsvpConfigParam: string | null): 'simple' | 'detailed' => {
+    if (!rsvpConfigParam) return 'detailed'; // Default to detailed
+    
+    try {
+      const config = JSON.parse(rsvpConfigParam);
+      return config.type === 'simple' ? 'simple' : 'detailed';
+    } catch (error) {
+      console.warn('Failed to parse rsvpConfig parameter:', error);
+      return 'detailed';
+    }
+  };
+
   useEffect(() => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
@@ -23,6 +36,7 @@ export const useUrlParams = () => {
             guestName: parsedData.guestName,
             hasResponded: parsedData.hasResponded,
             accepted: parsedData.accepted,
+            rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
             structuredData: parsedData
           });
           
@@ -39,7 +53,8 @@ export const useUrlParams = () => {
         guestId: urlParams.get('guestId') || undefined,
         guestName: urlParams.get('guestName') || undefined,
         hasResponded: urlParams.get('hasResponded') === 'true',
-        accepted: urlParams.get('accepted') === 'true'
+        accepted: urlParams.get('accepted') === 'true',
+        rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig'))
       };
 
       // Try to construct structured data from individual parameters

@@ -16,7 +16,7 @@ import PhotoGrid from '@/components/PhotoGrid';
 import WishesCarousel from '@/components/WishesCarousel';
 import WishesModal from '@/components/WishesModal';
 import Footer from '@/components/Footer';
-import RSVPModal from '@/components/RSVPModal';
+import { RSVPSection } from '@/components/RSVPSection';
 import { FloatingPetals, Confetti, FireworksDisplay } from '@/components/AnimatedElements';
 import { ArrowLeftCircle, Heart, MapPin, User, Music, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -486,46 +486,7 @@ const Invitation = () => {
                     </p>
                   </div>
                 ) : (
-                  <div className="text-center">
-                    {/* Call to Action Text */}
-                    <h3 className="text-2xl md:text-3xl font-playfair text-wedding-maroon mb-4">
-                      Your Presence is Our Present
-                    </h3>
-                    <p className="text-wedding-gold/80 mb-8 font-poppins text-sm md:text-base">
-                      Please confirm your attendance to make our day complete
-                    </p>
-                    
-                    {/* Enhanced Accept Button with Spotlight Effect */}
-                    <div className="relative inline-block">
-                      {/* Glowing Ring Effect */}
-                      <div className="absolute -inset-4 bg-gradient-to-r from-wedding-gold/30 via-wedding-deep-gold/40 to-wedding-gold/30 rounded-full blur-xl animate-pulse"></div>
-                      
-                      <Button
-                        onClick={handleAcceptInvitation}
-                        className="relative overflow-hidden bg-gradient-to-r from-wedding-gold via-wedding-deep-gold to-wedding-gold hover:from-wedding-deep-gold hover:via-wedding-gold hover:to-wedding-deep-gold text-white px-10 py-6 md:px-12 md:py-8 rounded-full transition-all duration-500 shadow-2xl hover:shadow-3xl transform hover:scale-110 text-base md:text-lg font-semibold border-2 border-white/30"
-                      >
-                        <span className="relative z-10 flex items-center font-medium">
-                          <Heart size={20} className="md:w-6 md:h-6 mr-3 animate-pulse" />
-                          Accept Invitation
-                        </span>
-                        
-                        {/* Shimmer Effect */}
-                        <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full animate-shimmer"></span>
-                        
-                        {/* Decorative Icons */}
-                        <span className="absolute -top-6 -left-6 text-white/20">
-                          <Heart size={24} className="animate-pulse" style={{ animationDelay: '0.5s' }} />
-                        </span>
-                        <span className="absolute -bottom-6 -right-6 text-white/20">
-                          <Sparkles size={24} className="animate-pulse" style={{ animationDelay: '1s' }} />
-                        </span>
-                      </Button>
-                    </div>
-                    
-                    <p className="text-xs md:text-sm text-wedding-gold/60 mt-6 font-poppins italic">
-                      "A wedding is a celebration of love, and we want to celebrate with you"
-                    </p>
-                  </div>
+                  <RSVPSection />
                 )}
               </div>
             </div>
@@ -533,7 +494,7 @@ const Invitation = () => {
           
           <Footer />
           
-          <RSVPModal />
+          {/* RSVPSection is now used earlier in the component */}
           <WishesModal open={showWishesModal} onOpenChange={setShowWishesModal} />
         </div>
       )}

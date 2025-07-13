@@ -11,7 +11,9 @@ interface PlatformContextType {
   isLoading: boolean;
   error: string | null;
   isPlatformMode: boolean;
-  sendRSVP: (rsvpData: { attendees: number; dietary_requirements?: string; special_requests?: string }) => void;
+  hasResponded: boolean;
+  rsvpConfig: 'simple' | 'detailed';
+  sendRSVP: (rsvpData?: { attendees?: number; dietary_requirements?: string; special_requests?: string }) => void;
   trackInvitationViewed: (duration: number) => void;
 }
 
@@ -76,9 +78,9 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [lastMessage]);
 
   // RSVP handler
-  const sendRSVP = (rsvpData: { attendees: number; dietary_requirements?: string; special_requests?: string }) => {
+  const sendRSVP = (rsvpData?: { attendees?: number; dietary_requirements?: string; special_requests?: string }) => {
     if (isPlatformMode) {
-      sendRSVPAccepted(rsvpData);
+      sendRSVPAccepted(rsvpData || {});
     } else {
       console.log('RSVP sent (standalone mode):', rsvpData);
     }
@@ -99,6 +101,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     isLoading,
     error,
     isPlatformMode,
+    hasResponded: Boolean(platformData?.hasResponded),
+    rsvpConfig: platformData?.rsvpConfig || 'detailed',
     sendRSVP,
     trackInvitationViewed
   };
