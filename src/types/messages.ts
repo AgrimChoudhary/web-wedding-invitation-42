@@ -22,6 +22,17 @@ export interface InvitationLoadedMessage extends BaseMessage {
   };
 }
 
+export interface LoadInvitationDataMessage extends BaseMessage {
+  type: 'LOAD_INVITATION_DATA';
+  data: {
+    event: {
+      rsvp_config?: { type: string };
+      [key: string]: any;
+    };
+    guest: any;
+  };
+}
+
 export interface RSVPAcceptedMessage extends BaseMessage {
   type: 'RSVP_ACCEPTED';
   data: {
@@ -51,7 +62,8 @@ export interface TemplateReadyMessage extends BaseMessage {
 
 export type PlatformMessage = 
   | WeddingDataTransferMessage 
-  | InvitationLoadedMessage;
+  | InvitationLoadedMessage
+  | LoadInvitationDataMessage;
 
 export type TemplateMessage = 
   | RSVPAcceptedMessage 

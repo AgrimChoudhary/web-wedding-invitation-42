@@ -12,7 +12,8 @@ export const useUrlParams = () => {
     
     try {
       const config = JSON.parse(rsvpConfigParam);
-      return config.type === 'simple' ? 'simple' : 'detailed';
+      // Handle both {"type":"simple"} and direct "simple" formats
+      return (config.type || config) === 'simple' ? 'simple' : 'detailed';
     } catch (error) {
       console.warn('Failed to parse rsvpConfig parameter:', error);
       return 'simple';

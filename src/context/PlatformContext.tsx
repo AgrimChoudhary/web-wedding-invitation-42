@@ -74,6 +74,14 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       } catch (err) {
         console.error('Error processing PostMessage data:', err);
       }
+    } else if (lastMessage.type === 'LOAD_INVITATION_DATA') {
+      try {
+        // Handle platform integration guide format
+        console.log('LOAD_INVITATION_DATA received:', lastMessage.data);
+        // You can extend this to handle RSVP config updates from postMessage
+      } catch (err) {
+        console.error('Error processing LOAD_INVITATION_DATA:', err);
+      }
     }
   }, [lastMessage]);
 
@@ -102,7 +110,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     error,
     isPlatformMode,
     hasResponded: Boolean(platformData?.hasResponded),
-    rsvpConfig: platformData?.rsvpConfig || 'detailed',
+    rsvpConfig: platformData?.rsvpConfig || 'simple',
     sendRSVP,
     trackInvitationViewed
   };

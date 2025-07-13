@@ -51,6 +51,8 @@ export const usePostMessage = () => {
         // Handle specific message types
         if (message.type === 'WEDDING_DATA_TRANSFER') {
           console.log('Wedding data received:', message.data);
+        } else if (message.type === 'LOAD_INVITATION_DATA') {
+          console.log('Load invitation data received:', message.data);
         } else if (message.type === 'INVITATION_LOADED') {
           console.log('Invitation loaded:', message.data);
         }
