@@ -22,9 +22,9 @@ export interface StructuredEventData {
       mapLink: string;
     };
     family: {
-      bride: {
-        familyPhoto: string;
-        parentsNames: string;
+      bride_family: {
+        family_photo: string;
+        parents_name: string;
         members: Array<{
           name: string;
           relation?: string;
@@ -32,9 +32,9 @@ export interface StructuredEventData {
           photo?: string;
         }>;
       };
-      groom: {
-        familyPhoto: string;
-        parentsNames: string;
+      groom_family: {
+        family_photo: string;
+        parents_name: string;
         members: Array<{
           name: string;
           relation?: string;

@@ -51,10 +51,10 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
     return members.filter(member => !member.showInDialogOnly);
   };
 
-  // For dialog view, filter out the combined parent card
+  // For dialog view, show all members dynamically
   const getDialogMembers = (members: FamilyMember[]) => {
-    // Remove entries that contain both parents (typically contain " & " in the name)
-    return members.filter(member => !member.name.includes(" & "));
+    // Return all members for dynamic rendering
+    return members || [];
   };
 
   // Determine which family to show first based on groomFirst flag

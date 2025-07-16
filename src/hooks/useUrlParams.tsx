@@ -113,15 +113,15 @@ export const useUrlParams = () => {
               mapLink: urlParams.get('venueMapLink') || urlParams.get('mapLink') || ''
             },
             family: {
-              bride: {
-                familyPhoto: urlParams.get('brideFamilyPhoto') || '',
-                parentsNames: urlParams.get('brideParentsNames') || '',
-                members: tryParseJSON(urlParams.get('brideFamily')) || []
+              bride_family: {
+                family_photo: urlParams.get('brideFamilyPhoto') || '',
+                parents_name: urlParams.get('brideParentsNames') || '',
+                members: tryParseJSON(urlParams.get('bride_family')) || []
               },
-              groom: {
-                familyPhoto: urlParams.get('groomFamilyPhoto') || '',
-                parentsNames: urlParams.get('groomParentsNames') || '',
-                members: tryParseJSON(urlParams.get('groomFamily')) || []
+              groom_family: {
+                family_photo: urlParams.get('groomFamilyPhoto') || '',
+                parents_name: urlParams.get('groomParentsNames') || '',
+                members: tryParseJSON(urlParams.get('groom_family')) || []
               }
             },
             contacts: tryParseJSON(urlParams.get('contacts')) || [],
