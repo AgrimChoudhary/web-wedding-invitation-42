@@ -51,6 +51,20 @@ export const useUrlParams = () => {
         console.log(`${key}: ${value}`);
       }
       
+      // Special logging for family parameters
+      console.log('=== FAMILY PARAMETERS DEBUG ===');
+      console.log('bride_family:', urlParams.get('bride_family'));
+      console.log('groom_family:', urlParams.get('groom_family'));
+      console.log('brideFamilyPhoto:', urlParams.get('brideFamilyPhoto'));
+      console.log('bride_family_photo:', urlParams.get('bride_family_photo'));
+      console.log('brideParentsNames:', urlParams.get('brideParentsNames'));
+      console.log('bride_parents_name:', urlParams.get('bride_parents_name'));
+      console.log('groomFamilyPhoto:', urlParams.get('groomFamilyPhoto'));
+      console.log('groom_family_photo:', urlParams.get('groom_family_photo'));
+      console.log('groomParentsNames:', urlParams.get('groomParentsNames'));
+      console.log('groom_parents_name:', urlParams.get('groom_parents_name'));
+      console.log('=== END FAMILY PARAMETERS DEBUG ===');
+      
       // Try to parse the main data parameter first (recommended method)
       const dataParam = urlParams.get('data');
       if (dataParam) {
@@ -113,16 +127,34 @@ export const useUrlParams = () => {
               mapLink: urlParams.get('venueMapLink') || urlParams.get('mapLink') || ''
             },
             family: {
-              bride_family: {
-                family_photo: urlParams.get('brideFamilyPhoto') || '',
-                parents_name: urlParams.get('brideParentsNames') || '',
-                members: tryParseJSON(urlParams.get('bride_family')) || []
-              },
-              groom_family: {
-                family_photo: urlParams.get('groomFamilyPhoto') || '',
-                parents_name: urlParams.get('groomParentsNames') || '',
-                members: tryParseJSON(urlParams.get('groom_family')) || []
-              }
+              bride_family: (() => {
+                // Try to parse the full bride_family JSON structure first
+                const brideFamilyData = tryParseJSON(urlParams.get('bride_family'));
+                if (brideFamilyData) {
+                  return brideFamilyData;
+                }
+                
+                // Fallback to individual parameters
+                return {
+                  family_photo: urlParams.get('brideFamilyPhoto') || urlParams.get('bride_family_photo') || '',
+                  parents_name: urlParams.get('brideParentsNames') || urlParams.get('bride_parents_name') || '',
+                  members: tryParseJSON(urlParams.get('bride_family_members')) || []
+                };
+              })(),
+              groom_family: (() => {
+                // Try to parse the full groom_family JSON structure first
+                const groomFamilyData = tryParseJSON(urlParams.get('groom_family'));
+                if (groomFamilyData) {
+                  return groomFamilyData;
+                }
+                
+                // Fallback to individual parameters
+                return {
+                  family_photo: urlParams.get('groomFamilyPhoto') || urlParams.get('groom_family_photo') || '',
+                  parents_name: urlParams.get('groomParentsNames') || urlParams.get('groom_parents_name') || '',
+                  members: tryParseJSON(urlParams.get('groom_family_members')) || []
+                };
+              })()
             },
             contacts: tryParseJSON(urlParams.get('contacts')) || [],
             gallery: tryParseJSON(urlParams.get('photos')) || [],

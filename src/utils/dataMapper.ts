@@ -4,6 +4,14 @@ import { WeddingData } from '../types/wedding';
 export const mapPlatformDataToWeddingData = (platformData: StructuredEventData): WeddingData => {
   const { weddingData } = platformData;
   
+  // Debug logging for family data
+  console.log('=== DATA MAPPER DEBUG ===');
+  console.log('Full weddingData:', weddingData);
+  console.log('weddingData.family:', weddingData.family);
+  console.log('bride_family:', weddingData.family?.bride_family);
+  console.log('groom_family:', weddingData.family?.groom_family);
+  console.log('=== END DATA MAPPER DEBUG ===');
+  
   return {
     couple: {
       groomFirstName: extractFirstName(weddingData.couple.groomName),
@@ -17,27 +25,27 @@ export const mapPlatformDataToWeddingData = (platformData: StructuredEventData):
     family: {
       groomFamily: {
         title: "Groom's Family",
-        members: weddingData.family.groom_family.members.map((member, index) => ({
+        members: (weddingData.family?.groom_family?.members || []).map((member, index) => ({
           id: `groom-${index}`,
-          name: member.name,
+          name: member.name || '',
           relation: member.relation || '',
-          description: member.description,
-          image: member.photo
+          description: member.description || '',
+          image: member.photo || ''
         })),
-        familyPhotoUrl: weddingData.family.groom_family.family_photo,
-        parentsNameCombined: weddingData.family.groom_family.parents_name
+        familyPhotoUrl: weddingData.family?.groom_family?.family_photo || '',
+        parentsNameCombined: weddingData.family?.groom_family?.parents_name || ''
       },
       brideFamily: {
         title: "Bride's Family",
-        members: weddingData.family.bride_family.members.map((member, index) => ({
+        members: (weddingData.family?.bride_family?.members || []).map((member, index) => ({
           id: `bride-${index}`,
-          name: member.name,
+          name: member.name || '',
           relation: member.relation || '',
-          description: member.description,
-          image: member.photo
+          description: member.description || '',
+          image: member.photo || ''
         })),
-        familyPhotoUrl: weddingData.family.bride_family.family_photo,
-        parentsNameCombined: weddingData.family.bride_family.parents_name
+        familyPhotoUrl: weddingData.family?.bride_family?.family_photo || '',
+        parentsNameCombined: weddingData.family?.bride_family?.parents_name || ''
       }
     },
     mainWedding: {

@@ -41,6 +41,17 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
   const groomFamily = propGroomFamily || weddingData.family.groomFamily;
   const brideFamily = propBrideFamily || weddingData.family.brideFamily;
 
+  // Debug logging for family data in component
+  console.log('=== FAMILY DETAILS COMPONENT DEBUG ===');
+  console.log('weddingData.family:', weddingData.family);
+  console.log('groomFamily:', groomFamily);
+  console.log('brideFamily:', brideFamily);
+  console.log('groomFamily.familyPhotoUrl:', groomFamily?.familyPhotoUrl);
+  console.log('groomFamily.parentsNameCombined:', groomFamily?.parentsNameCombined);
+  console.log('brideFamily.familyPhotoUrl:', brideFamily?.familyPhotoUrl);
+  console.log('brideFamily.parentsNameCombined:', brideFamily?.parentsNameCombined);
+  console.log('=== END FAMILY DETAILS DEBUG ===');
+
   const handleShowFamily = (family: FamilyData) => {
     setSelectedFamily(family);
     setIsDialogOpen(true);
@@ -71,15 +82,19 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
       <div className="absolute inset-0 luxury-glow-border opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
       <div className="relative bg-gradient-to-br from-white/95 to-wedding-cream/80 backdrop-blur-sm">
         {/* Family Photo Section */}
-        {family.familyPhotoUrl && (
+        {family.familyPhotoUrl && family.familyPhotoUrl.trim() !== '' ? (
           <div className="relative h-48 overflow-hidden">
             <AspectRatio ratio={16/9} className="bg-wedding-cream">
               <img 
                 src={family.familyPhotoUrl} 
                 alt={`${family.title} Photo`}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="eager"
+                loading="eager"
                 decoding="async"
+                onError={(e) => {
+                  console.warn(`Failed to load family photo for ${family.title}:`, family.familyPhotoUrl);
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
             </AspectRatio>
@@ -92,27 +107,34 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
               </h3>
             </div>
           </div>
+        ) : (
+          /* No Family Photo - Show Placeholder */
+          <div className="relative h-32 bg-gradient-to-br from-wedding-cream/50 to-wedding-blush/30 flex items-center justify-center">
+            <div className="text-center">
+              <Crown size={24} className="text-wedding-gold mx-auto mb-2" />
+              <h3 className="text-wedding-maroon font-playfair text-lg">
+                {family.title}
+              </h3>
+            </div>
+          </div>
         )}
         
         {/* Family Details Section */}
         <div className="p-6">
-          {/* Show title if no photo */}
-          {!family.familyPhotoUrl && (
-            <div className="text-center mb-4">
-              <h3 className="text-xl font-playfair text-wedding-maroon flex items-center justify-center gap-2">
-                <Crown size={18} className="text-wedding-gold" />
-                {family.title}
-              </h3>
-            </div>
-          )}
-          
           {/* Combined Parents Names */}
-          {family.parentsNameCombined && (
+          {family.parentsNameCombined && family.parentsNameCombined.trim() !== '' ? (
             <div className="text-center mb-4">
               <h4 className="font-playfair text-lg text-wedding-maroon mb-1">
                 {family.parentsNameCombined}
               </h4>
               <p className="text-sm text-gray-600 italic">Parents</p>
+            </div>
+          ) : (
+            /* No Parents Names - Show Member Count */
+            <div className="text-center mb-4">
+              <p className="text-sm text-gray-600">
+                {family.members.length > 0 ? `${family.members.length} family members` : 'Family details'}
+              </p>
             </div>
           )}
 
