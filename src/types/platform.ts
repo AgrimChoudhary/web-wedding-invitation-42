@@ -69,6 +69,12 @@ export interface PlatformData {
   guestName?: string;
   hasResponded?: boolean;
   accepted?: boolean;
+  guestStatus?: 'invited' | 'accepted' | 'submitted';
+  existingRsvpData?: {
+    attendees?: number;
+    dietary_requirements?: string;
+    special_requests?: string;
+  };
   rsvpConfig?: 'simple' | 'detailed';
   structuredData?: StructuredEventData;
 }

@@ -12,6 +12,8 @@ interface PlatformContextType {
   error: string | null;
   isPlatformMode: boolean;
   hasResponded: boolean;
+  guestStatus: 'invited' | 'accepted' | 'submitted';
+  existingRsvpData: { attendees?: number; dietary_requirements?: string; special_requests?: string } | null;
   rsvpConfig: 'simple' | 'detailed';
   sendRSVP: (rsvpData?: { attendees?: number; dietary_requirements?: string; special_requests?: string }) => void;
   trackInvitationViewed: (duration: number) => void;
@@ -113,9 +115,22 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // RSVP handler
   const sendRSVP = (rsvpData?: { attendees?: number; dietary_requirements?: string; special_requests?: string }) => {
     if (isPlatformMode) {
-      sendRSVPAccepted(rsvpData || {});
+      const messagePayload = rsvpData ? 
+        { ...rsvpData, guestStatus: 'submitted' } : 
+        { guestStatus: 'accepted' };
+      sendRSVPAccepted(messagePayload);
     } else {
       console.log('RSVP sent (standalone mode):', rsvpData);
+    }
+    
+    // Update local platform data state
+    if (platformData) {
+      const newStatus = rsvpData ? 'submitted' : 'accepted';
+      setPlatformData({
+        ...platformData,
+        guestStatus: newStatus,
+        existingRsvpData: rsvpData || platformData.existingRsvpData
+      });
     }
   };
 
@@ -135,6 +150,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     error,
     isPlatformMode,
     hasResponded: Boolean(platformData?.hasResponded),
+    guestStatus: platformData?.guestStatus || 'invited',
+    existingRsvpData: platformData?.existingRsvpData || null,
     rsvpConfig: platformData?.rsvpConfig || 'simple',
     sendRSVP,
     trackInvitationViewed

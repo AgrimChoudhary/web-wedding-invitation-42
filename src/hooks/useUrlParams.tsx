@@ -78,6 +78,8 @@ export const useUrlParams = () => {
             guestName: parsedData.guestName,
             hasResponded: parsedData.hasResponded,
             accepted: parsedData.accepted,
+            guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
+            existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
             rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
             structuredData: parsedData
           });
@@ -96,6 +98,8 @@ export const useUrlParams = () => {
         guestName: urlParams.get('guestName') || undefined,
         hasResponded: urlParams.get('hasResponded') === 'true',
         accepted: urlParams.get('accepted') === 'true',
+        guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
+        existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
         rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig'))
       };
 
