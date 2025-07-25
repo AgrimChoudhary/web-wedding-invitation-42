@@ -13,9 +13,9 @@ interface PlatformContextType {
   isPlatformMode: boolean;
   hasResponded: boolean;
   guestStatus: 'invited' | 'accepted' | 'submitted';
-  existingRsvpData: { attendees?: number; dietary_requirements?: string; special_requests?: string } | null;
+  existingRsvpData: Record<string, any> | null;
   rsvpConfig: 'simple' | 'detailed';
-  sendRSVP: (rsvpData?: { attendees?: number; dietary_requirements?: string; special_requests?: string }) => void;
+  sendRSVP: (rsvpData?: any) => void;
   trackInvitationViewed: (duration: number) => void;
 }
 
@@ -113,7 +113,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [lastMessage]);
 
   // RSVP handler
-  const sendRSVP = (rsvpData?: { attendees?: number; dietary_requirements?: string; special_requests?: string }) => {
+  const sendRSVP = (rsvpData?: any) => {
     if (isPlatformMode) {
       const messagePayload = rsvpData ? 
         { ...rsvpData, guestStatus: 'submitted' } : 

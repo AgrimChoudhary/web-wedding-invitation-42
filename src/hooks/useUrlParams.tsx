@@ -78,9 +78,10 @@ export const useUrlParams = () => {
             guestName: parsedData.guestName,
             hasResponded: parsedData.hasResponded,
             accepted: parsedData.accepted,
-            guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
-            existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
-            rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
+        guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
+        existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
+        rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
+        customFields: tryParseJSON(urlParams.get('customFields')) || [],
             structuredData: parsedData
           });
           
@@ -100,7 +101,8 @@ export const useUrlParams = () => {
         accepted: urlParams.get('accepted') === 'true',
         guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
         existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
-        rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig'))
+        rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
+        customFields: tryParseJSON(urlParams.get('customFields')) || []
       };
 
       // Try to construct structured data from individual parameters

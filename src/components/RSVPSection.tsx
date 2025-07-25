@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Sparkles, Users, Utensils, MessageSquare } from 'lucide-react';
+import { Heart, Sparkles } from 'lucide-react';
 import { usePlatform } from '../context/PlatformContext';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
 import { useToast } from '../hooks/use-toast';
 import { Confetti } from './AnimatedElements';
+import { DynamicFormField } from './DynamicFormField';
+import { CustomField } from '../types/platform';
 
 export const RSVPSection: React.FC = () => {
   const { 
@@ -21,24 +20,46 @@ export const RSVPSection: React.FC = () => {
   const { toast } = useToast();
   
   const [showDetailedForm, setShowDetailedForm] = useState(false);
-  const [attendees, setAttendees] = useState(1);
-  const [dietaryRequirements, setDietaryRequirements] = useState('');
-  const [specialRequests, setSpecialRequests] = useState('');
+  const [formData, setFormData] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   // Get guest name from platform data or fallback
   const guestName = platformData?.guestName || platformData?.structuredData?.guestName || "Guest";
+  
+  // Get custom fields with fallback and proper sorting
+  const getCustomFields = (): CustomField[] => {
+    if (!platformData?.customFields || !Array.isArray(platformData.customFields)) {
+      return [];
+    }
+    
+    // Sort by display_order, placing fields without order at the end
+    return [...platformData.customFields].sort((a, b) => {
+      const orderA = a.display_order ?? 999;
+      const orderB = b.display_order ?? 999;
+      return orderA - orderB;
+    });
+  };
+
+  const customFields = getCustomFields();
 
   // Load existing RSVP data when available
   useEffect(() => {
-    if (existingRsvpData) {
-      setAttendees(existingRsvpData.attendees || 1);
-      setDietaryRequirements(existingRsvpData.dietary_requirements || '');
-      setSpecialRequests(existingRsvpData.special_requests || '');
+    if (existingRsvpData && typeof existingRsvpData === 'object') {
+      const initialData: Record<string, string> = {};
+      
+      // Populate form data with existing values
+      customFields.forEach(field => {
+        const existingValue = existingRsvpData[field.field_name];
+        if (existingValue !== undefined) {
+          initialData[field.field_name] = String(existingValue);
+        }
+      });
+      
+      setFormData(initialData);
     }
-  }, [existingRsvpData]);
+  }, [existingRsvpData, customFields]);
 
   // Clear validation errors when reopening form after successful submission
   useEffect(() => {
@@ -50,9 +71,39 @@ export const RSVPSection: React.FC = () => {
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
     
-    if (attendees < 1 || attendees > 10) {
-      errors.attendees = "Please specify between 1 and 10 attendees.";
-    }
+    customFields.forEach(field => {
+      const value = formData[field.field_name] || '';
+      
+      // Required field validation
+      if (field.is_required && !value.trim()) {
+        errors[field.field_name] = `${field.field_label} is required.`;
+        return;
+      }
+      
+      // Email validation
+      if (field.field_type === 'email' && value.trim()) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value.trim())) {
+          errors[field.field_name] = 'Please enter a valid email address.';
+          return;
+        }
+      }
+      
+      // Max length validation
+      if (field.max_length && value.length > field.max_length) {
+        errors[field.field_name] = `Maximum ${field.max_length} characters allowed.`;
+        return;
+      }
+      
+      // Number validation
+      if (field.field_type === 'number' && value.trim()) {
+        const numValue = parseFloat(value);
+        if (isNaN(numValue)) {
+          errors[field.field_name] = 'Please enter a valid number.';
+          return;
+        }
+      }
+    });
     
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -68,11 +119,20 @@ export const RSVPSection: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      const rsvpData = {
-        attendees,
-        dietary_requirements: dietaryRequirements.trim() || undefined,
-        special_requests: specialRequests.trim() || undefined
-      };
+      // Convert form data to the format expected by the platform
+      const rsvpData: Record<string, any> = {};
+      
+      customFields.forEach(field => {
+        const value = formData[field.field_name];
+        if (value !== undefined && value !== '') {
+          // Convert to appropriate type based on field type
+          if (field.field_type === 'number') {
+            rsvpData[field.field_name] = parseFloat(value) || 0;
+          } else {
+            rsvpData[field.field_name] = value.trim();
+          }
+        }
+      });
 
       sendRSVP(rsvpData);
       setShowDetailedForm(false);
@@ -230,59 +290,23 @@ export const RSVPSection: React.FC = () => {
             </DialogHeader>
             
             <form onSubmit={handleFormSubmit} className="space-y-5">
-              <div>
-                <Label htmlFor="attendees" className="text-wedding-maroon font-medium text-sm flex items-center gap-2">
-                  <Users size={16} />
-                  Number of Attendees *
-                </Label>
-                <Input
-                  id="attendees"
-                  type="number"
-                  min="1"
-                  max="10"
-                  value={attendees}
-                  onChange={(e) => setAttendees(parseInt(e.target.value) || 1)}
-                  required
-                  className="mt-1 border-wedding-gold/30 focus:border-wedding-gold focus:ring-wedding-gold/20 rounded-lg"
-                  placeholder="How many guests will attend?"
-                  aria-label="Number of attendees"
-                />
-                {validationErrors.attendees && (
-                  <p className="text-red-500 text-sm mt-1">{validationErrors.attendees}</p>
-                )}
-              </div>
-
-              <div>
-                <Label htmlFor="dietary" className="text-wedding-maroon font-medium text-sm flex items-center gap-2">
-                  <Utensils size={16} />
-                  Dietary Requirements
-                </Label>
-                <Textarea
-                  id="dietary"
-                  placeholder="e.g., Vegetarian, Vegan, Gluten-free, Allergies..."
-                  value={dietaryRequirements}
-                  onChange={(e) => setDietaryRequirements(e.target.value)}
-                  rows={3}
-                  className="mt-1 border-wedding-gold/30 focus:border-wedding-gold focus:ring-wedding-gold/20 rounded-lg resize-none"
-                  aria-label="Dietary requirements"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="requests" className="text-wedding-maroon font-medium text-sm flex items-center gap-2">
-                  <MessageSquare size={16} />
-                  Special Requests
-                </Label>
-                <Textarea
-                  id="requests"
-                  placeholder="e.g., Wheelchair access, Seating preferences..."
-                  value={specialRequests}
-                  onChange={(e) => setSpecialRequests(e.target.value)}
-                  rows={3}
-                  className="mt-1 border-wedding-gold/30 focus:border-wedding-gold focus:ring-wedding-gold/20 rounded-lg resize-none"
-                  aria-label="Special requests"
-                />
-              </div>
+              {customFields.length > 0 ? (
+                customFields.map((field) => (
+                  <DynamicFormField
+                    key={field.field_name}
+                    field={field}
+                    value={formData[field.field_name] || ''}
+                    onChange={(value) => 
+                      setFormData(prev => ({ ...prev, [field.field_name]: value }))
+                    }
+                    error={validationErrors[field.field_name]}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-gray-500">No additional fields configured for this event.</p>
+                </div>
+              )}
 
               <div className="flex flex-col sm:flex-row gap-3 pt-6">
                 <Button

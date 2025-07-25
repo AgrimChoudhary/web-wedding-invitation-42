@@ -63,6 +63,18 @@ export interface StructuredEventData {
   };
 }
 
+export interface CustomField {
+  id?: string;
+  field_name: string;
+  field_label: string;
+  field_type: 'text' | 'textarea' | 'select' | 'email' | 'number';
+  is_required?: boolean;
+  field_options?: string[];
+  placeholder_text?: string;
+  display_order?: number;
+  max_length?: number;
+}
+
 export interface PlatformData {
   eventId?: string;
   guestId?: string;
@@ -70,11 +82,8 @@ export interface PlatformData {
   hasResponded?: boolean;
   accepted?: boolean;
   guestStatus?: 'invited' | 'accepted' | 'submitted';
-  existingRsvpData?: {
-    attendees?: number;
-    dietary_requirements?: string;
-    special_requests?: string;
-  };
+  existingRsvpData?: Record<string, any>;
   rsvpConfig?: 'simple' | 'detailed';
   structuredData?: StructuredEventData;
+  customFields?: CustomField[];
 }
