@@ -87,11 +87,7 @@ export const usePostMessage = () => {
   }, [sendMessageToPlatform]);
 
   // Send RSVP acceptance
-  const sendRSVPAccepted = useCallback((rsvpData: {
-    attendees?: number;
-    dietary_requirements?: string;
-    special_requests?: string;
-  } = {}) => {
+  const sendRSVPAccepted = useCallback((rsvpData: Record<string, any> = {}) => {
     const messageData: any = { accepted: true };
     
     // Only include rsvpData if there are actual values
