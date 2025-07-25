@@ -115,10 +115,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // RSVP handler
   const sendRSVP = (rsvpData?: any) => {
     if (isPlatformMode) {
-      const messagePayload = rsvpData ? 
-        { ...rsvpData, guestStatus: 'submitted' } : 
-        { guestStatus: 'accepted' };
-      sendRSVPAccepted(messagePayload);
+      // Send only the RSVP data without adding guestStatus field
+      sendRSVPAccepted(rsvpData || {});
     } else {
       console.log('RSVP sent (standalone mode):', rsvpData);
     }
