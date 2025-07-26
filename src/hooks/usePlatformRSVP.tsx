@@ -9,7 +9,7 @@ interface RSVPData {
 }
 
 export const usePlatformRSVP = () => {
-  const { isPlatformMode, sendRSVP, sendRSVPDecline } = usePlatform();
+  const { isPlatformMode, sendRSVP } = usePlatform();
   const { toast } = useToast();
 
   const submitRSVP = useCallback((rsvpData: RSVPData) => {
@@ -47,34 +47,8 @@ export const usePlatformRSVP = () => {
     }
   }, [sendRSVP, isPlatformMode, toast]);
 
-  const declineRSVP = useCallback(() => {
-    try {
-      // Send decline through platform integration
-      sendRSVPDecline();
-
-      // Show success message
-      toast({
-        title: "RSVP Declined",
-        description: isPlatformMode 
-          ? "Your decline has been sent to the platform successfully."
-          : "Your decline has been recorded (demo mode).",
-      });
-
-      return true;
-    } catch (error) {
-      console.error('Error declining RSVP:', error);
-      toast({
-        title: "Decline Failed",
-        description: "There was an error declining the RSVP. Please try again.",
-        variant: "destructive"
-      });
-      return false;
-    }
-  }, [sendRSVPDecline, isPlatformMode, toast]);
-
   return {
     submitRSVP,
-    declineRSVP,
     isPlatformMode
   };
 };

@@ -81,7 +81,7 @@ export interface PlatformData {
   guestName?: string;
   hasResponded?: boolean;
   accepted?: boolean;
-  guestStatus?: 'pending' | 'viewed' | 'accepted' | 'submitted';
+  guestStatus?: 'invited' | 'accepted' | 'submitted';
   existingRsvpData?: Record<string, any>;
   rsvpConfig?: 'simple' | 'detailed';
   structuredData?: StructuredEventData;
