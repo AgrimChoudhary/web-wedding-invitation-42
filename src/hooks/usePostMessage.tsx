@@ -1,37 +1,70 @@
 import { useEffect, useState, useCallback } from 'react';
 import { PlatformMessage, TemplateMessage } from '../types/messages';
 
-const ALLOWED_ORIGINS = [
-  'https://utsavy2.vercel.app',
-  'https://platform-domain.com', // Replace with actual platform domain
-  window.location.origin
-];
+// Dynamic origin validation for better platform compatibility
+const isValidOrigin = (origin: string): boolean => {
+  const allowedPatterns = [
+    /^https:\/\/.*\.vercel\.app$/,
+    /^https:\/\/.*\.netlify\.app$/,
+    /^https:\/\/.*\.herokuapp\.com$/,
+    /^https:\/\/localhost:\d+$/,
+    /^http:\/\/localhost:\d+$/,
+    /^https:\/\/127\.0\.0\.1:\d+$/,
+    /^http:\/\/127\.0\.0\.1:\d+$/
+  ];
+  
+  // Always allow same origin
+  if (origin === window.location.origin) return true;
+  
+  // Check against allowed patterns
+  return allowedPatterns.some(pattern => pattern.test(origin));
+};
 
 export const usePostMessage = () => {
   const [lastMessage, setLastMessage] = useState<PlatformMessage | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [platformData, setPlatformData] = useState<{ eventId?: string; guestId?: string; guestName?: string } | null>(null);
 
-  // Send message to platform
-  const sendMessageToPlatform = useCallback((message: TemplateMessage) => {
-    try {
-      // Send to parent window (platform iframe container)
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage(message, '*');
-        console.log('Sent message to platform:', message);
-      } else {
-        console.warn('No parent window found, running standalone');
+  // Send message to platform with retry logic
+  const sendMessageToPlatform = useCallback((message: TemplateMessage, maxRetries: number = 3) => {
+    let attempts = 0;
+    
+    const attemptSend = () => {
+      try {
+        console.log(`[TEMPLATE] Sending message (attempt ${attempts + 1}/${maxRetries}):`, message);
+        console.log('[TEMPLATE] Current platform data:', platformData);
+        console.log('[TEMPLATE] Window parent exists:', window.parent !== window);
+        console.log('[TEMPLATE] Message type:', message.type);
+        
+        // Send to parent window (platform iframe container)
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(message, '*');
+          console.log('[TEMPLATE] ✅ Message sent successfully:', message);
+        } else {
+          console.warn('[TEMPLATE] ⚠️ No parent window found, running standalone');
+        }
+      } catch (error) {
+        console.error(`[TEMPLATE] ❌ Error sending message (attempt ${attempts + 1}):`, error);
+        
+        attempts++;
+        if (attempts < maxRetries) {
+          console.log(`[TEMPLATE] 🔄 Retrying in 500ms...`);
+          setTimeout(attemptSend, 500);
+        } else {
+          console.error('[TEMPLATE] ❌ Max retry attempts reached, giving up');
+        }
       }
-    } catch (error) {
-      console.error('Error sending message to platform:', error);
-    }
-  }, []);
+    };
+    
+    attemptSend();
+  }, [platformData]);
 
   // Listen for messages from platform
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      // Validate origin for security
-      if (!ALLOWED_ORIGINS.includes(event.origin)) {
-        console.warn('Message from unauthorized origin:', event.origin);
+      // Validate origin for security using dynamic validation
+      if (!isValidOrigin(event.origin)) {
+        console.warn('[TEMPLATE] ⚠️ Message from unauthorized origin:', event.origin);
         return;
       }
 
@@ -44,25 +77,36 @@ export const usePostMessage = () => {
           return;
         }
 
-        console.log('Received platform message:', message);
+        console.log('[TEMPLATE] 📨 Received platform message:', message);
         setLastMessage(message);
         setIsConnected(true);
         
+        // Extract platform data for future message sending
+        if (message.type === 'LOAD_INVITATION_DATA' && message.data) {
+          const newPlatformData = {
+            eventId: message.data.event?.id || (message.data as any).eventId,
+            guestId: message.data.guest?.id || (message.data as any).guestId,
+            guestName: message.data.guest?.name || (message.data as any).guestName
+          };
+          setPlatformData(newPlatformData);
+          console.log('[TEMPLATE] 💾 Updated platform data for messaging:', newPlatformData);
+        }
+        
         // Handle specific message types
         if (message.type === 'WEDDING_DATA_TRANSFER') {
-          console.log('Wedding data received:', message.data);
+          console.log('[TEMPLATE] 💒 Wedding data received:', message.data);
         } else if (message.type === 'LOAD_INVITATION_DATA') {
-          console.log('=== LOAD_INVITATION_DATA RECEIVED ===');
-          console.log('Full message data:', message.data);
+          console.log('[TEMPLATE] === LOAD_INVITATION_DATA RECEIVED ===');
+          console.log('[TEMPLATE] Full message data:', message.data);
           
           if (message.data?.event?.rsvp_config) {
-            console.log('RSVP Config from postMessage:', message.data.event.rsvp_config);
-            console.log('RSVP Type:', message.data.event.rsvp_config.type);
+            console.log('[TEMPLATE] RSVP Config from postMessage:', message.data.event.rsvp_config);
+            console.log('[TEMPLATE] RSVP Type:', message.data.event.rsvp_config.type);
           }
           
-          console.log('=== END LOAD_INVITATION_DATA ===');
+          console.log('[TEMPLATE] === END LOAD_INVITATION_DATA ===');
         } else if (message.type === 'INVITATION_LOADED') {
-          console.log('Invitation loaded:', message.data);
+          console.log('[TEMPLATE] 👁️ Invitation loaded:', message.data);
         }
         
       } catch (error) {
@@ -86,13 +130,23 @@ export const usePostMessage = () => {
     };
   }, [sendMessageToPlatform]);
 
-  // Send RSVP acceptance
+  // Send RSVP acceptance with enhanced data
   const sendRSVPAccepted = useCallback((rsvpData: Record<string, any> = {}) => {
-    const messageData: any = { accepted: true };
+    console.log('[TEMPLATE] 🎯 Preparing RSVP message...');
+    console.log('[TEMPLATE] RSVP Data:', rsvpData);
+    console.log('[TEMPLATE] Platform Data Available:', platformData);
+    
+    const messageData: any = { 
+      accepted: true,
+      ...(platformData?.eventId && { eventId: platformData.eventId }),
+      ...(platformData?.guestId && { guestId: platformData.guestId }),
+      ...(platformData?.guestName && { guestName: platformData.guestName })
+    };
     
     // Only include rsvpData if there are actual values
     if (Object.keys(rsvpData).length > 0) {
       messageData.rsvpData = rsvpData;
+      console.log('[TEMPLATE] 📝 Including RSVP form data');
     }
     
     const message: TemplateMessage = {
@@ -101,22 +155,33 @@ export const usePostMessage = () => {
       timestamp: Date.now(),
       source: 'TEMPLATE'
     };
+    
+    console.log('[TEMPLATE] 🚀 Final RSVP message:', message);
     sendMessageToPlatform(message);
-  }, [sendMessageToPlatform]);
+  }, [sendMessageToPlatform, platformData]);
 
-  // Send invitation viewed analytics
+  // Send invitation viewed analytics with enhanced data
   const sendInvitationViewed = useCallback((viewDuration: number) => {
+    console.log('[TEMPLATE] 👁️ Sending invitation viewed analytics...');
+    
+    const messageData: any = {
+      timestamp: Date.now(),
+      viewDuration,
+      ...(platformData?.eventId && { eventId: platformData.eventId }),
+      ...(platformData?.guestId && { guestId: platformData.guestId }),
+      ...(platformData?.guestName && { guestName: platformData.guestName })
+    };
+    
     const message: TemplateMessage = {
       type: 'INVITATION_VIEWED',
-      data: {
-        timestamp: Date.now(),
-        viewDuration
-      },
+      data: messageData,
       timestamp: Date.now(),
       source: 'TEMPLATE'
     };
+    
+    console.log('[TEMPLATE] 📊 Analytics message:', message);
     sendMessageToPlatform(message);
-  }, [sendMessageToPlatform]);
+  }, [sendMessageToPlatform, platformData]);
 
   return {
     lastMessage,

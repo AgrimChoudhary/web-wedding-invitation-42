@@ -12,7 +12,7 @@ interface PlatformContextType {
   error: string | null;
   isPlatformMode: boolean;
   hasResponded: boolean;
-  guestStatus: 'invited' | 'accepted' | 'submitted';
+  guestStatus: 'pending' | 'viewed' | 'accepted' | 'submitted';
   existingRsvpData: Record<string, any> | null;
   rsvpConfig: 'simple' | 'detailed';
   sendRSVP: (rsvpData?: any) => void;
@@ -112,32 +112,54 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [lastMessage]);
 
-  // RSVP handler
+  // RSVP handler with enhanced logging
   const sendRSVP = (rsvpData?: any) => {
+    console.log('[PLATFORM CONTEXT] 🎯 Sending RSVP...');
+    console.log('[PLATFORM CONTEXT] Platform mode:', isPlatformMode);
+    console.log('[PLATFORM CONTEXT] RSVP data:', rsvpData);
+    console.log('[PLATFORM CONTEXT] Current platform data:', platformData);
+    
     if (isPlatformMode) {
       // Send only the RSVP data without adding guestStatus field
       sendRSVPAccepted(rsvpData || {});
+      console.log('[PLATFORM CONTEXT] ✅ RSVP sent to platform');
     } else {
-      console.log('RSVP sent (standalone mode):', rsvpData);
+      console.log('[PLATFORM CONTEXT] 🔧 RSVP sent (standalone mode):', rsvpData);
     }
     
-    // Update local platform data state
+    // Update local platform data state with proper status mapping
     if (platformData) {
-      const newStatus = rsvpData ? 'submitted' : 'accepted';
-      setPlatformData({
+      const newStatus: 'pending' | 'viewed' | 'accepted' | 'submitted' = rsvpData ? 'submitted' : 'accepted';
+      const updatedData = {
         ...platformData,
         guestStatus: newStatus,
         existingRsvpData: rsvpData || platformData.existingRsvpData
-      });
+      };
+      setPlatformData(updatedData);
+      console.log('[PLATFORM CONTEXT] 📝 Updated platform data:', updatedData);
     }
   };
 
-  // Analytics handler
+  // Analytics handler with enhanced logging
   const trackInvitationViewed = (duration: number) => {
+    console.log('[PLATFORM CONTEXT] 👁️ Tracking invitation view...');
+    console.log('[PLATFORM CONTEXT] Platform mode:', isPlatformMode);
+    console.log('[PLATFORM CONTEXT] View duration:', duration);
+    
     if (isPlatformMode) {
       sendInvitationViewed(duration);
+      console.log('[PLATFORM CONTEXT] ✅ Analytics sent to platform');
+      
+      // Update guest status to 'viewed' if still pending
+      if (platformData?.guestStatus === 'pending') {
+        setPlatformData({
+          ...platformData,
+          guestStatus: 'viewed'
+        });
+        console.log('[PLATFORM CONTEXT] 📝 Updated guest status to "viewed"');
+      }
     } else {
-      console.log('Invitation viewed (standalone mode):', duration);
+      console.log('[PLATFORM CONTEXT] 🔧 Invitation viewed (standalone mode):', duration);
     }
   };
 
@@ -148,7 +170,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     error,
     isPlatformMode,
     hasResponded: Boolean(platformData?.hasResponded),
-    guestStatus: platformData?.guestStatus || 'invited',
+    guestStatus: platformData?.guestStatus || 'pending',
     existingRsvpData: platformData?.existingRsvpData || null,
     rsvpConfig: platformData?.rsvpConfig || 'simple',
     sendRSVP,

@@ -78,7 +78,7 @@ export const useUrlParams = () => {
             guestName: parsedData.guestName,
             hasResponded: parsedData.hasResponded,
             accepted: parsedData.accepted,
-        guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
+        guestStatus: mapLegacyGuestStatus(urlParams.get('guestStatus')),
         existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
         rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
         customFields: tryParseJSON(urlParams.get('customFields')) || [],
@@ -99,7 +99,7 @@ export const useUrlParams = () => {
         guestName: urlParams.get('guestName') || undefined,
         hasResponded: urlParams.get('hasResponded') === 'true',
         accepted: urlParams.get('accepted') === 'true',
-        guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
+        guestStatus: mapLegacyGuestStatus(urlParams.get('guestStatus')),
         existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
         rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
         customFields: tryParseJSON(urlParams.get('customFields')) || []
@@ -182,6 +182,24 @@ export const useUrlParams = () => {
   }, []);
 
   return { platformData, isLoading, error };
+};
+
+// Helper function to map legacy guest status to new format
+const mapLegacyGuestStatus = (status: string | null): 'pending' | 'viewed' | 'accepted' | 'submitted' => {
+  if (!status) return 'pending';
+  
+  switch (status) {
+    case 'invited':
+      return 'pending';
+    case 'accepted':
+      return 'accepted';
+    case 'submitted':
+      return 'submitted';
+    case 'viewed':
+      return 'viewed';
+    default:
+      return 'pending';
+  }
 };
 
 // Helper function to safely parse JSON strings
