@@ -12,10 +12,11 @@ interface PlatformContextType {
   error: string | null;
   isPlatformMode: boolean;
   hasResponded: boolean;
-  guestStatus: 'invited' | 'accepted' | 'submitted';
+  guestStatus: 'pending' | 'viewed' | 'accepted' | 'submitted';
   existingRsvpData: Record<string, any> | null;
   rsvpConfig: 'simple' | 'detailed';
   sendRSVP: (rsvpData?: any) => void;
+  sendRSVPDecline: () => void;
   trackInvitationViewed: (duration: number) => void;
 }
 
@@ -23,12 +24,11 @@ const PlatformContext = createContext<PlatformContextType | undefined>(undefined
 
 export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { platformData: urlPlatformData, isLoading: urlLoading, error: urlError } = useUrlParams();
-  const { lastMessage, sendRSVPAccepted, sendInvitationViewed } = usePostMessage();
-  
   const [platformData, setPlatformData] = useState<PlatformData | null>(null);
   const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { lastMessage, sendRSVPAccepted, sendRSVPDeclined, sendInvitationViewed } = usePostMessage(platformData);
 
   // Track if we're in platform mode (iframe with platform data)
   const isPlatformMode = Boolean(platformData?.eventId || lastMessage);
@@ -132,6 +132,25 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
+  // RSVP decline handler
+  const sendRSVPDecline = () => {
+    if (isPlatformMode) {
+      sendRSVPDeclined();
+    } else {
+      console.log('RSVP declined (standalone mode)');
+    }
+    
+    // Update local platform data state
+    if (platformData) {
+      setPlatformData({
+        ...platformData,
+        guestStatus: 'submitted',
+        hasResponded: true,
+        accepted: false
+      });
+    }
+  };
+
   // Analytics handler
   const trackInvitationViewed = (duration: number) => {
     if (isPlatformMode) {
@@ -148,10 +167,11 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     error,
     isPlatformMode,
     hasResponded: Boolean(platformData?.hasResponded),
-    guestStatus: platformData?.guestStatus || 'invited',
+    guestStatus: platformData?.guestStatus || 'pending',
     existingRsvpData: platformData?.existingRsvpData || null,
     rsvpConfig: platformData?.rsvpConfig || 'simple',
     sendRSVP,
+    sendRSVPDecline,
     trackInvitationViewed
   };
 

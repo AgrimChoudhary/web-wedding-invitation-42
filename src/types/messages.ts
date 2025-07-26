@@ -37,11 +37,25 @@ export interface RSVPAcceptedMessage extends BaseMessage {
   type: 'RSVP_ACCEPTED';
   data: {
     accepted: true;
-    rsvpData: {
-      attendees: number;
+    eventId?: string;
+    guestId?: string;
+    guestName?: string;
+    rsvpData?: {
+      attendees?: number;
       dietary_requirements?: string;
       special_requests?: string;
+      [key: string]: any;
     };
+  };
+}
+
+export interface RSVPDeclinedMessage extends BaseMessage {
+  type: 'RSVP_DECLINED';
+  data: {
+    accepted: false;
+    eventId?: string;
+    guestId?: string;
+    guestName?: string;
   };
 }
 
@@ -67,5 +81,6 @@ export type PlatformMessage =
 
 export type TemplateMessage = 
   | RSVPAcceptedMessage 
+  | RSVPDeclinedMessage
   | InvitationViewedMessage
   | TemplateReadyMessage;
