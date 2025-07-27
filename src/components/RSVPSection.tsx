@@ -186,10 +186,21 @@ export const RSVPSection: React.FC = () => {
       guestStatus,
       hasExistingData: !!existingRsvpData,
       existingRsvpData,
-      shouldShow: false
+      isPlatformMode,
+      platformData
     });
     
-    if (rsvpConfig !== 'detailed') return false;
+    // Only show button for detailed RSVP configuration
+    if (rsvpConfig !== 'detailed') {
+      console.log('[RSVP BUTTON] Hidden - not detailed config');
+      return false;
+    }
+    
+    // Wait for platform data to be loaded if in platform mode
+    if (isPlatformMode && !platformData) {
+      console.log('[RSVP BUTTON] Hidden - platform mode but no platform data yet');
+      return false;
+    }
     
     // Show "Submit RSVP" when accepted but no existing data
     if (guestStatus === 'accepted' && !existingRsvpData) {
