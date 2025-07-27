@@ -161,18 +161,50 @@ export const RSVPSection: React.FC = () => {
       return "Thank you for accepting our invitation! We look forward to celebrating with you.";
     }
     
-    if (guestStatus === 'accepted') {
+    if (guestStatus === 'accepted' && !existingRsvpData) {
       return "Thank you for accepting! Please provide additional details to help us plan better.";
     }
     
-    return "Thank you for your RSVP! We have received your details and look forward to celebrating with you.";
+    if (guestStatus === 'submitted' && existingRsvpData) {
+      return "Thank you for your RSVP! We have received your details and look forward to celebrating with you.";
+    }
+    
+    return "Thank you for accepting our invitation! We look forward to celebrating with you.";
   };
 
   const getButtonText = () => {
     if (isSubmitting) {
-      return guestStatus === 'submitted' ? 'Updating...' : 'Submitting...';
+      return (guestStatus === 'submitted' && existingRsvpData) ? 'Updating...' : 'Submitting...';
     }
-    return guestStatus === 'submitted' ? 'Edit RSVP' : 'Submit RSVP';
+    return (guestStatus === 'submitted' && existingRsvpData) ? 'Edit RSVP' : 'Submit RSVP';
+  };
+
+  // Determine if we should show the RSVP button for detailed config
+  const shouldShowRsvpButton = () => {
+    console.log('[RSVP BUTTON LOGIC]', {
+      rsvpConfig,
+      guestStatus,
+      hasExistingData: !!existingRsvpData,
+      existingRsvpData,
+      shouldShow: false
+    });
+    
+    if (rsvpConfig !== 'detailed') return false;
+    
+    // Show "Submit RSVP" when accepted but no existing data
+    if (guestStatus === 'accepted' && !existingRsvpData) {
+      console.log('[RSVP BUTTON] Showing "Submit RSVP" - accepted status, no existing data');
+      return true;
+    }
+    
+    // Show "Edit RSVP" when submitted and has existing data  
+    if (guestStatus === 'submitted' && existingRsvpData) {
+      console.log('[RSVP BUTTON] Showing "Edit RSVP" - submitted status, has existing data');
+      return true;
+    }
+    
+    console.log('[RSVP BUTTON] Hidden - conditions not met');
+    return false;
   };
 
   // Show thank you message for accepted or submitted states
@@ -236,8 +268,8 @@ export const RSVPSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Show Submit/Edit RSVP button for detailed RSVP config */}
-                {rsvpConfig === 'detailed' && (
+                {/* Show Submit/Edit RSVP button based on status and data */}
+                {shouldShowRsvpButton() && (
                   <div className="flex justify-center mb-6">
                     <Button
                       onClick={() => setShowDetailedForm(true)}
