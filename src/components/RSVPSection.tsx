@@ -501,6 +501,7 @@ export const RSVPSection: React.FC = () => {
 
 
   return (
+    <>
     <section className="w-full py-8 md:py-12 bg-gradient-to-br from-wedding-cream/60 via-wedding-blush/10 to-wedding-cream/60 relative overflow-hidden">
       {/* Luxury royal pattern background */}
       <div className="absolute inset-0 bg-gradient-to-br from-wedding-gold/5 via-transparent to-wedding-maroon/5"></div>
