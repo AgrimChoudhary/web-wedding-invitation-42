@@ -45,14 +45,17 @@ export const RSVPSection: React.FC = () => {
 
   const customFields = getCustomFields();
 
-  // Load existing RSVP data when available
+  // Load existing RSVP data when available - USE PLATFORM DATA DIRECTLY
   useEffect(() => {
-    if (existingRsvpData && typeof existingRsvpData === 'object') {
+    // Use platform data as primary source for existing RSVP data
+    const rsvpData = platformData?.existingRsvpData || existingRsvpData;
+    
+    if (rsvpData && typeof rsvpData === 'object') {
       const initialData: Record<string, string> = {};
       
       // Populate form data with existing values
       customFields.forEach(field => {
-        const existingValue = existingRsvpData[field.field_name];
+        const existingValue = rsvpData[field.field_name];
         if (existingValue !== undefined) {
           initialData[field.field_name] = String(existingValue);
         }
@@ -60,7 +63,7 @@ export const RSVPSection: React.FC = () => {
       
       setFormData(initialData);
     }
-  }, [existingRsvpData, customFields]);
+  }, [platformData?.existingRsvpData, existingRsvpData, customFields]);
 
   // Clear validation errors when reopening form after successful submission
   useEffect(() => {
@@ -120,9 +123,12 @@ export const RSVPSection: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Convert form data to the format expected by the platform
-      const rsvpData: Record<string, any> = {};
+      // Send COMPLETE RSVP data every time - include acceptance status
+      const rsvpData: Record<string, any> = {
+        accepted: true, // Always include acceptance status
+      };
       
+      // Add all custom field data
       customFields.forEach(field => {
         const value = formData[field.field_name];
         if (value !== undefined && value !== '') {
@@ -175,111 +181,21 @@ export const RSVPSection: React.FC = () => {
   };
 
   const getButtonText = () => {
-    console.log('[RSVP BUTTON TEXT] 🏷️ Determining button text:', {
-      isSubmitting,
-      guestStatus,
-      hasExistingData: !!existingRsvpData,
-      platformFlags: {
-        showEditButton: platformData?.showEditButton,
-        showSubmitButton: platformData?.showSubmitButton
-      },
-      isPlatformMode
-    });
-    
     if (isSubmitting) {
-      const text = (guestStatus === 'submitted' && existingRsvpData) ? 'Updating...' : 'Submitting...';
-      console.log('[RSVP BUTTON TEXT] ⏳ Submitting state:', text);
-      return text;
+      return platformData?.showEditButton ? 'Updating...' : 'Submitting...';
     }
     
-    // STRICT: Use platform flags to determine button text when available
-    if (isPlatformMode && platformData) {
-      if (platformData.showEditButton) {
-        console.log('[RSVP BUTTON TEXT] ✏️ Platform says: Edit RSVP');
-        return 'Edit RSVP';
-      }
-      if (platformData.showSubmitButton) {
-        console.log('[RSVP BUTTON TEXT] ➕ Platform says: Submit RSVP');
-        return 'Submit RSVP';
-      }
-      
-      // If platform data exists but no explicit flags, log warning
-      console.warn('[RSVP BUTTON TEXT] ⚠️ Platform data exists but no button flags set');
-    }
-    
-    // Fallback logic for standalone mode only
-    const fallbackText = (guestStatus === 'submitted' && existingRsvpData) ? 'Edit RSVP' : 'Submit RSVP';
-    console.log('[RSVP BUTTON TEXT] 🔧 Fallback text:', fallbackText);
-    return fallbackText;
+    // Use platform flags directly - no complex logic
+    return platformData?.showEditButton ? 'Edit RSVP' : 'Submit RSVP';
   };
 
-  // Determine if we should show the RSVP button - STRICT PLATFORM FLAG DEPENDENCY
+  // Determine if we should show the RSVP button - USE PLATFORM FLAGS DIRECTLY
   const shouldShowRsvpButton = () => {
-    console.log('[RSVP BUTTON] 🔍 Checking visibility with comprehensive platform data:', {
-      rsvpConfig,
-      guestStatus,
-      hasExistingData: !!existingRsvpData,
-      platformFlags: {
-        canSubmitRsvp: platformData?.canSubmitRsvp,
-        canEditRsvp: platformData?.canEditRsvp,
-        showSubmitButton: platformData?.showSubmitButton,
-        showEditButton: platformData?.showEditButton,
-        hasCustomFields: platformData?.hasCustomFields,
-        allowEditAfterSubmit: platformData?.allowEditAfterSubmit
-      },
-      isPlatformMode,
-      platformDataLoaded: !!platformData,
-      timestamp: new Date().toISOString()
-    });
-    
     // Only show button for detailed RSVP configuration
-    if (rsvpConfig !== 'detailed') {
-      console.log('[RSVP BUTTON] ❌ Hidden - not detailed config, rsvpConfig:', rsvpConfig);
-      return false;
-    }
+    if (rsvpConfig !== 'detailed') return false;
     
-    // CRITICAL: In platform mode, ONLY use platform-provided flags
-    if (isPlatformMode) {
-      // Wait for platform data to be loaded
-      if (!platformData) {
-        console.log('[RSVP BUTTON] ⏳ Hidden - platform mode but no platform data yet');
-        return false;
-      }
-      
-      // STRICT platform flag dependency - NO FALLBACK LOGIC
-      const shouldShow = platformData.showSubmitButton || platformData.showEditButton;
-      console.log('[RSVP BUTTON] 🎯 Platform decision:', {
-        showSubmitButton: platformData.showSubmitButton,
-        showEditButton: platformData.showEditButton,
-        finalDecision: shouldShow
-      });
-      
-      if (shouldShow) {
-        console.log('[RSVP BUTTON] ✅ Show - platform explicitly indicates visibility');
-      } else {
-        console.log('[RSVP BUTTON] ❌ Hidden - platform explicitly indicates no visibility');
-      }
-      
-      return shouldShow;
-    }
-    
-    // Fallback logic ONLY for standalone mode (no platform)
-    console.log('[RSVP BUTTON] 🔧 Using fallback logic (standalone mode)');
-    
-    // Show "Submit RSVP" when accepted but no existing data
-    if (guestStatus === 'accepted' && !existingRsvpData) {
-      console.log('[RSVP BUTTON] ✅ Show Submit RSVP button (standalone fallback)');
-      return true;
-    }
-    
-    // Show "Edit RSVP" when submitted and has existing data
-    if (guestStatus === 'submitted' && existingRsvpData) {
-      console.log('[RSVP BUTTON] ✅ Show Edit RSVP button (standalone fallback)');
-      return true;
-    }
-    
-    console.log('[RSVP BUTTON] ❌ Hidden - no matching standalone conditions');
-    return false;
+    // Use platform flags directly - no complex logic
+    return platformData?.showSubmitButton || platformData?.showEditButton;
   };
 
   // Show thank you message for accepted or submitted states
