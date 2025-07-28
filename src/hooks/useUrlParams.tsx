@@ -94,15 +94,45 @@ export const useUrlParams = () => {
 
       // Fallback to individual parameters (legacy support)
       const individualData: PlatformData = {
+        // Core identifiers
         eventId: urlParams.get('eventId') || undefined,
         guestId: urlParams.get('guestId') || undefined,
         guestName: urlParams.get('guestName') || undefined,
+        eventName: urlParams.get('eventName') || undefined,
+        
+        // Legacy compatibility
         hasResponded: urlParams.get('hasResponded') === 'true',
         accepted: urlParams.get('accepted') === 'true',
+        guestViewed: urlParams.get('guestViewed') === 'true',
+        guestAccepted: urlParams.get('guestAccepted') === 'true',
+        
+        // Enhanced RSVP status
         guestStatus: mapLegacyGuestStatus(urlParams.get('guestStatus')),
-        existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
+        viewed: urlParams.get('viewed') === 'true',
+        custom_fields_submitted: urlParams.get('customFieldsSubmitted') === 'true',
+        
+        // RSVP configuration  
         rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
-        customFields: tryParseJSON(urlParams.get('customFields')) || []
+        hasCustomFields: urlParams.get('hasCustomFields') === 'true',
+        allowEditAfterSubmit: urlParams.get('allowEditAfterSubmit') === 'true',
+        
+        // UI control flags - CRITICAL FOR BUTTON STATE
+        canSubmitRsvp: urlParams.get('canSubmitRsvp') === 'true',
+        canEditRsvp: urlParams.get('canEditRsvp') === 'true', 
+        showSubmitButton: urlParams.get('showSubmitButton') === 'true',
+        showEditButton: urlParams.get('showEditButton') === 'true',
+        
+        // RSVP data
+        rsvpData: tryParseJSON(urlParams.get('rsvpData')),
+        existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
+        
+        // Custom fields
+        customFields: tryParseJSON(urlParams.get('customFields')) || [],
+        
+        // Timestamps
+        viewed_at: urlParams.get('viewed_at') || null,
+        accepted_at: urlParams.get('accepted_at') || null,
+        custom_fields_submitted_at: urlParams.get('custom_fields_submitted_at') || null
       };
 
       // Try to construct structured data from individual parameters

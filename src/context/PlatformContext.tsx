@@ -171,8 +171,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     isPlatformMode,
     hasResponded: Boolean(platformData?.hasResponded),
     guestStatus: platformData?.guestStatus || 'pending',
-    existingRsvpData: platformData?.existingRsvpData || null,
-    rsvpConfig: platformData?.rsvpConfig || 'simple',
+    existingRsvpData: platformData?.existingRsvpData || platformData?.rsvpData || null,
+    rsvpConfig: typeof platformData?.rsvpConfig === 'string' ? platformData.rsvpConfig : platformData?.rsvpConfig?.type || 'simple',
     sendRSVP,
     trackInvitationViewed
   };

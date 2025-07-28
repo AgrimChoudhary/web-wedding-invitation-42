@@ -176,18 +176,36 @@ export const RSVPSection: React.FC = () => {
     if (isSubmitting) {
       return (guestStatus === 'submitted' && existingRsvpData) ? 'Updating...' : 'Submitting...';
     }
+    
+    // Use platform flags to determine button text when available
+    if (isPlatformMode && platformData) {
+      if (platformData.showEditButton) {
+        return 'Edit RSVP';
+      }
+      if (platformData.showSubmitButton) {
+        return 'Submit RSVP';
+      }
+    }
+    
+    // Fallback logic
     return (guestStatus === 'submitted' && existingRsvpData) ? 'Edit RSVP' : 'Submit RSVP';
   };
 
   // Determine if we should show the RSVP button for detailed config
   const shouldShowRsvpButton = () => {
-    console.log('[RSVP BUTTON LOGIC]', {
+    console.log('[RSVP BUTTON] Checking visibility with platform flags:', {
       rsvpConfig,
       guestStatus,
       hasExistingData: !!existingRsvpData,
-      existingRsvpData,
+      platformFlags: {
+        canSubmitRsvp: platformData?.canSubmitRsvp,
+        canEditRsvp: platformData?.canEditRsvp,
+        showSubmitButton: platformData?.showSubmitButton,
+        showEditButton: platformData?.showEditButton,
+        hasCustomFields: platformData?.hasCustomFields
+      },
       isPlatformMode,
-      platformData
+      platformDataLoaded: !!platformData
     });
     
     // Only show button for detailed RSVP configuration
@@ -202,19 +220,34 @@ export const RSVPSection: React.FC = () => {
       return false;
     }
     
+    // Use platform-provided flags when available (CRITICAL - as per guide)
+    if (isPlatformMode && platformData) {
+      // Platform explicitly controls button visibility
+      if (platformData.showSubmitButton || platformData.showEditButton) {
+        console.log('[RSVP BUTTON] Show - platform flag indicates visibility');
+        return true;
+      }
+      
+      if (!platformData.canSubmitRsvp && !platformData.canEditRsvp) {
+        console.log('[RSVP BUTTON] Hidden - platform flags indicate no RSVP capability');
+        return false;
+      }
+    }
+    
+    // Fallback logic for non-platform mode or missing flags
     // Show "Submit RSVP" when accepted but no existing data
     if (guestStatus === 'accepted' && !existingRsvpData) {
-      console.log('[RSVP BUTTON] Showing "Submit RSVP" - accepted status, no existing data');
+      console.log('[RSVP BUTTON] Show Submit RSVP button (fallback logic)');
       return true;
     }
     
-    // Show "Edit RSVP" when submitted and has existing data  
+    // Show "Edit RSVP" when submitted and has existing data
     if (guestStatus === 'submitted' && existingRsvpData) {
-      console.log('[RSVP BUTTON] Showing "Edit RSVP" - submitted status, has existing data');
+      console.log('[RSVP BUTTON] Show Edit RSVP button (fallback logic)');
       return true;
     }
     
-    console.log('[RSVP BUTTON] Hidden - conditions not met');
+    console.log('[RSVP BUTTON] Hidden - no matching conditions');
     return false;
   };
 

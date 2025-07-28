@@ -15,10 +15,46 @@ export interface WeddingDataTransferMessage extends BaseMessage {
 export interface InvitationLoadedMessage extends BaseMessage {
   type: 'INVITATION_LOADED';
   data: {
+    // Core identifiers
     eventId: string;
     guestId: string;
     guestName: string;
-    eventData: any;
+    eventName?: string;
+    eventData?: any;
+    
+    // Legacy compatibility
+    hasResponded?: boolean;
+    accepted?: boolean;
+    guestViewed?: boolean;
+    guestAccepted?: boolean;
+    
+    // Enhanced RSVP status
+    guestStatus?: 'pending' | 'viewed' | 'accepted' | 'submitted';
+    viewed?: boolean;
+    custom_fields_submitted?: boolean;
+    
+    // RSVP configuration
+    rsvpConfig?: any;
+    hasCustomFields?: boolean;
+    allowEditAfterSubmit?: boolean;
+    
+    // UI control flags
+    canSubmitRsvp?: boolean;
+    canEditRsvp?: boolean;
+    showSubmitButton?: boolean;
+    showEditButton?: boolean;
+    
+    // RSVP data
+    rsvpData?: any;
+    existingRsvpData?: any;
+    
+    // Custom fields
+    customFields?: any[];
+    
+    // Timestamps
+    viewed_at?: string | null;
+    accepted_at?: string | null;
+    custom_fields_submitted_at?: string | null;
   };
 }
 

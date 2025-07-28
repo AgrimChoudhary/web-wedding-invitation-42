@@ -23,7 +23,7 @@ const isValidOrigin = (origin: string): boolean => {
 export const usePostMessage = () => {
   const [lastMessage, setLastMessage] = useState<PlatformMessage | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [platformData, setPlatformData] = useState<{ eventId?: string; guestId?: string; guestName?: string } | null>(null);
+  const [platformData, setPlatformData] = useState<any>(null);
 
   // Send message to platform with retry logic
   const sendMessageToPlatform = useCallback((message: TemplateMessage, maxRetries: number = 3) => {
@@ -81,7 +81,7 @@ export const usePostMessage = () => {
         setLastMessage(message);
         setIsConnected(true);
         
-        // Extract platform data for future message sending
+        // Extract and update platform data from messages
         if (message.type === 'LOAD_INVITATION_DATA' && message.data) {
           const newPlatformData = {
             eventId: message.data.event?.id || (message.data as any).eventId,
@@ -90,6 +90,50 @@ export const usePostMessage = () => {
           };
           setPlatformData(newPlatformData);
           console.log('[TEMPLATE] 💾 Updated platform data for messaging:', newPlatformData);
+        } else if (message.type === 'INVITATION_LOADED' && message.data) {
+          // Extract comprehensive RSVP data from INVITATION_LOADED message
+          const rsvpData = {
+            eventId: message.data.eventId,
+            guestId: message.data.guestId,
+            guestName: message.data.guestName,
+            eventName: message.data.eventName,
+            
+            // Legacy compatibility
+            hasResponded: message.data.hasResponded,
+            accepted: message.data.accepted,
+            guestViewed: message.data.guestViewed,
+            guestAccepted: message.data.guestAccepted,
+            
+            // Enhanced RSVP status
+            guestStatus: message.data.guestStatus,
+            viewed: message.data.viewed,
+            custom_fields_submitted: message.data.custom_fields_submitted,
+            
+            // RSVP configuration
+            rsvpConfig: message.data.rsvpConfig,
+            hasCustomFields: message.data.hasCustomFields,
+            allowEditAfterSubmit: message.data.allowEditAfterSubmit,
+            
+            // UI control flags
+            canSubmitRsvp: message.data.canSubmitRsvp,
+            canEditRsvp: message.data.canEditRsvp,
+            showSubmitButton: message.data.showSubmitButton,
+            showEditButton: message.data.showEditButton,
+            
+            // RSVP data
+            rsvpData: message.data.rsvpData,
+            existingRsvpData: message.data.existingRsvpData,
+            
+            // Custom fields
+            customFields: message.data.customFields,
+            
+            // Timestamps
+            viewed_at: message.data.viewed_at,
+            accepted_at: message.data.accepted_at,
+            custom_fields_submitted_at: message.data.custom_fields_submitted_at
+          };
+          setPlatformData(rsvpData);
+          console.log('[TEMPLATE] 🎯 Updated platform data from INVITATION_LOADED:', rsvpData);
         }
         
         // Handle specific message types
