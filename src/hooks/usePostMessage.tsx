@@ -92,6 +92,9 @@ export const usePostMessage = () => {
           console.log('[TEMPLATE] 💾 Updated platform data for messaging:', newPlatformData);
         } else if (message.type === 'INVITATION_LOADED' && message.data) {
           // Extract comprehensive RSVP data from INVITATION_LOADED message
+          console.log('[TEMPLATE] 🎯 === PROCESSING INVITATION_LOADED IN POSTMESSAGE ===');
+          console.log('[TEMPLATE] 📊 Full INVITATION_LOADED data:', message.data);
+          
           const rsvpData = {
             eventId: message.data.eventId,
             guestId: message.data.guestId,
@@ -114,7 +117,7 @@ export const usePostMessage = () => {
             hasCustomFields: message.data.hasCustomFields,
             allowEditAfterSubmit: message.data.allowEditAfterSubmit,
             
-            // UI control flags
+            // CRITICAL: UI control flags from platform
             canSubmitRsvp: message.data.canSubmitRsvp,
             canEditRsvp: message.data.canEditRsvp,
             showSubmitButton: message.data.showSubmitButton,
@@ -132,8 +135,22 @@ export const usePostMessage = () => {
             accepted_at: message.data.accepted_at,
             custom_fields_submitted_at: message.data.custom_fields_submitted_at
           };
+          
+          console.log('[TEMPLATE] 🔄 Updating platform data with INVITATION_LOADED:', {
+            currentData: platformData,
+            newData: rsvpData,
+            criticalFlags: {
+              guestStatus: rsvpData.guestStatus,
+              canSubmitRsvp: rsvpData.canSubmitRsvp,
+              canEditRsvp: rsvpData.canEditRsvp,
+              showSubmitButton: rsvpData.showSubmitButton,
+              showEditButton: rsvpData.showEditButton
+            }
+          });
+          
           setPlatformData(rsvpData);
-          console.log('[TEMPLATE] 🎯 Updated platform data from INVITATION_LOADED:', rsvpData);
+          console.log('[TEMPLATE] ✅ Platform data updated from INVITATION_LOADED');
+          console.log('[TEMPLATE] === END PROCESSING INVITATION_LOADED IN POSTMESSAGE ===');
         }
         
         // Handle specific message types

@@ -69,9 +69,11 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setIsLoading(false);
   }, [platformData, urlLoading, urlError]);
 
-  // Process PostMessage data
+  // Process PostMessage data with enhanced INVITATION_LOADED handling
   useEffect(() => {
     if (!lastMessage) return;
+
+    console.log('[PLATFORM CONTEXT] 📨 Processing message:', lastMessage.type);
 
     if (lastMessage.type === 'WEDDING_DATA_TRANSFER') {
       try {
@@ -79,20 +81,20 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         if (validatePlatformData(messageData)) {
           const mappedData = mapPlatformDataToWeddingData(messageData);
           setWeddingData(mappedData);
-          console.log('PostMessage wedding data successfully processed');
+          console.log('[PLATFORM CONTEXT] ✅ PostMessage wedding data successfully processed');
         }
       } catch (err) {
-        console.error('Error processing PostMessage data:', err);
+        console.error('[PLATFORM CONTEXT] ❌ Error processing PostMessage data:', err);
       }
     } else if (lastMessage.type === 'LOAD_INVITATION_DATA') {
       try {
-        console.log('=== PROCESSING LOAD_INVITATION_DATA ===');
-        console.log('Full message data:', lastMessage.data);
+        console.log('[PLATFORM CONTEXT] === PROCESSING LOAD_INVITATION_DATA ===');
+        console.log('[PLATFORM CONTEXT] Full message data:', lastMessage.data);
         
         // Extract RSVP config from postMessage
         if (lastMessage.data?.event?.rsvp_config) {
           const newRsvpConfig: 'simple' | 'detailed' = lastMessage.data.event.rsvp_config.type === 'simple' ? 'simple' : 'detailed';
-          console.log('Updating RSVP config from postMessage:', newRsvpConfig);
+          console.log('[PLATFORM CONTEXT] 🔄 Updating RSVP config from postMessage:', newRsvpConfig);
           
           // Update platform data with new RSVP config
           if (platformData) {
@@ -101,43 +103,136 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
               rsvpConfig: newRsvpConfig
             };
             setPlatformData(updatedData);
-            console.log('Platform data updated with new RSVP config:', updatedData);
+            console.log('[PLATFORM CONTEXT] ✅ Platform data updated with new RSVP config:', updatedData);
           }
         }
         
-        console.log('=== END PROCESSING LOAD_INVITATION_DATA ===');
+        console.log('[PLATFORM CONTEXT] === END PROCESSING LOAD_INVITATION_DATA ===');
       } catch (err) {
-        console.error('Error processing LOAD_INVITATION_DATA:', err);
+        console.error('[PLATFORM CONTEXT] ❌ Error processing LOAD_INVITATION_DATA:', err);
+      }
+    } else if (lastMessage.type === 'INVITATION_LOADED') {
+      try {
+        console.log('[PLATFORM CONTEXT] 🎯 === PROCESSING INVITATION_LOADED ===');
+        console.log('[PLATFORM CONTEXT] 📊 Complete INVITATION_LOADED data:', lastMessage.data);
+        
+        // Extract comprehensive platform data from INVITATION_LOADED message
+        const messageData = lastMessage.data;
+        
+        // Create updated platform data with all RSVP flags
+        const updatedPlatformData: PlatformData = {
+          ...platformData,
+          
+          // Basic identifiers
+          eventId: messageData.eventId || platformData?.eventId,
+          guestId: messageData.guestId || platformData?.guestId,
+          guestName: messageData.guestName || platformData?.guestName,
+          eventName: messageData.eventName || platformData?.eventName,
+          
+          // Enhanced RSVP status
+          guestStatus: messageData.guestStatus || platformData?.guestStatus || 'pending',
+          hasResponded: messageData.hasResponded ?? platformData?.hasResponded ?? false,
+          accepted: messageData.accepted ?? platformData?.accepted ?? false,
+          viewed: messageData.viewed ?? platformData?.viewed ?? false,
+          custom_fields_submitted: messageData.custom_fields_submitted ?? platformData?.custom_fields_submitted ?? false,
+          
+          // CRITICAL: UI control flags from platform
+          canSubmitRsvp: messageData.canSubmitRsvp ?? platformData?.canSubmitRsvp ?? false,
+          canEditRsvp: messageData.canEditRsvp ?? platformData?.canEditRsvp ?? false,
+          showSubmitButton: messageData.showSubmitButton ?? platformData?.showSubmitButton ?? false,
+          showEditButton: messageData.showEditButton ?? platformData?.showEditButton ?? false,
+          
+          // RSVP configuration
+          rsvpConfig: messageData.rsvpConfig || platformData?.rsvpConfig || 'simple',
+          hasCustomFields: messageData.hasCustomFields ?? platformData?.hasCustomFields ?? false,
+          allowEditAfterSubmit: messageData.allowEditAfterSubmit ?? platformData?.allowEditAfterSubmit ?? false,
+          
+          // RSVP data
+          rsvpData: messageData.rsvpData || messageData.existingRsvpData || platformData?.rsvpData,
+          existingRsvpData: messageData.existingRsvpData || messageData.rsvpData || platformData?.existingRsvpData,
+          
+          // Custom fields
+          customFields: messageData.customFields || platformData?.customFields || [],
+          
+          // Timestamps
+          viewed_at: messageData.viewed_at || platformData?.viewed_at,
+          accepted_at: messageData.accepted_at || platformData?.accepted_at,
+          custom_fields_submitted_at: messageData.custom_fields_submitted_at || platformData?.custom_fields_submitted_at,
+          
+          // Legacy compatibility
+          guestViewed: messageData.guestViewed ?? messageData.viewed ?? platformData?.guestViewed ?? false,
+          guestAccepted: messageData.guestAccepted ?? messageData.accepted ?? platformData?.guestAccepted ?? false
+        };
+        
+        console.log('[PLATFORM CONTEXT] 🔄 Updating platform data with INVITATION_LOADED:', {
+          before: platformData,
+          after: updatedPlatformData,
+          keyFlags: {
+            guestStatus: updatedPlatformData.guestStatus,
+            canSubmitRsvp: updatedPlatformData.canSubmitRsvp,
+            canEditRsvp: updatedPlatformData.canEditRsvp,
+            showSubmitButton: updatedPlatformData.showSubmitButton,
+            showEditButton: updatedPlatformData.showEditButton
+          }
+        });
+        
+        setPlatformData(updatedPlatformData);
+        console.log('[PLATFORM CONTEXT] ✅ Platform data successfully updated from INVITATION_LOADED');
+        console.log('[PLATFORM CONTEXT] === END PROCESSING INVITATION_LOADED ===');
+        
+      } catch (err) {
+        console.error('[PLATFORM CONTEXT] ❌ Error processing INVITATION_LOADED:', err);
       }
     }
-  }, [lastMessage]);
+  }, [lastMessage, platformData]);
 
-  // RSVP handler with enhanced logging
+  // RSVP handler with enhanced logging and proper platform flag updates
   const sendRSVP = (rsvpData?: any) => {
-    console.log('[PLATFORM CONTEXT] 🎯 Sending RSVP...');
-    console.log('[PLATFORM CONTEXT] Platform mode:', isPlatformMode);
-    console.log('[PLATFORM CONTEXT] RSVP data:', rsvpData);
-    console.log('[PLATFORM CONTEXT] Current platform data:', platformData);
+    console.log('[PLATFORM CONTEXT] 🎯 === SENDING RSVP ===');
+    console.log('[PLATFORM CONTEXT] 📊 Current state:', {
+      isPlatformMode,
+      hasRsvpData: !!rsvpData,
+      rsvpDataKeys: rsvpData ? Object.keys(rsvpData) : [],
+      currentGuestStatus: platformData?.guestStatus,
+      currentFlags: {
+        canSubmitRsvp: platformData?.canSubmitRsvp,
+        canEditRsvp: platformData?.canEditRsvp,
+        showSubmitButton: platformData?.showSubmitButton,
+        showEditButton: platformData?.showEditButton
+      }
+    });
     
     if (isPlatformMode) {
       // Send only the RSVP data without adding guestStatus field
       sendRSVPAccepted(rsvpData || {});
-      console.log('[PLATFORM CONTEXT] ✅ RSVP sent to platform');
+      console.log('[PLATFORM CONTEXT] ✅ RSVP sent to platform via postMessage');
+      
+      // CRITICAL: In platform mode, let the platform update our state via INVITATION_LOADED message
+      // Don't update local state immediately - wait for platform response
+      console.log('[PLATFORM CONTEXT] ⏳ Waiting for platform to send updated state via INVITATION_LOADED...');
+      
     } else {
       console.log('[PLATFORM CONTEXT] 🔧 RSVP sent (standalone mode):', rsvpData);
+      
+      // Only update local state in standalone mode
+      if (platformData) {
+        const newStatus: 'pending' | 'viewed' | 'accepted' | 'submitted' = rsvpData ? 'submitted' : 'accepted';
+        const updatedData = {
+          ...platformData,
+          guestStatus: newStatus,
+          existingRsvpData: rsvpData || platformData.existingRsvpData,
+          // Update button flags for standalone mode
+          showSubmitButton: newStatus === 'accepted' && !rsvpData,
+          showEditButton: newStatus === 'submitted' && !!rsvpData,
+          canSubmitRsvp: newStatus === 'accepted',
+          canEditRsvp: newStatus === 'submitted'
+        };
+        setPlatformData(updatedData);
+        console.log('[PLATFORM CONTEXT] 📝 Updated standalone platform data:', updatedData);
+      }
     }
     
-    // Update local platform data state with proper status mapping
-    if (platformData) {
-      const newStatus: 'pending' | 'viewed' | 'accepted' | 'submitted' = rsvpData ? 'submitted' : 'accepted';
-      const updatedData = {
-        ...platformData,
-        guestStatus: newStatus,
-        existingRsvpData: rsvpData || platformData.existingRsvpData
-      };
-      setPlatformData(updatedData);
-      console.log('[PLATFORM CONTEXT] 📝 Updated platform data:', updatedData);
-    }
+    console.log('[PLATFORM CONTEXT] === END SENDING RSVP ===');
   };
 
   // Analytics handler with enhanced logging
