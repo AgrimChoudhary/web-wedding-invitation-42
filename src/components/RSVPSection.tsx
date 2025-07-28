@@ -162,12 +162,13 @@ export const RSVPSection: React.FC = () => {
       return "Thank you for accepting our invitation! We look forward to celebrating with you.";
     }
     
+    // For detailed RSVP, show different messages based on status
     if (guestStatus === 'accepted' && !existingRsvpData) {
-      return "Thank you for accepting! Please provide additional details to help us plan better.";
+      return "Thank you for accepting! Please provide additional details to help us plan the perfect celebration for you.";
     }
     
     if (guestStatus === 'submitted' && existingRsvpData) {
-      return "Thank you for your RSVP! We have received your details and look forward to celebrating with you.";
+      return "Thank you for your RSVP! We have received your details and look forward to celebrating with you. You can edit your details anytime if needed.";
     }
     
     return "Thank you for accepting our invitation! We look forward to celebrating with you.";
@@ -462,7 +463,8 @@ export const RSVPSection: React.FC = () => {
   const handleSimpleAccept = async () => {
     setIsSubmitting(true);
     try {
-      sendRSVP();
+      // Send acceptance data to platform
+      sendRSVP({ accepted: true });
       setShowConfetti(true);
       toast({
         title: "RSVP Confirmed",
@@ -482,11 +484,12 @@ export const RSVPSection: React.FC = () => {
   const handleDetailedAccept = async () => {
     setIsSubmitting(true);
     try {
-      sendRSVP(); // Send simple acceptance first
+      // Send acceptance data to platform
+      sendRSVP({ accepted: true });
       setShowConfetti(true);
       toast({
         title: "Invitation Accepted",
-        description: `Thank you ${guestName}! Please provide additional details.`,
+        description: `Thank you ${guestName}! Your acceptance has been sent successfully.`,
       });
     } catch (error) {
       toast({
