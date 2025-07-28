@@ -78,7 +78,7 @@ export const useUrlParams = () => {
             guestName: parsedData.guestName,
             hasResponded: parsedData.hasResponded,
             accepted: parsedData.accepted,
-        guestStatus: mapLegacyGuestStatus(urlParams.get('guestStatus')),
+        guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
         existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
         rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
         customFields: tryParseJSON(urlParams.get('customFields')) || [],
@@ -94,45 +94,15 @@ export const useUrlParams = () => {
 
       // Fallback to individual parameters (legacy support)
       const individualData: PlatformData = {
-        // Core identifiers
         eventId: urlParams.get('eventId') || undefined,
         guestId: urlParams.get('guestId') || undefined,
         guestName: urlParams.get('guestName') || undefined,
-        eventName: urlParams.get('eventName') || undefined,
-        
-        // Legacy compatibility
         hasResponded: urlParams.get('hasResponded') === 'true',
         accepted: urlParams.get('accepted') === 'true',
-        guestViewed: urlParams.get('guestViewed') === 'true',
-        guestAccepted: urlParams.get('guestAccepted') === 'true',
-        
-        // Enhanced RSVP status
-        guestStatus: mapLegacyGuestStatus(urlParams.get('guestStatus')),
-        viewed: urlParams.get('viewed') === 'true',
-        custom_fields_submitted: urlParams.get('customFieldsSubmitted') === 'true',
-        
-        // RSVP configuration  
-        rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
-        hasCustomFields: urlParams.get('hasCustomFields') === 'true',
-        allowEditAfterSubmit: urlParams.get('allowEditAfterSubmit') === 'true',
-        
-        // UI control flags - CRITICAL FOR BUTTON STATE
-        canSubmitRsvp: urlParams.get('canSubmitRsvp') === 'true',
-        canEditRsvp: urlParams.get('canEditRsvp') === 'true', 
-        showSubmitButton: urlParams.get('showSubmitButton') === 'true',
-        showEditButton: urlParams.get('showEditButton') === 'true',
-        
-        // RSVP data
-        rsvpData: tryParseJSON(urlParams.get('rsvpData')),
+        guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
         existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
-        
-        // Custom fields
-        customFields: tryParseJSON(urlParams.get('customFields')) || [],
-        
-        // Timestamps
-        viewed_at: urlParams.get('viewed_at') || null,
-        accepted_at: urlParams.get('accepted_at') || null,
-        custom_fields_submitted_at: urlParams.get('custom_fields_submitted_at') || null
+        rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
+        customFields: tryParseJSON(urlParams.get('customFields')) || []
       };
 
       // Try to construct structured data from individual parameters
@@ -212,24 +182,6 @@ export const useUrlParams = () => {
   }, []);
 
   return { platformData, isLoading, error };
-};
-
-// Helper function to map legacy guest status to new format
-const mapLegacyGuestStatus = (status: string | null): 'pending' | 'viewed' | 'accepted' | 'submitted' => {
-  if (!status) return 'pending';
-  
-  switch (status) {
-    case 'invited':
-      return 'pending';
-    case 'accepted':
-      return 'accepted';
-    case 'submitted':
-      return 'submitted';
-    case 'viewed':
-      return 'viewed';
-    default:
-      return 'pending';
-  }
 };
 
 // Helper function to safely parse JSON strings

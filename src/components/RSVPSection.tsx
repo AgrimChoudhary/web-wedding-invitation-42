@@ -7,7 +7,6 @@ import { useToast } from '../hooks/use-toast';
 import { Confetti } from './AnimatedElements';
 import { DynamicFormField } from './DynamicFormField';
 import { CustomField } from '../types/platform';
-import { RSVPDebugger } from './RSVPDebugger';
 
 export const RSVPSection: React.FC = () => {
   const { 
@@ -45,17 +44,14 @@ export const RSVPSection: React.FC = () => {
 
   const customFields = getCustomFields();
 
-  // Load existing RSVP data when available - USE PLATFORM DATA DIRECTLY
+  // Load existing RSVP data when available
   useEffect(() => {
-    // Use platform data as primary source for existing RSVP data
-    const rsvpData = platformData?.existingRsvpData || existingRsvpData;
-    
-    if (rsvpData && typeof rsvpData === 'object') {
+    if (existingRsvpData && typeof existingRsvpData === 'object') {
       const initialData: Record<string, string> = {};
       
       // Populate form data with existing values
       customFields.forEach(field => {
-        const existingValue = rsvpData[field.field_name];
+        const existingValue = existingRsvpData[field.field_name];
         if (existingValue !== undefined) {
           initialData[field.field_name] = String(existingValue);
         }
@@ -63,7 +59,7 @@ export const RSVPSection: React.FC = () => {
       
       setFormData(initialData);
     }
-  }, [platformData?.existingRsvpData, existingRsvpData, customFields]);
+  }, [existingRsvpData, customFields]);
 
   // Clear validation errors when reopening form after successful submission
   useEffect(() => {
@@ -123,12 +119,9 @@ export const RSVPSection: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Send COMPLETE RSVP data every time - include acceptance status
-      const rsvpData: Record<string, any> = {
-        accepted: true, // Always include acceptance status
-      };
+      // Convert form data to the format expected by the platform
+      const rsvpData: Record<string, any> = {};
       
-      // Add all custom field data
       customFields.forEach(field => {
         const value = formData[field.field_name];
         if (value !== undefined && value !== '') {
@@ -168,34 +161,18 @@ export const RSVPSection: React.FC = () => {
       return "Thank you for accepting our invitation! We look forward to celebrating with you.";
     }
     
-    // For detailed RSVP, show different messages based on status
-    if (guestStatus === 'accepted' && !existingRsvpData) {
-      return "Thank you for accepting! Please provide additional details to help us plan the perfect celebration for you.";
+    if (guestStatus === 'accepted') {
+      return "Thank you for accepting! Please provide additional details to help us plan better.";
     }
     
-    if (guestStatus === 'submitted' && existingRsvpData) {
-      return "Thank you for your RSVP! We have received your details and look forward to celebrating with you. You can edit your details anytime if needed.";
-    }
-    
-    return "Thank you for accepting our invitation! We look forward to celebrating with you.";
+    return "Thank you for your RSVP! We have received your details and look forward to celebrating with you.";
   };
 
   const getButtonText = () => {
     if (isSubmitting) {
-      return platformData?.showEditButton ? 'Updating...' : 'Submitting...';
+      return guestStatus === 'submitted' ? 'Updating...' : 'Submitting...';
     }
-    
-    // Use platform flags directly - no complex logic
-    return platformData?.showEditButton ? 'Edit RSVP' : 'Submit RSVP';
-  };
-
-  // Determine if we should show the RSVP button - USE PLATFORM FLAGS DIRECTLY
-  const shouldShowRsvpButton = () => {
-    // Only show button for detailed RSVP configuration
-    if (rsvpConfig !== 'detailed') return false;
-    
-    // Use platform flags directly - no complex logic
-    return platformData?.showSubmitButton || platformData?.showEditButton;
+    return guestStatus === 'submitted' ? 'Edit RSVP' : 'Submit RSVP';
   };
 
   // Show thank you message for accepted or submitted states
@@ -259,8 +236,8 @@ export const RSVPSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Show Submit/Edit RSVP button based on status and data */}
-                {shouldShowRsvpButton() && (
+                {/* Show Submit/Edit RSVP button for detailed RSVP config */}
+                {rsvpConfig === 'detailed' && (
                   <div className="flex justify-center mb-6">
                     <Button
                       onClick={() => setShowDetailedForm(true)}
@@ -379,8 +356,7 @@ export const RSVPSection: React.FC = () => {
   const handleSimpleAccept = async () => {
     setIsSubmitting(true);
     try {
-      // Send acceptance data to platform
-      sendRSVP({ accepted: true });
+      sendRSVP();
       setShowConfetti(true);
       toast({
         title: "RSVP Confirmed",
@@ -400,12 +376,11 @@ export const RSVPSection: React.FC = () => {
   const handleDetailedAccept = async () => {
     setIsSubmitting(true);
     try {
-      // Send acceptance data to platform
-      sendRSVP({ accepted: true });
+      sendRSVP(); // Send simple acceptance first
       setShowConfetti(true);
       toast({
         title: "Invitation Accepted",
-        description: `Thank you ${guestName}! Your acceptance has been sent successfully.`,
+        description: `Thank you ${guestName}! Please provide additional details.`,
       });
     } catch (error) {
       toast({
@@ -420,7 +395,6 @@ export const RSVPSection: React.FC = () => {
 
 
   return (
-    <>
     <section className="w-full py-8 md:py-12 bg-gradient-to-br from-wedding-cream/60 via-wedding-blush/10 to-wedding-cream/60 relative overflow-hidden">
       {/* Luxury royal pattern background */}
       <div className="absolute inset-0 bg-gradient-to-br from-wedding-gold/5 via-transparent to-wedding-maroon/5"></div>
@@ -513,10 +487,5 @@ export const RSVPSection: React.FC = () => {
         </div>
       </div>
     </section>
-    
-    {/* Debug overlay for troubleshooting RSVP issues */}
-    <RSVPDebugger enabled={process.env.NODE_ENV === 'development' || 
-      new URLSearchParams(window.location.search).get('debug') === 'true'} />
-    </>
   );
 };
