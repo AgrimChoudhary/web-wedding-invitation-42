@@ -178,15 +178,21 @@ export const RSVPSection: React.FC = () => {
   const handleAcceptInvitation = async () => {
     setIsSubmitting(true);
     try {
-      // Send acceptance to platform (no immediate local state change)
+      // Send acceptance to platform
       sendRSVP();
+      
+      // Immediately update local state for instant UI feedback
+      setLocalGuestStatus('accepted');
       setShowConfetti(true);
+      
       toast({
         title: "Invitation Accepted",
         description: `Thank you ${guestName} for accepting the invitation!`,
       });
     } catch (error) {
       console.error('Error accepting invitation:', error);
+      // Revert local state on error
+      setLocalGuestStatus('viewed');
       toast({
         title: "Error",
         description: "Failed to accept invitation. Please try again.",
