@@ -18,6 +18,7 @@ interface PlatformContextType {
   sendRSVP: (rsvpData?: any) => void;
   sendRSVPUpdate: (rsvpData: any) => void;
   markAsViewed: () => void;
+  sendInvitationViewed: () => void;
   trackInvitationViewed: (duration: number) => void;
   // V2 Platform flags
   canSubmitRSVP: boolean;
@@ -233,6 +234,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     sendRSVP,
     sendRSVPUpdate,
     markAsViewed,
+    sendInvitationViewed,
     trackInvitationViewed,
     // V2 Platform flags
     canSubmitRSVP: platformData?.canSubmitRSVP || false,

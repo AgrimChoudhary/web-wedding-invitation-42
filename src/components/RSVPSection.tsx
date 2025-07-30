@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Sparkles, Eye } from 'lucide-react';
+import { Heart, Sparkles } from 'lucide-react';
 import { usePlatform } from '../context/PlatformContext';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
@@ -7,8 +7,6 @@ import { useToast } from '../hooks/use-toast';
 import { Confetti } from './AnimatedElements';
 import { DynamicFormField } from './DynamicFormField';
 import { CustomField } from '../types/platform';
-import { StatusBadge } from './StatusBadge';
-import { RSVPProgress } from './RSVPProgress';
 import { DeadlineDisplay } from './DeadlineDisplay';
 
 export const RSVPSection: React.FC = () => {
@@ -18,7 +16,7 @@ export const RSVPSection: React.FC = () => {
     rsvpConfig, 
     sendRSVP, 
     sendRSVPUpdate,
-    markAsViewed,
+    sendInvitationViewed,
     isPlatformMode, 
     platformData,
     canSubmitRSVP,
@@ -34,6 +32,7 @@ export const RSVPSection: React.FC = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [isEditMode, setIsEditMode] = useState(false);
+  const [localGuestStatus, setLocalGuestStatus] = useState(guestStatus);
 
   // Get guest name from platform data
   const guestName = platformData?.guestName || platformData?.structuredData?.guestName || "Guest";
@@ -52,6 +51,18 @@ export const RSVPSection: React.FC = () => {
   };
 
   const customFields = getCustomFields();
+
+  // Auto-send viewed status on component mount
+  useEffect(() => {
+    if (sendInvitationViewed) {
+      sendInvitationViewed();
+    }
+  }, [sendInvitationViewed]);
+
+  // Update local status when platform status changes
+  useEffect(() => {
+    setLocalGuestStatus(guestStatus);
+  }, [guestStatus]);
 
   // Load existing RSVP data when available
   useEffect(() => {
@@ -140,6 +151,11 @@ export const RSVPSection: React.FC = () => {
       setShowConfetti(true);
       setIsEditMode(false);
       
+      // Update local status if not in edit mode
+      if (!isEditMode) {
+        setLocalGuestStatus('submitted');
+      }
+      
       toast({
         title: isEditMode ? "RSVP Updated" : "RSVP Submitted",
         description: isPlatformMode 
@@ -158,45 +174,16 @@ export const RSVPSection: React.FC = () => {
     }
   };
 
-  // Handle marking invitation as viewed
-  const handleMarkAsViewed = () => {
-    markAsViewed();
-    toast({
-      title: "Invitation Viewed",
-      description: `Welcome ${guestName}! Please review our invitation.`,
-    });
-  };
-
-  // Handle simple acceptance
-  const handleSimpleAccept = async () => {
+  // Handle accept invitation
+  const handleAcceptInvitation = async () => {
     setIsSubmitting(true);
     try {
       sendRSVP();
-      setShowConfetti(true);
-      toast({
-        title: "RSVP Confirmed",
-        description: `Thank you ${guestName} for accepting the invitation!`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to submit RSVP. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  // Handle detailed acceptance
-  const handleDetailedAccept = async () => {
-    setIsSubmitting(true);
-    try {
-      sendRSVP(); // Send simple acceptance first
+      setLocalGuestStatus('accepted');
       setShowConfetti(true);
       toast({
         title: "Invitation Accepted",
-        description: `Thank you ${guestName}! Please provide additional details.`,
+        description: `Thank you ${guestName} for accepting the invitation!`,
       });
     } catch (error) {
       toast({
@@ -228,63 +215,19 @@ export const RSVPSection: React.FC = () => {
         <div className="w-full max-w-6xl mx-auto px-4 md:px-8 relative z-10">
           <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-2xl border-2 border-wedding-gold/20 text-center">
             <DeadlineDisplay rsvpClosed={rsvpClosed} deadlineMessage={deadlineMessage} className="mb-6" />
-            <RSVPProgress currentStatus={guestStatus} className="max-w-md mx-auto" />
           </div>
         </div>
       </section>
     );
   }
 
-  // Status: pending - Show view invitation button
-  if (guestStatus === 'pending') {
-    return (
-      <section className="w-full py-8 md:py-12 bg-gradient-to-br from-wedding-cream/60 via-wedding-blush/10 to-wedding-cream/60 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-wedding-gold/5 via-transparent to-wedding-maroon/5"></div>
-        
-        <div className="w-full max-w-6xl mx-auto px-4 md:px-8 relative z-10">
-          <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-2xl border-2 border-wedding-gold/20 text-center">
-            
-            <div className="flex justify-center items-center mb-6">
-              <Eye className="w-8 h-8 text-wedding-gold animate-pulse mr-3" />
-              <Heart className="w-12 h-12 text-wedding-gold animate-pulse" />
-              <Eye className="w-8 h-8 text-wedding-gold animate-pulse ml-3" />
-            </div>
-            
-            <h2 className="font-great-vibes text-3xl md:text-5xl text-wedding-maroon mb-4">
-              Dear {guestName},
-            </h2>
-            <h3 className="font-great-vibes text-xl md:text-3xl text-wedding-maroon mb-6">
-              You're Cordially Invited!
-            </h3>
-            
-            <p className="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
-              We would be honored by your presence at our wedding celebration. Please view our invitation to learn more about our special day.
-            </p>
-
-            <div className="mb-6">
-              <StatusBadge status={guestStatus} />
-            </div>
-
-            <RSVPProgress currentStatus={guestStatus} className="max-w-md mx-auto mb-8" />
-
-            <DeadlineDisplay rsvpClosed={rsvpClosed} deadlineMessage={deadlineMessage} className="mb-6" />
-
-            <Button
-              onClick={handleMarkAsViewed}
-              disabled={isSubmitting}
-              className="bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold text-white font-semibold px-8 py-4 text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
-            >
-              <Eye className="w-5 h-5 mr-2" />
-              View Invitation
-            </Button>
-          </div>
-        </div>
-      </section>
-    );
+  // Status: pending - No UI for pending, platform handles this state
+  if (localGuestStatus === 'pending') {
+    return null;
   }
 
-  // Status: viewed - Show accept/decline buttons
-  if (guestStatus === 'viewed') {
+  // Status: viewed - Show accept invitation button
+  if (localGuestStatus === 'viewed') {
     return (
       <section className="w-full py-8 md:py-12 bg-gradient-to-br from-wedding-cream/60 via-wedding-blush/10 to-wedding-cream/60 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-wedding-gold/5 via-transparent to-wedding-maroon/5"></div>
@@ -309,22 +252,18 @@ export const RSVPSection: React.FC = () => {
               Your presence would mean the world to us as we begin this new chapter together. Please let us know if you can join us on our special day.
             </p>
 
-            <div className="mb-6">
-              <StatusBadge status={guestStatus} />
-            </div>
+            {deadlineMessage && (
+              <DeadlineDisplay rsvpClosed={rsvpClosed} deadlineMessage={deadlineMessage} className="mb-6" />
+            )}
 
-            <RSVPProgress currentStatus={guestStatus} className="max-w-md mx-auto mb-8" />
-
-            <DeadlineDisplay rsvpClosed={rsvpClosed} deadlineMessage={deadlineMessage} className="mb-6" />
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex justify-center">
               <Button
-                onClick={rsvpConfig === 'simple' ? handleSimpleAccept : handleDetailedAccept}
+                onClick={handleAcceptInvitation}
                 disabled={isSubmitting}
                 className="bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold text-white font-semibold px-8 py-4 text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
               >
                 <Heart className="w-5 h-5 mr-2" />
-                Accept Invitation
+                {isSubmitting ? "Accepting..." : "Accept Invitation"}
               </Button>
             </div>
           </div>
@@ -334,7 +273,7 @@ export const RSVPSection: React.FC = () => {
   }
 
   // Status: accepted or submitted - Show thank you message with appropriate buttons
-  if (guestStatus === 'accepted' || guestStatus === 'submitted') {
+  if (localGuestStatus === 'accepted' || localGuestStatus === 'submitted') {
     return (
       <>
         <Confetti isActive={showConfetti} />
@@ -344,82 +283,47 @@ export const RSVPSection: React.FC = () => {
           <div className="w-full max-w-6xl mx-auto px-4 md:px-8 relative z-10">
             <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-2xl border-2 border-wedding-gold/20 text-center relative overflow-hidden">
               
-              {/* Elegant corner decorations */}
-              <div className="absolute top-0 left-0 w-20 h-20 border-l-4 border-t-4 border-wedding-gold/40 rounded-tl-3xl"></div>
-              <div className="absolute top-0 right-0 w-20 h-20 border-r-4 border-t-4 border-wedding-gold/40 rounded-tr-3xl"></div>
-              <div className="absolute bottom-0 left-0 w-20 h-20 border-l-4 border-b-4 border-wedding-gold/40 rounded-bl-3xl"></div>
-              <div className="absolute bottom-0 right-0 w-20 h-20 border-r-4 border-b-4 border-wedding-gold/40 rounded-br-3xl"></div>
-              
               <div className="relative z-10">
-                <div className="flex justify-center items-center mb-6">
-                  <Sparkles className="w-8 h-8 text-wedding-gold animate-pulse mr-3" />
-                  <Heart className="w-12 h-12 text-wedding-gold animate-pulse" />
-                  <Sparkles className="w-8 h-8 text-wedding-gold animate-pulse ml-3" />
+                <div className="flex justify-center items-center mb-4">
+                  <Heart className="w-8 h-8 text-wedding-gold animate-pulse" />
                 </div>
                 
-                <h2 className="font-great-vibes text-3xl md:text-5xl text-wedding-maroon mb-3">
-                  Dear <span className="text-wedding-gold">{guestName}</span>,
-                </h2>
-                <h3 className="font-great-vibes text-xl md:text-3xl text-wedding-maroon mb-6">
-                  Thank You for Accepting!
+                <h3 className="font-great-vibes text-xl md:text-2xl text-wedding-maroon mb-4">
+                  Thank you {guestName}!
                 </h3>
                 
-                <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left mb-8">
-                  <div className="bg-wedding-gold/5 p-6 rounded-2xl border border-wedding-gold/20">
-                    <p className="text-lg text-gray-700 font-medium mb-2">
-                      🎉 We are absolutely thrilled!
-                    </p>
-                    <p className="text-base text-gray-600 leading-relaxed">
-                      {guestStatus === 'accepted' 
-                        ? "Thank you for accepting! Please provide additional details to help us plan better." 
-                        : "Thank you for your RSVP! We have received your details and look forward to celebrating with you."
-                      }
-                    </p>
-                  </div>
-                  
-                  <div className="bg-wedding-maroon/5 p-6 rounded-2xl border border-wedding-maroon/20">
-                    <p className="text-lg text-wedding-maroon font-medium mb-2">
-                      💝 Save the Date!
-                    </p>
-                    <p className="text-base text-gray-600 leading-relaxed">
-                      Get ready for an unforgettable celebration of love, tradition, and togetherness.
-                    </p>
-                  </div>
-                </div>
+                <p className="text-sm text-gray-600 mb-6">
+                  We are looking forward to celebrate with you.
+                </p>
 
-                <div className="mb-6">
-                  <StatusBadge status={guestStatus} />
-                </div>
+                {deadlineMessage && (
+                  <DeadlineDisplay rsvpClosed={rsvpClosed} deadlineMessage={deadlineMessage} className="mb-6" />
+                )}
 
-                <RSVPProgress currentStatus={guestStatus} className="max-w-md mx-auto mb-8" />
-
-                <DeadlineDisplay rsvpClosed={rsvpClosed} deadlineMessage={deadlineMessage} className="mb-6" />
-
-                {/* Show Submit/Edit RSVP button based on platform flags */}
-                {(guestStatus === 'accepted' && canSubmitRSVP) && (
-                  <div className="flex justify-center mb-6">
+                {/* Show Submit RSVP button if accepted and can submit */}
+                {(localGuestStatus === 'accepted' && canSubmitRSVP) && (
+                  <div className="flex justify-center mb-4">
                     <Button
                       onClick={handleSubmitRSVP}
                       disabled={isSubmitting}
-                      className="bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold text-white font-semibold px-8 py-4 text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                      className="bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold text-white font-semibold px-6 py-3 text-base rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
                     >
-                      <Heart className="w-5 h-5 mr-2" />
-                      Submit RSVP Details
-                      <Sparkles className="w-4 h-4 ml-2 opacity-70" />
+                      <Heart className="w-4 h-4 mr-2" />
+                      {isSubmitting ? "Loading..." : "Submit RSVP Details"}
                     </Button>
                   </div>
                 )}
 
-                {(guestStatus === 'submitted' && canEditRSVP) && (
-                  <div className="flex justify-center mb-6">
+                {/* Show Edit RSVP button if submitted and can edit */}
+                {(localGuestStatus === 'submitted' && canEditRSVP) && (
+                  <div className="flex justify-center mb-4">
                     <Button
                       onClick={handleEditRSVP}
                       disabled={isSubmitting}
-                      className="bg-gradient-to-r from-wedding-maroon via-wedding-maroon/90 to-wedding-maroon hover:from-wedding-maroon/90 hover:to-wedding-maroon text-white font-semibold px-8 py-4 text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                      className="bg-gradient-to-r from-wedding-maroon via-wedding-maroon/90 to-wedding-maroon hover:from-wedding-maroon/90 hover:to-wedding-maroon text-white font-semibold px-6 py-3 text-base rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
                     >
-                      <Heart className="w-5 h-5 mr-2" />
-                      Edit RSVP Details
-                      <Sparkles className="w-4 h-4 ml-2 opacity-70" />
+                      <Heart className="w-4 h-4 mr-2" />
+                      {isSubmitting ? "Loading..." : "Edit RSVP Details"}
                     </Button>
                   </div>
                 )}
@@ -461,9 +365,16 @@ export const RSVPSection: React.FC = () => {
                     key={field.field_name}
                     field={field}
                     value={formData[field.field_name] || ''}
-                    onChange={(value) => 
-                      setFormData(prev => ({ ...prev, [field.field_name]: value }))
-                    }
+                    onChange={(value) => {
+                      setFormData(prev => ({ ...prev, [field.field_name]: value }));
+                      // Clear validation error when user starts typing
+                      if (validationErrors[field.field_name]) {
+                        setValidationErrors(prev => ({
+                          ...prev,
+                          [field.field_name]: ''
+                        }));
+                      }
+                    }}
                     error={validationErrors[field.field_name]}
                   />
                 ))
