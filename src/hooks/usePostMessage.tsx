@@ -53,9 +53,18 @@ export const usePostMessage = () => {
         // Handle specific message types
         if (message.type === 'WEDDING_DATA_TRANSFER') {
           console.log('Wedding data received:', message.data);
+        } else if (message.type === 'INVITATION_LOADED') {
+          console.log('Invitation loaded:', message.data);
+          // Store eventId and guestId for security
+          if (message.data.eventId) setCurrentEventId(message.data.eventId);
+          if (message.data.guestId) setCurrentGuestId(message.data.guestId);
         } else if (message.type === 'LOAD_INVITATION_DATA') {
           console.log('=== LOAD_INVITATION_DATA RECEIVED ===');
           console.log('Full message data:', message.data);
+          
+          // Extract eventId and guestId from LOAD_INVITATION_DATA
+          if (message.data?.event?.id) setCurrentEventId(message.data.event.id);
+          if (message.data?.guest?.id) setCurrentGuestId(message.data.guest.id);
           
           if (message.data?.event?.rsvp_config) {
             console.log('RSVP Config from postMessage:', message.data.event.rsvp_config);
@@ -63,11 +72,6 @@ export const usePostMessage = () => {
           }
           
           console.log('=== END LOAD_INVITATION_DATA ===');
-        } else if (message.type === 'INVITATION_LOADED') {
-          console.log('Invitation loaded:', message.data);
-          // Store eventId and guestId for security
-          if (message.data.eventId) setCurrentEventId(message.data.eventId);
-          if (message.data.guestId) setCurrentGuestId(message.data.guestId);
         } else if (message.type === 'STATUS_UPDATE') {
           console.log('Status update received:', message.data);
         }

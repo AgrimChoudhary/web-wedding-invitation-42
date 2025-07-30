@@ -161,19 +161,20 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // RSVP handler (for initial acceptance)
   const sendRSVP = (rsvpData?: any) => {
     if (isPlatformMode) {
+      console.log('Sending RSVP acceptance to platform:', rsvpData || {});
       sendRSVPAccepted(rsvpData || {});
+      // Don't update local state immediately - wait for STATUS_UPDATE from platform
     } else {
       console.log('RSVP sent (standalone mode):', rsvpData);
-    }
-    
-    // Update local platform data state
-    if (platformData) {
-      const newStatus = rsvpData && Object.keys(rsvpData).length > 0 ? 'submitted' : 'accepted';
-      setPlatformData({
-        ...platformData,
-        guestStatus: newStatus,
-        existingRsvpData: rsvpData || platformData.existingRsvpData
-      });
+      // In standalone mode, update local state directly
+      if (platformData) {
+        const newStatus = rsvpData && Object.keys(rsvpData).length > 0 ? 'submitted' : 'accepted';
+        setPlatformData({
+          ...platformData,
+          guestStatus: newStatus,
+          existingRsvpData: rsvpData || platformData.existingRsvpData
+        });
+      }
     }
   };
 
