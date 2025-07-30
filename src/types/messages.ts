@@ -30,62 +30,26 @@ export interface LoadInvitationDataMessage extends BaseMessage {
       [key: string]: any;
     };
     guest: any;
-    // V2 Platform flags
-    canSubmitRSVP?: boolean;
-    canEditRSVP?: boolean;
-    rsvpClosed?: boolean;
-    deadlineMessage?: string;
-    guestStatus?: 'pending' | 'viewed' | 'accepted' | 'submitted';
-    existingRsvpData?: Record<string, any>;
   };
 }
 
 export interface RSVPAcceptedMessage extends BaseMessage {
   type: 'RSVP_ACCEPTED';
   data: {
-    guestId: string;
-    eventId: string;
     accepted: true;
-    rsvpData?: Record<string, any>;
-  };
-}
-
-export interface RSVPDeclinedMessage extends BaseMessage {
-  type: 'RSVP_DECLINED';
-  data: {
-    guestId: string;
-    eventId: string;
-  };
-}
-
-export interface RSVPUpdatedMessage extends BaseMessage {
-  type: 'RSVP_UPDATED';
-  data: {
-    guestId: string;
-    eventId: string;
-    rsvpData: Record<string, any>;
-    newStatus: 'submitted';
+    rsvpData: {
+      attendees: number;
+      dietary_requirements?: string;
+      special_requests?: string;
+    };
   };
 }
 
 export interface InvitationViewedMessage extends BaseMessage {
   type: 'INVITATION_VIEWED';
   data: {
-    guestId: string;
-    eventId: string;
-    timestamp?: number;
-    viewDuration?: number;
-  };
-}
-
-export interface StatusUpdateMessage extends BaseMessage {
-  type: 'STATUS_UPDATE';
-  data: {
-    newStatus: 'pending' | 'viewed' | 'accepted' | 'submitted';
-    canSubmitRSVP: boolean;
-    canEditRSVP: boolean;
-    rsvpClosed?: boolean;
-    deadlineMessage?: string;
+    timestamp: number;
+    viewDuration: number;
   };
 }
 
@@ -99,12 +63,9 @@ export interface TemplateReadyMessage extends BaseMessage {
 export type PlatformMessage = 
   | WeddingDataTransferMessage 
   | InvitationLoadedMessage
-  | LoadInvitationDataMessage
-  | StatusUpdateMessage;
+  | LoadInvitationDataMessage;
 
 export type TemplateMessage = 
   | RSVPAcceptedMessage 
-  | RSVPDeclinedMessage
-  | RSVPUpdatedMessage
   | InvitationViewedMessage
   | TemplateReadyMessage;

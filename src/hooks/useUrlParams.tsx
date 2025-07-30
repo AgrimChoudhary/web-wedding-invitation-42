@@ -78,7 +78,7 @@ export const useUrlParams = () => {
             guestName: parsedData.guestName,
             hasResponded: parsedData.hasResponded,
             accepted: parsedData.accepted,
-        guestStatus: mapLegacyStatus(urlParams.get('guestStatus')) || 'pending',
+        guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
         existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
         rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
         customFields: tryParseJSON(urlParams.get('customFields')) || [],
@@ -99,7 +99,7 @@ export const useUrlParams = () => {
         guestName: urlParams.get('guestName') || undefined,
         hasResponded: urlParams.get('hasResponded') === 'true',
         accepted: urlParams.get('accepted') === 'true',
-        guestStatus: mapLegacyStatus(urlParams.get('guestStatus')) || 'pending',
+        guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
         existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
         rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
         customFields: tryParseJSON(urlParams.get('customFields')) || []
@@ -193,21 +193,5 @@ const tryParseJSON = (jsonString: string | null): any => {
   } catch (e) {
     console.warn('Failed to parse JSON:', jsonString);
     return null;
-  }
-};
-
-// Helper function to map legacy status to new V2 status
-const mapLegacyStatus = (legacyStatus: string | null): 'pending' | 'viewed' | 'accepted' | 'submitted' => {
-  switch (legacyStatus) {
-    case 'invited':
-      return 'pending';
-    case 'accepted':
-      return 'accepted';
-    case 'submitted':
-      return 'submitted';
-    case 'viewed':
-      return 'viewed';
-    default:
-      return 'pending';
   }
 };

@@ -193,13 +193,7 @@ const Invitation = () => {
     const hasRespondedParam = params.get('hasResponded');
     const acceptedParam = params.get('accepted');
     
-    console.log('=== RSVP STATUS DEBUG ===');
-    console.log('hasRespondedParam:', hasRespondedParam);
-    console.log('acceptedParam:', acceptedParam);
-    console.log('Will show thank you message?', hasRespondedParam === 'true' && acceptedParam === 'true');
-    
     if (hasRespondedParam === 'true' && acceptedParam === 'true') {
-      console.log('Setting showThankYouMessage to true due to URL params');
       setShowThankYouMessage(true);
     }
 
@@ -261,13 +255,7 @@ const Invitation = () => {
     }, 1500);
     
     // If there's a guestId and they've already accepted, show thank you message
-    console.log('=== GUEST STATUS DEBUG ===');
-    console.log('guestId:', guestId);
-    console.log('hasAccepted:', hasAccepted);
-    console.log('isPlatformMode:', isPlatformMode);
-    
     if (guestId && hasAccepted) {
-      console.log('Setting showThankYouMessage to true due to guest status');
       setShowThankYouMessage(true);
     }
     
@@ -498,12 +486,7 @@ const Invitation = () => {
                     </p>
                   </div>
                 ) : (
-                  <div>
-                    <div style={{backgroundColor: 'red', color: 'white', padding: '10px', marginBottom: '10px'}}>
-                      DEBUG: RSVPSection should render here. showThankYouMessage: {showThankYouMessage.toString()}
-                    </div>
-                    <RSVPSection />
-                  </div>
+                  <RSVPSection />
                 )}
               </div>
             </div>
