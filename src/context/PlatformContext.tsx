@@ -155,7 +155,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         console.error('Error processing STATUS_UPDATE:', err);
       }
     }
-  }, [lastMessage, platformData]);
+  }, [lastMessage]);
 
   // RSVP handler (for initial acceptance)
   const sendRSVP = (rsvpData?: any) => {
