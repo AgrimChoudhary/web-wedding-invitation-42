@@ -199,11 +199,10 @@ const Invitation = () => {
 
     console.log('Final wedding data:', updatedWeddingData);
 
-    // Track invitation viewed analytics on cleanup
-    return () => {
-      const viewDuration = Date.now() - startTime;
+    // Track invitation viewed immediately when invitation loads
+    setTimeout(() => {
       trackInvitationViewed();
-    };
+    }, 1000); // Give a short delay to ensure page is loaded
   }, [location.search, setGuestName, setGuestId, setAllWeddingData, trackInvitationViewed]);
 
   // Set up message listener for platform communication
@@ -273,16 +272,8 @@ const Invitation = () => {
   const handleAcceptInvitation = () => {
     setConfetti(true);
     
-    // Send RSVP_ACCEPTED message to parent platform
-    if (guestId) {
-      window.parent.postMessage({
-        type: 'RSVP_ACCEPTED',
-        payload: {
-          guestId: guestId,
-          eventId: weddingData.events[0]?.id || 'default-event-id'
-        }
-      }, '*');
-    }
+    // This function is deprecated - RSVP handling should go through PlatformContext
+    console.log('⚠️ handleAcceptInvitation called - consider using PlatformContext sendRSVP instead');
     
     updateGuestStatus('accepted');
     setTimeout(() => {

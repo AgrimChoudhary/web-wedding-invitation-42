@@ -33,7 +33,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     sendRSVPAccepted, 
     sendRSVPSubmitted, 
     sendRSVPUpdated, 
-    sendInvitationViewed 
+    sendInvitationViewed,
+    sendTemplateReady
   } = usePostMessage();
   
   const [platformData, setPlatformData] = useState<PlatformData | null>(null);
@@ -51,12 +52,17 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Track if we're in platform mode (iframe with platform data)
   const isPlatformMode = Boolean(platformData?.eventId || lastMessage);
 
-  // Initialize platform data from URL params
+  // Initialize platform data from URL params and send TEMPLATE_READY
   useEffect(() => {
     if (urlPlatformData) {
       setPlatformData(urlPlatformData);
+      // Send TEMPLATE_READY with eventId and guestId if available
+      sendTemplateReady(urlPlatformData.eventId, urlPlatformData.guestId);
+    } else {
+      // Send TEMPLATE_READY without IDs for standalone mode
+      sendTemplateReady();
     }
-  }, [urlPlatformData]);
+  }, [urlPlatformData, sendTemplateReady]);
 
   // Process platform data and convert to wedding data
   useEffect(() => {
@@ -200,16 +206,20 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // RSVP handlers
   const sendRSVP = (rsvpData?: any) => {
-    if (isPlatformMode && platformData) {
+    console.log('🎯 sendRSVP called with:', { rsvpData, isPlatformMode, platformData });
+    
+    if (isPlatformMode && platformData?.eventId && platformData?.guestId) {
       if (rsvpData && Object.keys(rsvpData).length > 0) {
         // Send submitted with data
-        sendRSVPSubmitted(platformData.eventId!, platformData.guestId!, rsvpData);
+        console.log('📝 Sending RSVP submission with data');
+        sendRSVPSubmitted(platformData.eventId, platformData.guestId, rsvpData);
       } else {
         // Send acceptance only
-        sendRSVPAccepted(platformData.eventId!, platformData.guestId!);
+        console.log('🎉 Sending RSVP acceptance');
+        sendRSVPAccepted(platformData.eventId, platformData.guestId);
       }
     } else {
-      console.log('RSVP sent (standalone mode):', rsvpData);
+      console.log('⚠️ RSVP sent (standalone mode or missing platform data):', rsvpData);
     }
     
     // Update local platform data state
@@ -224,23 +234,30 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const sendRSVPSubmittedHandler = (rsvpData: Record<string, any>) => {
-    if (isPlatformMode && platformData) {
-      sendRSVPSubmitted(platformData.eventId!, platformData.guestId!, rsvpData);
+    console.log('📝 sendRSVPSubmittedHandler called');
+    if (isPlatformMode && platformData?.eventId && platformData?.guestId) {
+      sendRSVPSubmitted(platformData.eventId, platformData.guestId, rsvpData);
+    } else {
+      console.log('⚠️ Cannot send RSVP_SUBMITTED: missing platform data');
     }
   };
 
   const sendRSVPUpdatedHandler = (rsvpData: Record<string, any>) => {
-    if (isPlatformMode && platformData) {
-      sendRSVPUpdated(platformData.eventId!, platformData.guestId!, rsvpData);
+    console.log('✏️ sendRSVPUpdatedHandler called');
+    if (isPlatformMode && platformData?.eventId && platformData?.guestId) {
+      sendRSVPUpdated(platformData.eventId, platformData.guestId, rsvpData);
+    } else {
+      console.log('⚠️ Cannot send RSVP_UPDATED: missing platform data');
     }
   };
 
   // Analytics handler
   const trackInvitationViewedHandler = () => {
-    if (isPlatformMode && platformData) {
-      sendInvitationViewed(platformData.eventId!, platformData.guestId!);
+    console.log('👀 trackInvitationViewedHandler called');
+    if (isPlatformMode && platformData?.eventId && platformData?.guestId) {
+      sendInvitationViewed(platformData.eventId, platformData.guestId);
     } else {
-      console.log('Invitation viewed (standalone mode)');
+      console.log('⚠️ Invitation viewed (standalone mode or missing platform data)');
     }
   };
 
