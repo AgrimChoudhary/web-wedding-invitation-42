@@ -202,7 +202,7 @@ const Invitation = () => {
     // Track invitation viewed analytics on cleanup
     return () => {
       const viewDuration = Date.now() - startTime;
-      trackInvitationViewed(viewDuration);
+      trackInvitationViewed();
     };
   }, [location.search, setGuestName, setGuestId, setAllWeddingData, trackInvitationViewed]);
 

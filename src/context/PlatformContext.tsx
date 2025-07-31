@@ -15,20 +15,38 @@ interface PlatformContextType {
   guestStatus: 'invited' | 'accepted' | 'submitted';
   existingRsvpData: Record<string, any> | null;
   rsvpConfig: 'simple' | 'detailed';
+  showSubmitButton: boolean;
+  showEditButton: boolean;
+  rsvpFields: Array<any>;
   sendRSVP: (rsvpData?: any) => void;
-  trackInvitationViewed: (duration: number) => void;
+  sendRSVPSubmitted: (rsvpData: Record<string, any>) => void;
+  sendRSVPUpdated: (rsvpData: Record<string, any>) => void;
+  trackInvitationViewed: () => void;
 }
 
 const PlatformContext = createContext<PlatformContextType | undefined>(undefined);
 
 export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { platformData: urlPlatformData, isLoading: urlLoading, error: urlError } = useUrlParams();
-  const { lastMessage, sendRSVPAccepted, sendInvitationViewed } = usePostMessage();
+  const { 
+    lastMessage, 
+    sendRSVPAccepted, 
+    sendRSVPSubmitted, 
+    sendRSVPUpdated, 
+    sendInvitationViewed 
+  } = usePostMessage();
   
   const [platformData, setPlatformData] = useState<PlatformData | null>(null);
   const [weddingData, setWeddingData] = useState<WeddingData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Platform-controlled RSVP state
+  const [rsvpStatus, setRsvpStatus] = useState<null | "accepted" | "submitted">(null);
+  const [showSubmitButton, setShowSubmitButton] = useState(false);
+  const [showEditButton, setShowEditButton] = useState(false);
+  const [rsvpFields, setRsvpFields] = useState<Array<any>>([]);
+  const [existingRsvpData, setExistingRsvpData] = useState<Record<string, any> | null>(null);
 
   // Track if we're in platform mode (iframe with platform data)
   const isPlatformMode = Boolean(platformData?.eventId || lastMessage);
@@ -73,50 +91,123 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   useEffect(() => {
     if (!lastMessage) return;
 
-    if (lastMessage.type === 'WEDDING_DATA_TRANSFER') {
+    if (lastMessage.type === 'INVITATION_LOADED') {
       try {
-        const messageData = lastMessage.data;
-        if (validatePlatformData(messageData)) {
-          const mappedData = mapPlatformDataToWeddingData(messageData);
-          setWeddingData(mappedData);
-          console.log('PostMessage wedding data successfully processed');
-        }
-      } catch (err) {
-        console.error('Error processing PostMessage data:', err);
-      }
-    } else if (lastMessage.type === 'LOAD_INVITATION_DATA') {
-      try {
-        console.log('=== PROCESSING LOAD_INVITATION_DATA ===');
-        console.log('Full message data:', lastMessage.data);
+        console.log('=== PROCESSING INVITATION_LOADED ===');
+        const payload = lastMessage.payload;
         
-        // Extract RSVP config from postMessage
-        if (lastMessage.data?.event?.rsvp_config) {
-          const newRsvpConfig: 'simple' | 'detailed' = lastMessage.data.event.rsvp_config.type === 'simple' ? 'simple' : 'detailed';
-          console.log('Updating RSVP config from postMessage:', newRsvpConfig);
+        // Update RSVP state from platform
+        setRsvpStatus(payload.status);
+        setShowSubmitButton(payload.showSubmitButton);
+        setShowEditButton(payload.showEditButton);
+        setRsvpFields(payload.rsvpFields || []);
+        setExistingRsvpData(payload.existingRsvpData);
+        
+        // Update platform data
+        const newPlatformData: PlatformData = {
+          eventId: payload.eventId,
+          guestId: payload.guestId,
+          guestName: payload.platformData.guestName,
+          hasResponded: Boolean(payload.status),
+          guestStatus: payload.status === 'submitted' ? 'submitted' : payload.status === 'accepted' ? 'accepted' : 'invited',
+          rsvpConfig: payload.rsvpFields.length > 0 ? 'detailed' : 'simple',
+          existingRsvpData: payload.existingRsvpData,
+          customFields: payload.rsvpFields
+        };
+        setPlatformData(newPlatformData);
+        
+        // Map event details to wedding data if available
+        if (payload.eventDetails) {
+          // Create a mock structured data to reuse existing mapper
+          const mockStructuredData = {
+            eventId: payload.eventId,
+            eventName: 'Wedding',
+            guestId: payload.guestId,
+            guestName: payload.platformData.guestName,
+            hasResponded: Boolean(payload.status),
+            accepted: payload.status === 'accepted' || payload.status === 'submitted',
+            weddingData: {
+              couple: {
+                groomName: payload.eventDetails.groom_name,
+                brideName: payload.eventDetails.bride_name,
+                groomCity: '',
+                brideCity: '',
+                weddingDate: payload.eventDetails.wedding_date,
+                weddingTime: payload.eventDetails.wedding_time,
+                groomFirst: true,
+                coupleImage: ''
+              },
+              venue: {
+                name: payload.eventDetails.venue_name,
+                address: payload.eventDetails.venue_address,
+                mapLink: ''
+              },
+              family: {
+                bride_family: { family_photo: '', parents_name: '', members: [] },
+                groom_family: { family_photo: '', parents_name: '', members: [] }
+              },
+              contacts: [],
+              gallery: payload.eventDetails.photos?.map((photo, index) => ({
+                photo: photo.url,
+                title: photo.caption || `Photo ${index + 1}`
+              })) || [],
+              events: payload.eventDetails.events?.map(event => ({
+                name: event.event_name,
+                date: event.event_date,
+                time: event.event_time,
+                venue: event.venue_name,
+                description: '',
+                map_link: ''
+              })) || []
+            }
+          };
           
-          // Update platform data with new RSVP config
-          if (platformData) {
-            const updatedData: PlatformData = {
-              ...platformData,
-              rsvpConfig: newRsvpConfig
-            };
-            setPlatformData(updatedData);
-            console.log('Platform data updated with new RSVP config:', updatedData);
-          }
+          const mappedData = mapPlatformDataToWeddingData(mockStructuredData);
+          setWeddingData(mappedData);
         }
         
-        console.log('=== END PROCESSING LOAD_INVITATION_DATA ===');
+        console.log('=== END PROCESSING INVITATION_LOADED ===');
       } catch (err) {
-        console.error('Error processing LOAD_INVITATION_DATA:', err);
+        console.error('Error processing INVITATION_LOADED:', err);
+      }
+    } else if (lastMessage.type === 'INVITATION_PAYLOAD_UPDATE') {
+      try {
+        console.log('=== PROCESSING INVITATION_PAYLOAD_UPDATE ===');
+        const data = lastMessage.data;
+        
+        // Update RSVP state from platform
+        setRsvpStatus(data.status);
+        setShowSubmitButton(data.showSubmitButton);
+        setShowEditButton(data.showEditButton);
+        setRsvpFields(data.rsvpFields || []);
+        setExistingRsvpData(data.existingRsvpData);
+        
+        // Update platform data
+        if (platformData) {
+          setPlatformData({
+            ...platformData,
+            guestStatus: data.status === 'submitted' ? 'submitted' : data.status === 'accepted' ? 'accepted' : 'invited',
+            existingRsvpData: data.existingRsvpData
+          });
+        }
+        
+        console.log('=== END PROCESSING INVITATION_PAYLOAD_UPDATE ===');
+      } catch (err) {
+        console.error('Error processing INVITATION_PAYLOAD_UPDATE:', err);
       }
     }
   }, [lastMessage]);
 
-  // RSVP handler
+  // RSVP handlers
   const sendRSVP = (rsvpData?: any) => {
-    if (isPlatformMode) {
-      // Send only the RSVP data without adding guestStatus field
-      sendRSVPAccepted(rsvpData || {});
+    if (isPlatformMode && platformData) {
+      if (rsvpData && Object.keys(rsvpData).length > 0) {
+        // Send submitted with data
+        sendRSVPSubmitted(platformData.eventId!, platformData.guestId!, rsvpData);
+      } else {
+        // Send acceptance only
+        sendRSVPAccepted(platformData.eventId!, platformData.guestId!);
+      }
     } else {
       console.log('RSVP sent (standalone mode):', rsvpData);
     }
@@ -132,12 +223,24 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
+  const sendRSVPSubmittedHandler = (rsvpData: Record<string, any>) => {
+    if (isPlatformMode && platformData) {
+      sendRSVPSubmitted(platformData.eventId!, platformData.guestId!, rsvpData);
+    }
+  };
+
+  const sendRSVPUpdatedHandler = (rsvpData: Record<string, any>) => {
+    if (isPlatformMode && platformData) {
+      sendRSVPUpdated(platformData.eventId!, platformData.guestId!, rsvpData);
+    }
+  };
+
   // Analytics handler
-  const trackInvitationViewed = (duration: number) => {
-    if (isPlatformMode) {
-      sendInvitationViewed(duration);
+  const trackInvitationViewedHandler = () => {
+    if (isPlatformMode && platformData) {
+      sendInvitationViewed(platformData.eventId!, platformData.guestId!);
     } else {
-      console.log('Invitation viewed (standalone mode):', duration);
+      console.log('Invitation viewed (standalone mode)');
     }
   };
 
@@ -149,10 +252,15 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     isPlatformMode,
     hasResponded: Boolean(platformData?.hasResponded),
     guestStatus: platformData?.guestStatus || 'invited',
-    existingRsvpData: platformData?.existingRsvpData || null,
+    existingRsvpData: existingRsvpData || platformData?.existingRsvpData || null,
     rsvpConfig: platformData?.rsvpConfig || 'simple',
+    showSubmitButton,
+    showEditButton,
+    rsvpFields,
     sendRSVP,
-    trackInvitationViewed
+    sendRSVPSubmitted: sendRSVPSubmittedHandler,
+    sendRSVPUpdated: sendRSVPUpdatedHandler,
+    trackInvitationViewed: trackInvitationViewedHandler
   };
 
   return (

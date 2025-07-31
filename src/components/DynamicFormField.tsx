@@ -52,7 +52,7 @@ export const DynamicFormField: React.FC<DynamicFormFieldProps> = ({
               <SelectValue placeholder={placeholder || "Choose an option"} />
             </SelectTrigger>
             <SelectContent>
-              {field.field_options?.map((option) => (
+              {(Array.isArray(field.field_options) ? field.field_options : field.field_options?.options || []).map((option) => (
                 <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>

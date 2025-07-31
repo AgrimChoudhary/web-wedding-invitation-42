@@ -39,7 +39,7 @@ export const usePostMessage = () => {
         const message = event.data as PlatformMessage;
         
         // Validate message structure
-        if (!message.type || !message.timestamp || message.source !== 'PLATFORM') {
+        if (!message.type || !message.timestamp) {
           console.warn('Invalid message structure:', message);
           return;
         }
@@ -49,20 +49,20 @@ export const usePostMessage = () => {
         setIsConnected(true);
         
         // Handle specific message types
-        if (message.type === 'WEDDING_DATA_TRANSFER') {
-          console.log('Wedding data received:', message.data);
-        } else if (message.type === 'LOAD_INVITATION_DATA') {
-          console.log('=== LOAD_INVITATION_DATA RECEIVED ===');
-          console.log('Full message data:', message.data);
+        if (message.type === 'INVITATION_LOADED') {
+          console.log('=== INVITATION_LOADED RECEIVED ===');
+          console.log('Full message payload:', message.payload);
           
-          if (message.data?.event?.rsvp_config) {
-            console.log('RSVP Config from postMessage:', message.data.event.rsvp_config);
-            console.log('RSVP Type:', message.data.event.rsvp_config.type);
+          if (message.payload?.rsvpFields) {
+            console.log('RSVP Fields from postMessage:', message.payload.rsvpFields);
+            console.log('Status:', message.payload.status);
+            console.log('Show Submit Button:', message.payload.showSubmitButton);
+            console.log('Show Edit Button:', message.payload.showEditButton);
           }
           
-          console.log('=== END LOAD_INVITATION_DATA ===');
-        } else if (message.type === 'INVITATION_LOADED') {
-          console.log('Invitation loaded:', message.data);
+          console.log('=== END INVITATION_LOADED ===');
+        } else if (message.type === 'INVITATION_PAYLOAD_UPDATE') {
+          console.log('Invitation payload update:', message.data);
         }
         
       } catch (error) {
@@ -76,8 +76,7 @@ export const usePostMessage = () => {
     const readyMessage: TemplateMessage = {
       type: 'TEMPLATE_READY',
       data: { templateVersion: '1.0' },
-      timestamp: Date.now(),
-      source: 'TEMPLATE'
+      timestamp: Date.now()
     };
     sendMessageToPlatform(readyMessage);
 
@@ -86,34 +85,56 @@ export const usePostMessage = () => {
     };
   }, [sendMessageToPlatform]);
 
-  // Send RSVP acceptance
-  const sendRSVPAccepted = useCallback((rsvpData: Record<string, any> = {}) => {
-    const messageData: any = { accepted: true };
-    
-    // Only include rsvpData if there are actual values
-    if (Object.keys(rsvpData).length > 0) {
-      messageData.rsvpData = rsvpData;
-    }
-    
+  // Send invitation viewed
+  const sendInvitationViewed = useCallback((eventId: string, guestId: string) => {
     const message: TemplateMessage = {
-      type: 'RSVP_ACCEPTED',
-      data: messageData,
-      timestamp: Date.now(),
-      source: 'TEMPLATE'
+      type: 'INVITATION_VIEWED',
+      data: {
+        eventId,
+        guestId
+      },
+      timestamp: Date.now()
     };
     sendMessageToPlatform(message);
   }, [sendMessageToPlatform]);
 
-  // Send invitation viewed analytics
-  const sendInvitationViewed = useCallback((viewDuration: number) => {
+  // Send RSVP acceptance
+  const sendRSVPAccepted = useCallback((eventId: string, guestId: string) => {
     const message: TemplateMessage = {
-      type: 'INVITATION_VIEWED',
+      type: 'RSVP_ACCEPTED',
       data: {
-        timestamp: Date.now(),
-        viewDuration
+        eventId,
+        guestId
       },
-      timestamp: Date.now(),
-      source: 'TEMPLATE'
+      timestamp: Date.now()
+    };
+    sendMessageToPlatform(message);
+  }, [sendMessageToPlatform]);
+
+  // Send RSVP submission
+  const sendRSVPSubmitted = useCallback((eventId: string, guestId: string, rsvpData: Record<string, any>) => {
+    const message: TemplateMessage = {
+      type: 'RSVP_SUBMITTED',
+      data: {
+        eventId,
+        guestId,
+        rsvpData
+      },
+      timestamp: Date.now()
+    };
+    sendMessageToPlatform(message);
+  }, [sendMessageToPlatform]);
+
+  // Send RSVP update
+  const sendRSVPUpdated = useCallback((eventId: string, guestId: string, rsvpData: Record<string, any>) => {
+    const message: TemplateMessage = {
+      type: 'RSVP_UPDATED',
+      data: {
+        eventId,
+        guestId,
+        rsvpData
+      },
+      timestamp: Date.now()
     };
     sendMessageToPlatform(message);
   }, [sendMessageToPlatform]);
@@ -121,8 +142,10 @@ export const usePostMessage = () => {
   return {
     lastMessage,
     isConnected,
-    sendRSVPAccepted,
     sendInvitationViewed,
+    sendRSVPAccepted,
+    sendRSVPSubmitted,
+    sendRSVPUpdated,
     sendMessageToPlatform
   };
 };

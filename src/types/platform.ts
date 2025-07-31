@@ -67,12 +67,13 @@ export interface CustomField {
   id?: string;
   field_name: string;
   field_label: string;
-  field_type: 'text' | 'textarea' | 'select' | 'email' | 'number';
+  field_type: 'text' | 'textarea' | 'select' | 'email' | 'number' | 'phone' | 'radio' | 'checkbox';
   is_required?: boolean;
-  field_options?: string[];
+  field_options?: string[] | { options: string[] };
   placeholder_text?: string;
   display_order?: number;
   max_length?: number;
+  validation_rules?: Record<string, any>;
 }
 
 export interface PlatformData {
