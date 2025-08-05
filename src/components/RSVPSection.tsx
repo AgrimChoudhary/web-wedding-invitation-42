@@ -24,7 +24,6 @@ export const RSVPSection: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const [showThankYouMessage, setShowThankYouMessage] = useState(false);
 
   // Get guest name from platform data or fallback
   const guestName = platformData?.guestName || platformData?.structuredData?.guestName || "Guest";
@@ -176,8 +175,9 @@ export const RSVPSection: React.FC = () => {
     return guestStatus === 'submitted' ? 'Edit RSVP' : 'Submit RSVP';
   };
 
-  // Show thank you message for submitted/accepted states OR when user has clicked accept
-  if (guestStatus === 'submitted' || guestStatus === 'accepted' || showThankYouMessage) {
+  // Show thank you message for accepted or submitted states
+  // Only show if user has explicitly accepted (not from platform data)
+  if (guestStatus === 'accepted' || guestStatus === 'submitted') {
     return (
       <>
         <Confetti isActive={showConfetti} />
@@ -237,8 +237,8 @@ export const RSVPSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Show Submit/Edit RSVP button for detailed RSVP config - only if not already submitted */}
-                {rsvpConfig === 'detailed' && guestStatus !== 'submitted' && (
+                {/* Show Submit/Edit RSVP button for detailed RSVP config */}
+                {rsvpConfig === 'detailed' && (
                   <div className="flex justify-center mb-6">
                     <Button
                       onClick={() => setShowDetailedForm(true)}
@@ -359,13 +359,6 @@ export const RSVPSection: React.FC = () => {
     try {
       sendRSVP();
       setShowConfetti(true);
-      
-      // Show thank you message after a short delay
-      setTimeout(() => {
-        setShowConfetti(false);
-        setShowThankYouMessage(true); // Show thank you message
-      }, 2000);
-      
       toast({
         title: "RSVP Confirmed",
         description: `Thank you ${guestName} for accepting the invitation!`,
@@ -386,13 +379,6 @@ export const RSVPSection: React.FC = () => {
     try {
       sendRSVP(); // Send simple acceptance first
       setShowConfetti(true);
-      
-      // Show thank you message after a short delay
-      setTimeout(() => {
-        setShowConfetti(false);
-        setShowThankYouMessage(true); // Show thank you message
-      }, 2000);
-      
       toast({
         title: "Invitation Accepted",
         description: `Thank you ${guestName}! Please provide additional details.`,
