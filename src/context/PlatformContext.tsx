@@ -227,9 +227,9 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       console.log('⚠️ RSVP sent (standalone mode or missing platform data):', rsvpData);
     }
     
-    // Update local platform data state
+    // Update local platform data state - Only set 'submitted' status, not 'accepted'
     if (platformData) {
-      const newStatus = rsvpData ? 'submitted' : 'accepted';
+      const newStatus = rsvpData ? 'submitted' : 'invited';
       setPlatformData({
         ...platformData,
         guestStatus: newStatus,

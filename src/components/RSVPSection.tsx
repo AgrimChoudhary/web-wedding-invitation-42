@@ -175,9 +175,9 @@ export const RSVPSection: React.FC = () => {
     return guestStatus === 'submitted' ? 'Edit RSVP' : 'Submit RSVP';
   };
 
-  // Show thank you message for accepted or submitted states
-  // Only show if user has explicitly accepted (not from platform data)
-  if (guestStatus === 'accepted' || guestStatus === 'submitted') {
+  // Show thank you message ONLY for submitted states (not for accepted from platform)
+  // Only show if user has explicitly submitted RSVP details
+  if (guestStatus === 'submitted') {
     return (
       <>
         <Confetti isActive={showConfetti} />

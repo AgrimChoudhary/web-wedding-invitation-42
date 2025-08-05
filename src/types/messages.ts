@@ -9,7 +9,7 @@ export interface InvitationLoadedMessage extends BaseMessage {
   payload: {
     eventId: string;
     guestId: string;
-    status: null | "accepted" | "submitted";
+    status: "pending" | "accepted" | "submitted";
     showSubmitButton: boolean;
     showEditButton: boolean;
     eventDetails: {
