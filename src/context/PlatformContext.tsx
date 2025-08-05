@@ -109,13 +109,15 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setRsvpFields(payload.rsvpFields || []);
         setExistingRsvpData(payload.existingRsvpData);
         
-        // Update platform data
+        // Update platform data - Don't auto-accept from platform data
         const newPlatformData: PlatformData = {
           eventId: payload.eventId,
           guestId: payload.guestId,
           guestName: payload.platformData.guestName,
-          hasResponded: Boolean(payload.status),
-          guestStatus: payload.status === 'submitted' ? 'submitted' : payload.status === 'accepted' ? 'accepted' : 'invited',
+          // Only mark as responded if it's 'submitted', not 'accepted' from platform
+          hasResponded: payload.status === 'submitted',
+          // Only set status if it's 'submitted', otherwise keep as 'invited' until user clicks
+          guestStatus: payload.status === 'submitted' ? 'submitted' : 'invited',
           rsvpConfig: payload.rsvpFields.length > 0 ? 'detailed' : 'simple',
           existingRsvpData: payload.existingRsvpData,
           customFields: payload.rsvpFields
@@ -130,8 +132,10 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             eventName: 'Wedding',
             guestId: payload.guestId,
             guestName: payload.platformData.guestName,
-            hasResponded: Boolean(payload.status),
-            accepted: payload.status === 'accepted' || payload.status === 'submitted',
+            // Only mark as responded if it's 'submitted', not 'accepted' from platform
+            hasResponded: payload.status === 'submitted',
+            // Don't auto-accept from platform data - only if user explicitly accepts
+            accepted: false,
             weddingData: {
               couple: {
                 groomName: payload.eventDetails.groom_name,
@@ -188,11 +192,12 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setRsvpFields(data.rsvpFields || []);
         setExistingRsvpData(data.existingRsvpData);
         
-        // Update platform data
+        // Update platform data - Don't auto-accept from platform data
         if (platformData) {
           setPlatformData({
             ...platformData,
-            guestStatus: data.status === 'submitted' ? 'submitted' : data.status === 'accepted' ? 'accepted' : 'invited',
+            // Only set status if it's 'submitted', otherwise keep as 'invited' until user clicks
+            guestStatus: data.status === 'submitted' ? 'submitted' : 'invited',
             existingRsvpData: data.existingRsvpData
           });
         }
