@@ -118,7 +118,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           guestName: payload.platformData.guestName,
           // Only mark as responded if it's 'submitted' from platform
           hasResponded: payload.status === 'submitted',
-          // Only set 'submitted' status, keep 'invited' for 'accepted' and 'pending'
+          // Only set 'submitted' status, keep 'invited' for 'accepted', 'pending', and others
           guestStatus: payload.status === 'submitted' ? 'submitted' : 'invited',
           rsvpConfig: payload.rsvpFields.length > 0 ? 'detailed' : 'simple',
           existingRsvpData: payload.existingRsvpData,
@@ -198,7 +198,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         if (platformData) {
           setPlatformData({
             ...platformData,
-            // Only set 'submitted' status, keep 'invited' for others
+            // Only set 'submitted' status, keep 'invited' for 'accepted', 'pending', and others
             guestStatus: data.status === 'submitted' ? 'submitted' : 'invited',
             existingRsvpData: data.existingRsvpData
           });

@@ -355,15 +355,17 @@ export const RSVPSection: React.FC = () => {
 
   // Show initial RSVP invitation (invited state)
   const handleSimpleAccept = async () => {
+    // Immediately disable button to prevent double clicks
     setIsSubmitting(true);
+    setShowThankYouMessage(true); // Immediately show thank you to prevent double clicks
+    
     try {
       sendRSVP();
       setShowConfetti(true);
       
-      // Show thank you message after a short delay
+      // Hide confetti after delay
       setTimeout(() => {
         setShowConfetti(false);
-        setShowThankYouMessage(true); // Show thank you message
       }, 2000);
       
       toast({
@@ -376,21 +378,24 @@ export const RSVPSection: React.FC = () => {
         description: "Failed to submit RSVP. Please try again.",
         variant: "destructive",
       });
-    } finally {
+      // Reset state on error
+      setShowThankYouMessage(false);
       setIsSubmitting(false);
     }
   };
 
   const handleDetailedAccept = async () => {
+    // Immediately disable button to prevent double clicks
     setIsSubmitting(true);
+    setShowThankYouMessage(true); // Immediately show thank you to prevent double clicks
+    
     try {
       sendRSVP(); // Send simple acceptance first
       setShowConfetti(true);
       
-      // Show thank you message after a short delay
+      // Hide confetti after delay
       setTimeout(() => {
         setShowConfetti(false);
-        setShowThankYouMessage(true); // Show thank you message
       }, 2000);
       
       toast({
@@ -403,7 +408,8 @@ export const RSVPSection: React.FC = () => {
         description: "Failed to accept invitation. Please try again.",
         variant: "destructive",
       });
-    } finally {
+      // Reset state on error
+      setShowThankYouMessage(false);
       setIsSubmitting(false);
     }
   };
@@ -449,7 +455,7 @@ export const RSVPSection: React.FC = () => {
               {rsvpConfig === 'simple' ? (
                 <Button
                   onClick={handleSimpleAccept}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || showThankYouMessage}
                   className="flex-1 bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-6 md:px-10 py-3 md:py-4 text-base md:text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[56px] group disabled:opacity-50"
                 >
                   {isSubmitting ? (
@@ -471,7 +477,7 @@ export const RSVPSection: React.FC = () => {
               ) : (
                 <Button
                   onClick={handleDetailedAccept}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || showThankYouMessage}
                   className="flex-1 bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-6 md:px-10 py-3 md:py-4 text-base md:text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[56px] group disabled:opacity-50"
                 >
                   {isSubmitting ? (

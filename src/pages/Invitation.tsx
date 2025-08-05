@@ -279,6 +279,8 @@ const Invitation = () => {
       return;
     }
     
+    // Immediately show thank you to prevent double clicks
+    setShowThankYouMessage(true);
     setConfetti(true);
     
     // This function is deprecated - RSVP handling should go through PlatformContext
@@ -288,15 +290,13 @@ const Invitation = () => {
     try {
       updateGuestStatus('accepted');
       setTimeout(() => {
-        console.log('🎉 Showing thank you message after user acceptance');
-        setShowThankYouMessage(true);
+        console.log('🎉 Hiding confetti after user acceptance');
         setConfetti(false);
       }, 800);
     } catch (error) {
       console.warn('⚠️ Failed to update guest status:', error);
-      // Still show thank you message even if status update fails
+      // Hide confetti even if status update fails
       setTimeout(() => {
-        setShowThankYouMessage(true);
         setConfetti(false);
       }, 800);
     }
