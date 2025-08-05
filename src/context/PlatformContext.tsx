@@ -116,11 +116,10 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           eventId: payload.eventId,
           guestId: payload.guestId,
           guestName: payload.platformData.guestName,
-          // Mark as responded if it's 'submitted' or 'accepted' from platform
-          hasResponded: payload.status === 'submitted' || payload.status === 'accepted',
-          // Set status based on platform data - 'accepted' and 'submitted' both show thank you
-          guestStatus: payload.status === 'submitted' ? 'submitted' : 
-                      payload.status === 'accepted' ? 'accepted' : 'invited',
+          // Only mark as responded if it's 'submitted' from platform
+          hasResponded: payload.status === 'submitted',
+          // Only set 'submitted' status, keep 'invited' for 'accepted' and 'pending'
+          guestStatus: payload.status === 'submitted' ? 'submitted' : 'invited',
           rsvpConfig: payload.rsvpFields.length > 0 ? 'detailed' : 'simple',
           existingRsvpData: payload.existingRsvpData,
           customFields: payload.rsvpFields
@@ -135,10 +134,10 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             eventName: 'Wedding',
             guestId: payload.guestId,
             guestName: payload.platformData.guestName,
-            // Mark as responded if it's 'submitted' or 'accepted' from platform
-            hasResponded: payload.status === 'submitted' || payload.status === 'accepted',
-            // Set accepted based on platform status
-            accepted: payload.status === 'accepted' || payload.status === 'submitted',
+            // Only mark as responded if it's 'submitted' from platform
+            hasResponded: payload.status === 'submitted',
+            // Don't auto-accept from platform data
+            accepted: false,
             weddingData: {
               couple: {
                 groomName: payload.eventDetails.groom_name,
@@ -195,13 +194,12 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setRsvpFields(data.rsvpFields || []);
         setExistingRsvpData(data.existingRsvpData);
         
-        // Update platform data - Handle accepted and submitted statuses
+        // Update platform data - Only handle 'submitted' status
         if (platformData) {
           setPlatformData({
             ...platformData,
-            // Set status based on platform data - 'accepted' and 'submitted' both show thank you
-            guestStatus: data.status === 'submitted' ? 'submitted' : 
-                        data.status === 'accepted' ? 'accepted' : 'invited',
+            // Only set 'submitted' status, keep 'invited' for others
+            guestStatus: data.status === 'submitted' ? 'submitted' : 'invited',
             existingRsvpData: data.existingRsvpData
           });
         }

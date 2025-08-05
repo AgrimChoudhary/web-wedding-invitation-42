@@ -176,8 +176,8 @@ export const RSVPSection: React.FC = () => {
     return guestStatus === 'submitted' ? 'Edit RSVP' : 'Submit RSVP';
   };
 
-  // Show thank you message for submitted/accepted states OR when user has clicked accept
-  if (guestStatus === 'submitted' || guestStatus === 'accepted' || showThankYouMessage) {
+  // Show thank you message ONLY for submitted states OR when user has clicked accept
+  if (guestStatus === 'submitted' || showThankYouMessage) {
     return (
       <>
         <Confetti isActive={showConfetti} />
