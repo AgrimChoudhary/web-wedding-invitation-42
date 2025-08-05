@@ -97,8 +97,8 @@ export const useUrlParams = () => {
         eventId: urlParams.get('eventId') || undefined,
         guestId: urlParams.get('guestId') || undefined,
         guestName: urlParams.get('guestName') || undefined,
-        hasResponded: false, // CRITICAL FIX: Never auto-accept from URL
-        accepted: false, // CRITICAL FIX: Never auto-accept from URL
+        hasResponded: urlParams.get('hasResponded') === 'true',
+        accepted: urlParams.get('accepted') === 'true',
         guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
         existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
         rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
@@ -114,8 +114,8 @@ export const useUrlParams = () => {
           eventId: individualData.eventId || '',
           guestId: individualData.guestId || '',
           guestName: individualData.guestName || '',
-          hasResponded: false, // CRITICAL FIX: Never auto-accept from URL
-          accepted: false, // CRITICAL FIX: Never auto-accept from URL
+          hasResponded: individualData.hasResponded || false,
+          accepted: individualData.accepted || false,
           weddingData: {
             couple: {
               groomName,
