@@ -102,20 +102,30 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         console.log('=== PROCESSING INVITATION_LOADED ===');
         const payload = lastMessage.payload;
         
-        // Update RSVP state from platform
-        setRsvpStatus(payload.status);
+        // CRITICAL FIX: Never auto-accept from platform data
+        // Only set RSVP state if user hasn't explicitly accepted
+        const shouldAutoAccept = false; // CRITICAL: Never auto-accept
+        
+        if (shouldAutoAccept) {
+          setRsvpStatus(payload.status);
+        } else {
+          // Only set to 'invited' or 'viewed' - never 'accepted' automatically
+          const safeStatus = payload.status === 'accepted' ? 'invited' : payload.status;
+          setRsvpStatus(safeStatus);
+        }
+        
         setShowSubmitButton(payload.showSubmitButton);
         setShowEditButton(payload.showEditButton);
         setRsvpFields(payload.rsvpFields || []);
         setExistingRsvpData(payload.existingRsvpData);
         
-        // Update platform data
+        // Update platform data - CRITICAL FIX: Never auto-accept
         const newPlatformData: PlatformData = {
           eventId: payload.eventId,
           guestId: payload.guestId,
           guestName: payload.platformData.guestName,
-          hasResponded: Boolean(payload.status),
-          guestStatus: payload.status === 'submitted' ? 'submitted' : payload.status === 'accepted' ? 'accepted' : 'invited',
+          hasResponded: false, // CRITICAL FIX: Never auto-accept from platform
+          guestStatus: payload.status === 'accepted' ? 'invited' : payload.status === 'submitted' ? 'submitted' : 'invited',
           rsvpConfig: payload.rsvpFields.length > 0 ? 'detailed' : 'simple',
           existingRsvpData: payload.existingRsvpData,
           customFields: payload.rsvpFields
@@ -130,8 +140,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             eventName: 'Wedding',
             guestId: payload.guestId,
             guestName: payload.platformData.guestName,
-            hasResponded: Boolean(payload.status),
-            accepted: payload.status === 'accepted' || payload.status === 'submitted',
+            hasResponded: false, // CRITICAL FIX: Never auto-accept from platform
+            accepted: false, // CRITICAL FIX: Never auto-accept from platform
             weddingData: {
               couple: {
                 groomName: payload.eventDetails.groom_name,
@@ -181,18 +191,28 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         console.log('=== PROCESSING INVITATION_PAYLOAD_UPDATE ===');
         const data = lastMessage.data;
         
-        // Update RSVP state from platform
-        setRsvpStatus(data.status);
+        // CRITICAL FIX: Never auto-accept from platform data
+        // Only set RSVP state if user hasn't explicitly accepted
+        const shouldAutoAccept = false; // CRITICAL: Never auto-accept
+        
+        if (shouldAutoAccept) {
+          setRsvpStatus(data.status);
+        } else {
+          // Only set to 'invited' or 'viewed' - never 'accepted' automatically
+          const safeStatus = data.status === 'accepted' ? 'invited' : data.status;
+          setRsvpStatus(safeStatus);
+        }
+        
         setShowSubmitButton(data.showSubmitButton);
         setShowEditButton(data.showEditButton);
         setRsvpFields(data.rsvpFields || []);
         setExistingRsvpData(data.existingRsvpData);
         
-        // Update platform data
+        // Update platform data - CRITICAL FIX: Never auto-accept
         if (platformData) {
           setPlatformData({
             ...platformData,
-            guestStatus: data.status === 'submitted' ? 'submitted' : data.status === 'accepted' ? 'accepted' : 'invited',
+            guestStatus: data.status === 'accepted' ? 'invited' : data.status === 'submitted' ? 'submitted' : 'invited',
             existingRsvpData: data.existingRsvpData
           });
         }
@@ -222,7 +242,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       console.log('⚠️ RSVP sent (standalone mode or missing platform data):', rsvpData);
     }
     
-    // Update local platform data state
+    // Update local platform data state - only when user explicitly accepts
     if (platformData) {
       const newStatus = rsvpData ? 'submitted' : 'accepted';
       setPlatformData({
@@ -230,6 +250,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         guestStatus: newStatus,
         existingRsvpData: rsvpData || platformData.existingRsvpData
       });
+      // Also update RSVP status when user explicitly accepts
+      setRsvpStatus(newStatus);
     }
   };
 
@@ -267,8 +289,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     isLoading,
     error,
     isPlatformMode,
-    hasResponded: Boolean(platformData?.hasResponded),
-    guestStatus: platformData?.guestStatus || 'invited',
+    hasResponded: false, // CRITICAL FIX: Never auto-accept from platform data
+    guestStatus: platformData?.guestStatus === 'accepted' ? 'invited' : platformData?.guestStatus || 'invited',
     existingRsvpData: existingRsvpData || platformData?.existingRsvpData || null,
     rsvpConfig: platformData?.rsvpConfig || 'simple',
     showSubmitButton,

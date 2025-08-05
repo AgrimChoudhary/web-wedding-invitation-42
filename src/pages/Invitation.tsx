@@ -189,14 +189,15 @@ const Invitation = () => {
     // Update wedding data if any changes were made
     setAllWeddingData(updatedWeddingData);
 
-    // RSVP Status - Don't auto-accept from URL parameters
+    // CRITICAL FIX: RSVP Status - Never auto-accept from URL parameters
     const hasRespondedParam = params.get('hasResponded');
     const acceptedParam = params.get('accepted');
     
     // Block automatic acceptance from URL parameters
-    if (hasRespondedParam === 'true' && acceptedParam === 'true') {
-      console.log('🚫 Blocked automatic acceptance from URL parameters');
-      // Don't set showThankYouMessage automatically
+    if (hasRespondedParam === 'true' || acceptedParam === 'true') {
+      console.log('🚫 BLOCKED: Attempted to auto-accept invitation from URL parameters');
+      console.log('🚫 hasResponded:', hasRespondedParam, 'accepted:', acceptedParam);
+      // Don't set showThankYouMessage automatically - user must click manually
     }
 
     console.log('Final wedding data:', updatedWeddingData);
@@ -255,8 +256,9 @@ const Invitation = () => {
       }, 100); // Reduced delay for immediate start
     }, 1500);
     
-    // Removed automatic thank you message showing on page load
-    // The thank you message should only show after explicit user acceptance
+    // CRITICAL FIX: Never show thank you message automatically on page load
+    // The thank you message should ONLY show after explicit user acceptance via button click
+    // This prevents automatic acceptance from URL parameters or platform data
     
     return () => clearTimeout(timer);
   }, []);

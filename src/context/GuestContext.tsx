@@ -62,10 +62,15 @@ export const GuestProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setGuestId(guestIdParam);
       }
       
-      // Only set guestStatus from URL if it's a safe/allowed status
-      // Don't automatically accept invitations based on URL parameters
+      // CRITICAL FIX: Never automatically accept invitations from URL parameters
+      // Only set guestStatus from URL if it's a safe status (viewed, declined, etc.)
+      // NEVER set to 'accepted' from URL parameters - user must explicitly click
       if (guestStatusParam && guestStatusParam !== 'accepted') {
         setGuestStatus(guestStatusParam);
+      } else if (guestStatusParam === 'accepted') {
+        console.log('🚫 BLOCKED: Attempted to auto-accept invitation from URL parameter');
+        // Don't set status to accepted - user must click manually
+        setGuestStatus('viewed'); // Only mark as viewed
       }
       
       setIsLoading(false);
