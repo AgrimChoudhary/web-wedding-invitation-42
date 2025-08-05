@@ -133,12 +133,19 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           guestName: payload.platformData.guestName,
           // Only mark as responded if it's 'submitted', not 'accepted' from platform
           hasResponded: payload.status === 'submitted',
-          // Only set status if it's 'submitted', otherwise keep as 'invited' until user clicks
+          // Always start as 'invited' unless explicitly 'submitted' - prevent auto-acceptance
           guestStatus: payload.status === 'submitted' ? 'submitted' : 'invited',
           rsvpConfig: payload.rsvpFields.length > 0 ? 'detailed' : 'simple',
           existingRsvpData: payload.existingRsvpData,
           customFields: payload.rsvpFields
         };
+        
+        console.log('🛡️ PostMessage - Preventing automatic acceptance:', {
+          payloadStatus: payload.status,
+          finalGuestStatus: newPlatformData.guestStatus,
+          hasResponded: newPlatformData.hasResponded
+        });
+        
         setPlatformData(newPlatformData);
         
         // Map event details to wedding data if available
@@ -211,12 +218,19 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         
         // Update platform data - Don't auto-accept from platform data
         if (platformData) {
-          setPlatformData({
+          const updatedPlatformData = {
             ...platformData,
             // Only set status if it's 'submitted', otherwise keep as 'invited' until user clicks
-            guestStatus: data.status === 'submitted' ? 'submitted' : 'invited',
+            guestStatus: (data.status === 'submitted' ? 'submitted' : 'invited') as 'invited' | 'accepted' | 'submitted',
             existingRsvpData: data.existingRsvpData
+          };
+          
+          console.log('🛡️ INVITATION_PAYLOAD_UPDATE - Preventing automatic acceptance:', {
+            dataStatus: data.status,
+            finalGuestStatus: updatedPlatformData.guestStatus
           });
+          
+          setPlatformData(updatedPlatformData);
         }
         
         console.log('=== END PROCESSING INVITATION_PAYLOAD_UPDATE ===');
@@ -289,7 +303,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     isLoading,
     error,
     isPlatformMode,
-    hasResponded: Boolean(platformData?.hasResponded),
+    // Only mark as responded if user has explicitly submitted RSVP data
+    hasResponded: Boolean(platformData?.guestStatus === 'submitted'),
     guestStatus: platformData?.guestStatus || 'invited',
     existingRsvpData: existingRsvpData || platformData?.existingRsvpData || null,
     rsvpConfig: platformData?.rsvpConfig || 'simple',

@@ -4,12 +4,13 @@
 The "Royal Indian Wedding" template was automatically accepting invitations when the URL contained parameters like `accepted=true` or `hasResponded=true`. This meant that guests would see the "Thank You" message immediately without having to click the "Accept Invitation" button.
 
 ## Root Cause
-The issue was in two main files:
+The issue was in multiple files:
 1. `src/hooks/useUrlParams.tsx` - Was parsing URL parameters and automatically setting `accepted: true` and `hasResponded: true` based on URL values
-2. `src/context/PlatformContext.tsx` - Was not preventing automatic acceptance from URL parameters
+2. `src/context/PlatformContext.tsx` - Was not preventing automatic acceptance from URL parameters and PostMessage data
+3. PostMessage handling was allowing automatic acceptance from platform data
 
 ## Solution
-Modified both files to prevent automatic acceptance from URL parameters:
+Modified multiple files to prevent automatic acceptance from all sources:
 
 ### 1. useUrlParams.tsx Changes
 - Always set `hasResponded: false` regardless of URL parameters
@@ -20,7 +21,14 @@ Modified both files to prevent automatic acceptance from URL parameters:
 ### 2. PlatformContext.tsx Changes
 - Added safety wrapper that ensures platform data always starts with `invited` status
 - Prevents automatic acceptance from both URL parameters and structured data
+- Fixed PostMessage handling to prevent automatic acceptance from platform data
+- Fixed `hasResponded` value to only be true when user explicitly submits RSVP data
 - Added console logs to track prevention of automatic acceptance
+
+### 3. PostMessage Handling Fixes
+- `INVITATION_LOADED` messages: Always set `guestStatus: 'invited'` unless explicitly `'submitted'`
+- `INVITATION_PAYLOAD_UPDATE` messages: Always set `guestStatus: 'invited'` unless explicitly `'submitted'`
+- Added debugging logs for both message types
 
 ## Key Changes Made
 
@@ -45,10 +53,19 @@ const safePlatformData = {
   hasResponded: false,
   accepted: false
 };
+
+// Fixed PostMessage handling:
+guestStatus: payload.status === 'submitted' ? 'submitted' : 'invited',
+
+// Fixed hasResponded value:
+hasResponded: Boolean(platformData?.guestStatus === 'submitted'),
 ```
 
 ## Result
-Now guests must explicitly click the "Accept Invitation" button to accept the invitation. The RSVP status will only change from "invited" to "accepted" when the user takes action, not automatically from URL parameters.
+Now guests must explicitly click the "Accept Invitation" button to accept the invitation. The RSVP status will only change from "invited" to "accepted" when the user takes action, not automatically from:
+- URL parameters
+- Platform PostMessage data
+- Structured data parameters
 
 ## Testing
 To test the fix:
@@ -56,6 +73,13 @@ To test the fix:
 2. Verify that the invitation shows the "Accept Invitation" button instead of the "Thank You" message
 3. Click the "Accept Invitation" button to verify it works correctly
 4. Check browser console for prevention logs: `🛡️ Preventing automatic acceptance`
+
+## Console Logs to Look For
+- `🛡️ Preventing automatic acceptance from URL parameters`
+- `🛡️ URL Parameters - Preventing automatic acceptance`
+- `🛡️ Structured Data - Preventing automatic acceptance`
+- `🛡️ PostMessage - Preventing automatic acceptance`
+- `🛡️ INVITATION_PAYLOAD_UPDATE - Preventing automatic acceptance`
 
 ## Files Modified
 - `src/hooks/useUrlParams.tsx`
