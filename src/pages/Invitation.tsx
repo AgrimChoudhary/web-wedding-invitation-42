@@ -472,7 +472,8 @@ const Invitation = () => {
               <div className="absolute -inset-4 md:-inset-6 rounded-2xl border border-wedding-gold/30 opacity-40"></div>
               
               <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-8 md:p-12 shadow-2xl border border-wedding-gold/20">
-                {showThankYouMessage ? (
+                {/* Check if user has already accepted from platform data */}
+                {showThankYouMessage || hasAccepted ? (
                   <div className="text-center">
                     <h3 className="text-xl md:text-2xl font-playfair text-wedding-maroon mb-2">
                       {isGuestLoading ? (

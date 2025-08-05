@@ -176,7 +176,8 @@ export const RSVPSection: React.FC = () => {
   };
 
   // Show thank you message for accepted or submitted states
-  if (guestStatus === 'accepted' || guestStatus === 'submitted') {
+  // Also check if user has already accepted from platform data
+  if (guestStatus === 'accepted' || guestStatus === 'submitted' || platformData?.hasResponded || platformData?.accepted) {
     return (
       <>
         <Confetti isActive={showConfetti} />
