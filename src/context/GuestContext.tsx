@@ -139,7 +139,8 @@ export const GuestProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       setGuestId, 
       isLoading, 
       guestStatus,
-      hasAccepted: guestStatus === 'accepted',
+      // Don't auto-accept from guestStatus - only when user explicitly accepts
+      hasAccepted: false,
       updateGuestStatus 
     }}>
       {children}

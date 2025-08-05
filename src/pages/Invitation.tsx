@@ -271,10 +271,10 @@ const Invitation = () => {
 
   const handleAcceptInvitation = () => {
     console.log('🎯 handleAcceptInvitation: User manually clicked Accept Invitation');
-    console.log('📊 Current state:', { guestId, hasAccepted, showThankYouMessage });
+    console.log('📊 Current state:', { guestId, showThankYouMessage });
     
     // Prevent multiple rapid clicks
-    if (hasAccepted || showThankYouMessage) {
+    if (showThankYouMessage) {
       console.log('⚠️ handleAcceptInvitation: Already accepted, ignoring duplicate action');
       return;
     }
@@ -472,8 +472,8 @@ const Invitation = () => {
               <div className="absolute -inset-4 md:-inset-6 rounded-2xl border border-wedding-gold/30 opacity-40"></div>
               
               <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-8 md:p-12 shadow-2xl border border-wedding-gold/20">
-                {/* Check if user has already accepted from platform data */}
-                {showThankYouMessage || hasAccepted ? (
+                {/* Check if user has explicitly accepted (not from platform data) */}
+                {showThankYouMessage ? (
                   <div className="text-center">
                     <h3 className="text-xl md:text-2xl font-playfair text-wedding-maroon mb-2">
                       {isGuestLoading ? (
