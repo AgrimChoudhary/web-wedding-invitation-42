@@ -189,12 +189,14 @@ const Invitation = () => {
     // Update wedding data if any changes were made
     setAllWeddingData(updatedWeddingData);
 
-    // RSVP Status
+    // RSVP Status - Don't auto-accept from URL parameters
     const hasRespondedParam = params.get('hasResponded');
     const acceptedParam = params.get('accepted');
     
+    // Block automatic acceptance from URL parameters
     if (hasRespondedParam === 'true' && acceptedParam === 'true') {
-      setShowThankYouMessage(true);
+      console.log('🚫 Blocked automatic acceptance from URL parameters');
+      // Don't set showThankYouMessage automatically
     }
 
     console.log('Final wedding data:', updatedWeddingData);
@@ -253,13 +255,11 @@ const Invitation = () => {
       }, 100); // Reduced delay for immediate start
     }, 1500);
     
-    // If there's a guestId and they've already accepted, show thank you message
-    if (guestId && hasAccepted) {
-      setShowThankYouMessage(true);
-    }
+    // Removed automatic thank you message showing on page load
+    // The thank you message should only show after explicit user acceptance
     
     return () => clearTimeout(timer);
-  }, [guestId, hasAccepted]);
+  }, []);
   
   const handleOpenRSVP = () => {
     setConfetti(true);
@@ -270,16 +270,36 @@ const Invitation = () => {
   };
 
   const handleAcceptInvitation = () => {
+    console.log('🎯 handleAcceptInvitation: User manually clicked Accept Invitation');
+    console.log('📊 Current state:', { guestId, hasAccepted, showThankYouMessage });
+    
+    // Prevent multiple rapid clicks
+    if (hasAccepted || showThankYouMessage) {
+      console.log('⚠️ handleAcceptInvitation: Already accepted, ignoring duplicate action');
+      return;
+    }
+    
     setConfetti(true);
     
     // This function is deprecated - RSVP handling should go through PlatformContext
     console.log('⚠️ handleAcceptInvitation called - consider using PlatformContext sendRSVP instead');
     
-    updateGuestStatus('accepted');
-    setTimeout(() => {
-      setShowThankYouMessage(true);
-      setConfetti(false);
-    }, 800);
+    console.log('✅ Processing invitation acceptance');
+    try {
+      updateGuestStatus('accepted');
+      setTimeout(() => {
+        console.log('🎉 Showing thank you message after user acceptance');
+        setShowThankYouMessage(true);
+        setConfetti(false);
+      }, 800);
+    } catch (error) {
+      console.warn('⚠️ Failed to update guest status:', error);
+      // Still show thank you message even if status update fails
+      setTimeout(() => {
+        setShowThankYouMessage(true);
+        setConfetti(false);
+      }, 800);
+    }
   };
   
   // Get guestId from path to use for navigation

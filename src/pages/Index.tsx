@@ -38,6 +38,10 @@ const Index = () => {
 
   // Read URL parameters and update contexts
   useEffect(() => {
+    console.log('🔗 Index page loaded with URL:', window.location.href);
+    console.log('📍 Current pathname:', location.pathname);
+    console.log('🔍 URL search params:', location.search);
+    
     const params = new URLSearchParams(location.search);
 
     // Guest Data
@@ -45,10 +49,12 @@ const Index = () => {
     const guestIdParam = params.get('guestId');
     
     if (guestNameParam) {
+      console.log('👤 Setting guest name from URL:', guestNameParam);
       setGuestName(guestNameParam);
     }
     
     if (guestIdParam) {
+      console.log('🆔 Setting guest ID from URL:', guestIdParam);
       setGuestId(guestIdParam);
     }
 
@@ -61,11 +67,15 @@ const Index = () => {
         if (parsedWeddingData.mainWedding?.date) {
           parsedWeddingData.mainWedding.date = new Date(parsedWeddingData.mainWedding.date);
         }
+        console.log('📊 Setting wedding data from URL');
         setAllWeddingData(parsedWeddingData);
       } catch (e) {
         console.error("URL se weddingData parse karne mein error:", e);
       }
     }
+    
+    // Log to help debug automatic navigation issues
+    console.log('✅ Index page initialization complete');
   }, [location.search, setGuestName, setGuestId, setAllWeddingData]);
 
   // Set up message listener for platform communication

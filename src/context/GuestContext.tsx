@@ -62,7 +62,9 @@ export const GuestProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setGuestId(guestIdParam);
       }
       
-      if (guestStatusParam) {
+      // Only set guestStatus from URL if it's a safe/allowed status
+      // Don't automatically accept invitations based on URL parameters
+      if (guestStatusParam && guestStatusParam !== 'accepted') {
         setGuestStatus(guestStatusParam);
       }
       
@@ -99,9 +101,14 @@ export const GuestProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, [guestId]);
 
   const updateGuestStatus = async (status: 'viewed' | 'accepted' | 'declined') => {
-    if (!guestId) return;
+    if (!guestId) {
+      console.warn('⚠️ No guestId available for status update');
+      return;
+    }
     
     try {
+      console.log(`📤 Sending ${status} status to platform for guestId:`, guestId);
+      
       // Send message to parent platform instead of direct Supabase call
       window.parent.postMessage({
         type: status === 'accepted' ? 'RSVP_ACCEPTED' : 
@@ -115,14 +122,12 @@ export const GuestProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       
       // Optimistic update
       setGuestStatus(status);
+      console.log(`✅ Guest status updated to ${status}`);
       
     } catch (error) {
-      console.error(`Error updating guest status to ${status}:`, error);
-      toast({
-        title: "Error",
-        description: "Failed to update status. Please try again.",
-        variant: "destructive",
-      });
+      console.error(`❌ Error updating guest status to ${status}:`, error);
+      // Don't show toast for every error, only log it
+      console.warn('⚠️ Status update failed but continuing...');
     }
   };
 

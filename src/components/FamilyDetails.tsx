@@ -53,6 +53,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
   console.log('=== END FAMILY DETAILS DEBUG ===');
 
   const handleShowFamily = (family: FamilyData) => {
+    console.log('👨‍👩‍👧‍👦 User manually clicked on family:', family.title);
     setSelectedFamily(family);
     setIsDialogOpen(true);
   };
@@ -77,7 +78,14 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
       className="relative rounded-xl overflow-hidden luxury-card cursor-pointer group"
       whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
       whileTap={{ scale: 0.98 }}
-      onClick={() => handleShowFamily(family)}
+      onClick={(e) => {
+        // Prevent automatic clicks
+        if (!e.isTrusted) {
+          console.log('🚫 Blocked automatic family card click');
+          return;
+        }
+        handleShowFamily(family);
+      }}
     >
       <div className="absolute inset-0 luxury-glow-border opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
       <div className="relative bg-gradient-to-br from-white/95 to-wedding-cream/80 backdrop-blur-sm">
@@ -184,7 +192,13 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
         </div>
 
         {/* Family Details Dialog */}
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog 
+          open={isDialogOpen} 
+          onOpenChange={(open) => {
+            console.log('🔒 Family dialog state change:', open);
+            setIsDialogOpen(open);
+          }}
+        >
           <DialogContent className="max-w-2xl bg-gradient-to-br from-white/98 to-wedding-cream/95 backdrop-blur-md border-2 border-wedding-gold/30 shadow-2xl">
             <DialogHeader>
               <DialogTitle className="text-2xl font-dancing-script text-wedding-maroon flex items-center justify-center gap-2">
