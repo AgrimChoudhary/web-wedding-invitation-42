@@ -55,9 +55,26 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Initialize platform data from URL params and send TEMPLATE_READY
   useEffect(() => {
     if (urlPlatformData) {
-      setPlatformData(urlPlatformData);
+      // Prevent automatic acceptance from URL parameters
+      // This ensures that guests must explicitly click "Accept Invitation" 
+      // rather than having their RSVP automatically accepted from URL parameters
+      const safePlatformData = {
+        ...urlPlatformData,
+        // Always start with 'invited' status, regardless of URL parameters
+        guestStatus: 'invited' as const,
+        // Don't auto-accept from URL parameters
+        hasResponded: false,
+        accepted: false
+      };
+      
+      console.log('🛡️ Preventing automatic acceptance from URL parameters:', {
+        original: { hasResponded: urlPlatformData.hasResponded, accepted: urlPlatformData.accepted, guestStatus: urlPlatformData.guestStatus },
+        safe: { hasResponded: safePlatformData.hasResponded, accepted: safePlatformData.accepted, guestStatus: safePlatformData.guestStatus }
+      });
+      
+      setPlatformData(safePlatformData);
       // Send TEMPLATE_READY with eventId and guestId if available
-      sendTemplateReady(urlPlatformData.eventId, urlPlatformData.guestId);
+      sendTemplateReady(safePlatformData.eventId, safePlatformData.guestId);
     } else {
       // Send TEMPLATE_READY without IDs for standalone mode
       sendTemplateReady();

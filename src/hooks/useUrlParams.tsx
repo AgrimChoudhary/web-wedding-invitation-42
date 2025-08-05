@@ -76,13 +76,19 @@ export const useUrlParams = () => {
             eventId: parsedData.eventId,
             guestId: parsedData.guestId,
             guestName: parsedData.guestName,
-            hasResponded: parsedData.hasResponded,
-            accepted: parsedData.accepted,
-        guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
-        existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
-        rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
-        customFields: tryParseJSON(urlParams.get('customFields')) || [],
+            // Prevent automatic acceptance from structured data
+            hasResponded: false, // Always start as false
+            accepted: false, // Always start as false
+            guestStatus: 'invited' as const, // Always start as invited
+            existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
+            rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
+            customFields: tryParseJSON(urlParams.get('customFields')) || [],
             structuredData: parsedData
+          });
+          
+          console.log('🛡️ Structured Data - Preventing automatic acceptance:', {
+            original: { hasResponded: parsedData.hasResponded, accepted: parsedData.accepted },
+            final: { hasResponded: false, accepted: false, guestStatus: 'invited' }
           });
           
           setIsLoading(false);
@@ -97,13 +103,23 @@ export const useUrlParams = () => {
         eventId: urlParams.get('eventId') || undefined,
         guestId: urlParams.get('guestId') || undefined,
         guestName: urlParams.get('guestName') || undefined,
-        hasResponded: urlParams.get('hasResponded') === 'true',
-        accepted: urlParams.get('accepted') === 'true',
-        guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
+        // Prevent automatic acceptance from URL parameters
+        hasResponded: false, // Always start as false, regardless of URL
+        accepted: false, // Always start as false, regardless of URL
+        guestStatus: 'invited' as const, // Always start as invited
         existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
         rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
         customFields: tryParseJSON(urlParams.get('customFields')) || []
       };
+
+      console.log('🛡️ URL Parameters - Preventing automatic acceptance:', {
+        urlHasResponded: urlParams.get('hasResponded'),
+        urlAccepted: urlParams.get('accepted'),
+        urlGuestStatus: urlParams.get('guestStatus'),
+        finalHasResponded: individualData.hasResponded,
+        finalAccepted: individualData.accepted,
+        finalGuestStatus: individualData.guestStatus
+      });
 
       // Try to construct structured data from individual parameters
       const groomName = urlParams.get('groomName');
@@ -114,8 +130,9 @@ export const useUrlParams = () => {
           eventId: individualData.eventId || '',
           guestId: individualData.guestId || '',
           guestName: individualData.guestName || '',
-          hasResponded: individualData.hasResponded || false,
-          accepted: individualData.accepted || false,
+          // Prevent automatic acceptance from individual parameters
+          hasResponded: false, // Always start as false
+          accepted: false, // Always start as false
           weddingData: {
             couple: {
               groomName,
