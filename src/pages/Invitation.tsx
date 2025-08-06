@@ -21,6 +21,7 @@ import { FloatingPetals, Confetti, FireworksDisplay } from '@/components/Animate
 import { ArrowLeftCircle, Heart, MapPin, User, Music, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
+import AnimatedGuestName from '../components/AnimatedGuestName';
 
 // Security: Define trusted origins
 const TRUSTED_ORIGINS = [
@@ -39,10 +40,11 @@ const Invitation = () => {
   const [showRSVP, setShowRSVP] = useState(false);
   const [showWishesModal, setShowWishesModal] = useState(false);
   const [confetti, setConfetti] = useState(false);
+  const [showThankYouMessage, setShowThankYouMessage] = useState(false);
   const [showGaneshaTransition, setShowGaneshaTransition] = useState(false);
   const [hideGaneshaTransition, setHideGaneshaTransition] = useState(false);
   const [startGuestNameAnimation, setStartGuestNameAnimation] = useState(false);
-  const { guestName, isLoading: isGuestLoading, guestId, setGuestName, setGuestId } = useGuest();
+  const { guestName, isLoading: isGuestLoading, updateGuestStatus, guestId, hasAccepted, setGuestName, setGuestId } = useGuest();
   const { weddingData, setAllWeddingData } = useWedding();
   const { isPlaying, toggleMusic } = useAudio();
   const { isPlatformMode, trackInvitationViewed } = usePlatform();
@@ -267,6 +269,39 @@ const Invitation = () => {
     }, 800);
   };
 
+  const handleAcceptInvitation = () => {
+    console.log('🎯 handleAcceptInvitation: User manually clicked Accept Invitation');
+    console.log('📊 Current state:', { guestId, showThankYouMessage });
+    
+    // Prevent multiple rapid clicks
+    if (showThankYouMessage) {
+      console.log('⚠️ handleAcceptInvitation: Already accepted, ignoring duplicate action');
+      return;
+    }
+    
+    setConfetti(true);
+    
+    // This function is deprecated - RSVP handling should go through PlatformContext
+    console.log('⚠️ handleAcceptInvitation called - consider using PlatformContext sendRSVP instead');
+    
+    console.log('✅ Processing invitation acceptance');
+    try {
+      updateGuestStatus('accepted');
+      setTimeout(() => {
+        console.log('🎉 Showing thank you message after user acceptance');
+        setShowThankYouMessage(true);
+        setConfetti(false);
+      }, 800);
+    } catch (error) {
+      console.warn('⚠️ Failed to update guest status:', error);
+      // Still show thank you message even if status update fails
+      setTimeout(() => {
+        setShowThankYouMessage(true);
+        setConfetti(false);
+      }, 800);
+    }
+  };
+  
   // Get guestId from path to use for navigation
   const getCurrentGuestId = () => {
     const pathParts = window.location.pathname.split('/').filter(Boolean);
@@ -437,8 +472,34 @@ const Invitation = () => {
               <div className="absolute -inset-4 md:-inset-6 rounded-2xl border border-wedding-gold/30 opacity-40"></div>
               
               <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-8 md:p-12 shadow-2xl border border-wedding-gold/20">
-                {/* Use only RSVPSection which handles guestStatus from PlatformContext */}
-                <RSVPSection />
+                {/* Check if user has explicitly accepted (not from platform data) */}
+                {showThankYouMessage ? (
+                  <div className="text-center">
+                    <h3 className="text-xl md:text-2xl font-playfair text-wedding-maroon mb-2">
+                      {isGuestLoading ? (
+                        <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mx-auto"></div>
+                      ) : (
+                        <>
+                          Dear{' '}
+                          <AnimatedGuestName 
+                            name={guestName}
+                            animationType="brush"
+                            className="font-playfair text-wedding-maroon"
+                            delay={700}
+                            fallback="Guest Name"
+                          />,
+                        </>
+                      )}
+                    </h3>
+                    <h3 className="text-xl md:text-2xl font-playfair text-wedding-maroon mb-4">Thank You for Accepting!</h3>
+                    <p className="text-gray-600 mb-4 font-poppins">We are extremely excited to celebrate our special day with you!</p>
+                    <p className="text-sm text-wedding-maroon italic font-poppins">
+                      We are truly honored to have you join us in our celebration of love and commitment.
+                    </p>
+                  </div>
+                ) : (
+                  <RSVPSection />
+                )}
               </div>
             </div>
           </div>
