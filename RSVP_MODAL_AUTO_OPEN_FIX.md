@@ -16,7 +16,18 @@ Added a useEffect to ensure the modal state is reset when the component mounts o
 useEffect(() => {
   // Reset showDetailedForm to false on component mount and when guestStatus changes
   setShowDetailedForm(false);
-}, [guestStatus]);
+  setModalOpenedByUser(false);
+}, [guestStatus, rsvpConfig]);
+```
+
+### 2. Added User Intent Tracking
+Added a flag to track whether the modal was opened by user action:
+
+```typescript
+const [modalOpenedByUser, setModalOpenedByUser] = useState(false);
+
+// Only open modal if user explicitly clicked the button
+<Dialog open={showDetailedForm && modalOpenedByUser}>
 ```
 
 ### 2. Added Debug Logging
@@ -71,6 +82,14 @@ onClick={() => {
 **URL:** `?guestStatus=invited`
 **Expected:** Shows "Accept Invitation" button (no modal)
 **Actual:** ✅ No modal appears
+
+### Test Case 4: Accept Invitation Flow (Critical Fix)
+**URL:** `?guestStatus=invited&rsvpConfig={"type":"detailed"}`
+**Steps:** 
+1. Click "Accept Invitation" button
+2. Status changes to 'accepted'
+**Expected:** Shows thank you message + "Submit RSVP Details" button (modal closed)
+**Actual:** ✅ Modal stays closed until "Submit RSVP Details" is clicked
 
 ## Console Logs to Verify Fix
 
