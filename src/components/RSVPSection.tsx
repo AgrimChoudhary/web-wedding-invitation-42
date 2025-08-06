@@ -20,12 +20,6 @@ export const RSVPSection: React.FC = () => {
   const { toast } = useToast();
   
   const [showDetailedForm, setShowDetailedForm] = useState(false);
-  const [modalOpenedByUser, setModalOpenedByUser] = useState(false);
-
-  // Debug: Log when showDetailedForm changes
-  useEffect(() => {
-    console.log('🔍 showDetailedForm changed:', { showDetailedForm, guestStatus, rsvpConfig, modalOpenedByUser });
-  }, [showDetailedForm, guestStatus, rsvpConfig, modalOpenedByUser]);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -50,6 +44,17 @@ export const RSVPSection: React.FC = () => {
 
   const customFields = getCustomFields();
 
+  // Debug logging for modal state
+  useEffect(() => {
+    console.log('🔍 RSVP Modal State Debug:', {
+      showDetailedForm,
+      guestStatus,
+      rsvpConfig,
+      customFieldsCount: customFields.length,
+      isPlatformMode
+    });
+  }, [showDetailedForm, guestStatus, rsvpConfig, customFields, isPlatformMode]);
+
   // Load existing RSVP data when available
   useEffect(() => {
     if (existingRsvpData && typeof existingRsvpData === 'object') {
@@ -73,14 +78,6 @@ export const RSVPSection: React.FC = () => {
       setValidationErrors({});
     }
   }, [showDetailedForm, guestStatus]);
-
-  // Ensure modal doesn't open automatically - only when user clicks button
-  useEffect(() => {
-    console.log('🔍 Modal reset useEffect triggered:', { guestStatus, rsvpConfig });
-    // Reset showDetailedForm to false on component mount and when guestStatus changes
-    setShowDetailedForm(false);
-    setModalOpenedByUser(false);
-  }, [guestStatus, rsvpConfig]);
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
@@ -256,8 +253,7 @@ export const RSVPSection: React.FC = () => {
                   <div className="flex justify-center mb-6">
                     <Button
                       onClick={() => {
-                        console.log('🔍 Submit RSVP Details button clicked');
-                        setModalOpenedByUser(true);
+                        console.log('🔘 Submit RSVP Details button clicked - opening modal');
                         setShowDetailedForm(true);
                       }}
                       disabled={isSubmitting}
@@ -293,11 +289,10 @@ export const RSVPSection: React.FC = () => {
         </section>
 
         {/* Detailed RSVP Form Dialog */}
-        <Dialog open={showDetailedForm && modalOpenedByUser} onOpenChange={(open) => {
-          console.log('🔍 RSVP Dialog onOpenChange:', { open, guestStatus, rsvpConfig, modalOpenedByUser });
+        <Dialog open={showDetailedForm} onOpenChange={(open) => {
+          console.log('🔍 Dialog onOpenChange called:', { open, showDetailedForm });
           if (!open) {
             setShowDetailedForm(false);
-            setModalOpenedByUser(false);
           }
         }}>
           <DialogContent className="sm:max-w-lg w-[95vw] max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-lg border border-wedding-gold/30 rounded-2xl">
@@ -395,13 +390,7 @@ export const RSVPSection: React.FC = () => {
   };
 
   const handleDetailedAccept = async () => {
-    console.log('🔍 handleDetailedAccept called - ensuring modal stays closed');
     setIsSubmitting(true);
-    
-    // Explicitly ensure modal is closed before accepting
-    setShowDetailedForm(false);
-    setModalOpenedByUser(false);
-    
     try {
       sendRSVP(); // Send simple acceptance first
       setShowConfetti(true);

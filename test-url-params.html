@@ -52,7 +52,7 @@
     </a>
     
     <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&hasResponded=true&accepted=true&guestStatus=accepted&rsvpConfig=detailed" class="test-link">
-        <span class="status accepted">accepted</span> - Detailed RSVP (should show Submit RSVP button, NOT auto-open modal)
+        <span class="status accepted">accepted</span> - Detailed RSVP (should show Submit RSVP button)
     </a>
     
     <h3>Platform-Generated URLs (for testing):</h3>
@@ -67,18 +67,6 @@
     
     <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&guestStatus=accepted&hasResponded=true&accepted=true" class="test-link">
         <span class="status accepted">accepted</span> - Platform accepted status (should show Thank You)
-    </a>
-    
-    <h3>Modal Issue Test:</h3>
-    
-    <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&guestStatus=accepted&hasResponded=true&accepted=true&rsvpConfig=%7B%22type%22%3A%22detailed%22%7D" class="test-link">
-        <span class="status accepted">accepted</span> - Detailed RSVP (Modal should NOT auto-open)
-    </a>
-    
-    <h3>Accept Invitation Test:</h3>
-    
-    <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&guestStatus=invited&hasResponded=false&accepted=false&rsvpConfig=%7B%22type%22%3A%22detailed%22%7D" class="test-link">
-        <span class="status invited">invited</span> - Detailed RSVP (Click Accept, Modal should NOT auto-open)
     </a>
     
     <h2>Instructions:</h2>
@@ -101,14 +89,5 @@
         <li><strong>accepted</strong>: Shows "Thank You" message (simple RSVP) or "Submit RSVP Details" button (detailed RSVP)</li>
         <li><strong>submitted</strong>: Shows "Thank You" message with confirmation</li>
     </ul>
-    
-    <h2>Modal Auto-Open Fix Test:</h2>
-    <ol>
-        <li>Click the "Accept Invitation Test" link above</li>
-        <li>Click the "Accept Invitation" button</li>
-        <li>Verify that the modal does NOT open automatically</li>
-        <li>You should see a thank you message with a "Submit RSVP Details" button</li>
-        <li>Only when you click "Submit RSVP Details" should the modal open</li>
-    </ol>
 </body>
 </html> 
