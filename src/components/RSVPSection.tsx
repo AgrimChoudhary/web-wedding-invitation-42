@@ -20,6 +20,11 @@ export const RSVPSection: React.FC = () => {
   const { toast } = useToast();
   
   const [showDetailedForm, setShowDetailedForm] = useState(false);
+
+  // Debug: Log when showDetailedForm changes
+  useEffect(() => {
+    console.log('🔍 showDetailedForm changed:', { showDetailedForm, guestStatus, rsvpConfig });
+  }, [showDetailedForm, guestStatus, rsvpConfig]);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -67,6 +72,12 @@ export const RSVPSection: React.FC = () => {
       setValidationErrors({});
     }
   }, [showDetailedForm, guestStatus]);
+
+  // Ensure modal doesn't open automatically - only when user clicks button
+  useEffect(() => {
+    // Reset showDetailedForm to false on component mount and when guestStatus changes
+    setShowDetailedForm(false);
+  }, [guestStatus]);
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
@@ -241,7 +252,10 @@ export const RSVPSection: React.FC = () => {
                 {rsvpConfig === 'detailed' && (
                   <div className="flex justify-center mb-6">
                     <Button
-                      onClick={() => setShowDetailedForm(true)}
+                      onClick={() => {
+                        console.log('🔍 Submit RSVP Details button clicked');
+                        setShowDetailedForm(true);
+                      }}
                       disabled={isSubmitting}
                       className="bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-6 md:px-10 py-3 md:py-4 text-base md:text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[56px] group"
                     >
@@ -276,6 +290,7 @@ export const RSVPSection: React.FC = () => {
 
         {/* Detailed RSVP Form Dialog */}
         <Dialog open={showDetailedForm} onOpenChange={(open) => {
+          console.log('🔍 RSVP Dialog onOpenChange:', { open, guestStatus, rsvpConfig });
           if (!open) {
             setShowDetailedForm(false);
           }

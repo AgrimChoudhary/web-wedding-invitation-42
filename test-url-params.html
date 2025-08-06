@@ -52,7 +52,7 @@
     </a>
     
     <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&hasResponded=true&accepted=true&guestStatus=accepted&rsvpConfig=detailed" class="test-link">
-        <span class="status accepted">accepted</span> - Detailed RSVP (should show Submit RSVP button)
+        <span class="status accepted">accepted</span> - Detailed RSVP (should show Submit RSVP button, NOT auto-open modal)
     </a>
     
     <h3>Platform-Generated URLs (for testing):</h3>
@@ -67,6 +67,12 @@
     
     <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&guestStatus=accepted&hasResponded=true&accepted=true" class="test-link">
         <span class="status accepted">accepted</span> - Platform accepted status (should show Thank You)
+    </a>
+    
+    <h3>Modal Issue Test:</h3>
+    
+    <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&guestStatus=accepted&hasResponded=true&accepted=true&rsvpConfig=%7B%22type%22%3A%22detailed%22%7D" class="test-link">
+        <span class="status accepted">accepted</span> - Detailed RSVP (Modal should NOT auto-open)
     </a>
     
     <h2>Instructions:</h2>
