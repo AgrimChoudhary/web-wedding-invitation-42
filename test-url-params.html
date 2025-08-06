@@ -55,6 +55,20 @@
         <span class="status accepted">accepted</span> - Detailed RSVP (should show Submit RSVP button)
     </a>
     
+    <h3>Platform-Generated URLs (for testing):</h3>
+    
+    <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&guestStatus=pending&hasResponded=false&accepted=false" class="test-link">
+        <span class="status invited">pending</span> - Platform pending status (should show Accept button)
+    </a>
+    
+    <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&guestStatus=viewed&hasResponded=false&accepted=false" class="test-link">
+        <span class="status invited">viewed</span> - Platform viewed status (should show Accept button)
+    </a>
+    
+    <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&guestStatus=accepted&hasResponded=true&accepted=true" class="test-link">
+        <span class="status accepted">accepted</span> - Platform accepted status (should show Thank You)
+    </a>
+    
     <h2>Instructions:</h2>
     <ol>
         <li>Make sure the development server is running on localhost:5173</li>
