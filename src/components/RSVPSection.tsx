@@ -44,17 +44,6 @@ export const RSVPSection: React.FC = () => {
 
   const customFields = getCustomFields();
 
-  // Debug logging for modal state
-  useEffect(() => {
-    console.log('🔍 RSVP Modal State Debug:', {
-      showDetailedForm,
-      guestStatus,
-      rsvpConfig,
-      customFieldsCount: customFields.length,
-      isPlatformMode
-    });
-  }, [showDetailedForm, guestStatus, rsvpConfig, customFields, isPlatformMode]);
-
   // Load existing RSVP data when available
   useEffect(() => {
     if (existingRsvpData && typeof existingRsvpData === 'object') {
@@ -252,10 +241,7 @@ export const RSVPSection: React.FC = () => {
                 {rsvpConfig === 'detailed' && (
                   <div className="flex justify-center mb-6">
                     <Button
-                      onClick={() => {
-                        console.log('🔘 Submit RSVP Details button clicked - opening modal');
-                        setShowDetailedForm(true);
-                      }}
+                      onClick={() => setShowDetailedForm(true)}
                       disabled={isSubmitting}
                       className="bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-6 md:px-10 py-3 md:py-4 text-base md:text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[56px] group"
                     >
@@ -290,7 +276,6 @@ export const RSVPSection: React.FC = () => {
 
         {/* Detailed RSVP Form Dialog */}
         <Dialog open={showDetailedForm} onOpenChange={(open) => {
-          console.log('🔍 Dialog onOpenChange called:', { open, showDetailedForm });
           if (!open) {
             setShowDetailedForm(false);
           }

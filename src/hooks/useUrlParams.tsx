@@ -106,13 +106,7 @@ export const useUrlParams = () => {
         // Allow URL status parameters to work
         hasResponded: urlParams.get('hasResponded') === 'true',
         accepted: urlParams.get('accepted') === 'true',
-        guestStatus: (() => {
-          const status = urlParams.get('guestStatus');
-          // Map platform status values to template status values
-          if (status === 'pending' || status === 'viewed') return 'invited';
-          if (status === 'accepted' || status === 'submitted') return status;
-          return 'invited';
-        })() as 'invited' | 'accepted' | 'submitted',
+        guestStatus: (urlParams.get('guestStatus') as 'invited' | 'accepted' | 'submitted') || 'invited',
         existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
         rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
         customFields: tryParseJSON(urlParams.get('customFields')) || []
