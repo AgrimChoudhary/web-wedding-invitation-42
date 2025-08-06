@@ -44,7 +44,7 @@
     </a>
     
     <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&hasResponded=true&accepted=true&guestStatus=accepted" class="test-link">
-        <span class="status invited">accepted</span> - URL says accepted but should show Accept button (prevented auto-acceptance)
+        <span class="status accepted">accepted</span> - Already accepted (should show Thank You message)
     </a>
     
     <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&hasResponded=true&accepted=true&guestStatus=submitted" class="test-link">
@@ -52,7 +52,7 @@
     </a>
     
     <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&hasResponded=true&accepted=true&guestStatus=accepted&rsvpConfig=detailed" class="test-link">
-        <span class="status invited">accepted</span> - URL says accepted but should show Accept button (prevented auto-acceptance)
+        <span class="status accepted">accepted</span> - Detailed RSVP (should show Submit RSVP button)
     </a>
     
     <h3>Platform-Generated URLs (for testing):</h3>
@@ -66,7 +66,7 @@
     </a>
     
     <a href="http://localhost:5173/?eventId=test123&guestId=guest456&guestName=Test%20Guest&guestStatus=accepted&hasResponded=true&accepted=true" class="test-link">
-        <span class="status invited">accepted</span> - Platform says accepted but should show Accept button (prevented auto-acceptance)
+        <span class="status accepted">accepted</span> - Platform accepted status (should show Thank You)
     </a>
     
     <h2>Instructions:</h2>
@@ -79,22 +79,15 @@
     
     <h2>Expected Console Logs:</h2>
     <ul>
-        <li><code>🛡️ URL Parameters - Preventing automatic acceptance:</code> - Should show auto-acceptance being prevented</li>
-        <li><code>🛡️ Preventing automatic acceptance from URL parameters:</code> - Should show final status being set to 'invited'</li>
+        <li><code>✅ URL Parameters - Allowing status from URL:</code> - Should show the status being read from URL</li>
+        <li><code>✅ Allowing status from URL parameters:</code> - Should show the final status being set</li>
     </ul>
     
     <h2>Expected UI Behavior:</h2>
     <ul>
         <li><strong>invited</strong>: Shows "Accept Invitation" button</li>
-        <li><strong>accepted</strong>: Shows "Accept Invitation" button (auto-acceptance prevented)</li>
+        <li><strong>accepted</strong>: Shows "Thank You" message (simple RSVP) or "Submit RSVP Details" button (detailed RSVP)</li>
         <li><strong>submitted</strong>: Shows "Thank You" message with confirmation</li>
-    </ul>
-    
-    <h2>Auto-Acceptance Prevention:</h2>
-    <ul>
-        <li><strong>URL parameters are ignored</strong> for automatic acceptance</li>
-        <li><strong>Guests must click "Accept Invitation"</strong> to accept</li>
-        <li><strong>Only 'submitted' status</strong> is preserved from URL parameters</li>
     </ul>
 </body>
 </html> 

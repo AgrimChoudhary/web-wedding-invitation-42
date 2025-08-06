@@ -55,17 +55,16 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Initialize platform data from URL params and send TEMPLATE_READY
   useEffect(() => {
     if (urlPlatformData) {
-      // Prevent automatic acceptance from URL parameters
+      // Allow URL status parameters to work
       const platformData = {
         ...urlPlatformData,
-        // Always start with 'invited' status, regardless of URL parameters
-        guestStatus: 'invited' as const,
-        // Don't auto-accept from URL parameters
-        hasResponded: false,
-        accepted: false
+        // Use status from URL parameters if available
+        guestStatus: urlPlatformData.guestStatus || 'invited',
+        hasResponded: urlPlatformData.hasResponded || false,
+        accepted: urlPlatformData.accepted || false
       };
       
-      console.log('🛡️ Preventing automatic acceptance from URL parameters:', {
+      console.log('✅ Allowing status from URL parameters:', {
         original: { hasResponded: urlPlatformData.hasResponded, accepted: urlPlatformData.accepted, guestStatus: urlPlatformData.guestStatus },
         final: { hasResponded: platformData.hasResponded, accepted: platformData.accepted, guestStatus: platformData.guestStatus }
       });
@@ -124,21 +123,20 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setRsvpFields(payload.rsvpFields || []);
         setExistingRsvpData(payload.existingRsvpData);
         
-        // Update platform data - Don't auto-accept from platform data
+        // Update platform data - Allow status from platform data
         const newPlatformData: PlatformData = {
           eventId: payload.eventId,
           guestId: payload.guestId,
           guestName: payload.platformData.guestName,
-          // Only mark as responded if it's 'submitted', not 'accepted' from platform
-          hasResponded: payload.status === 'submitted',
-          // Always start as 'invited' unless explicitly 'submitted' - prevent auto-acceptance
-          guestStatus: payload.status === 'submitted' ? 'submitted' : 'invited',
+          // Allow status from platform data
+          hasResponded: payload.status === 'submitted' || payload.status === 'accepted',
+          guestStatus: payload.status === 'submitted' ? 'submitted' : payload.status === 'accepted' ? 'accepted' : 'invited',
           rsvpConfig: payload.rsvpFields.length > 0 ? 'detailed' : 'simple',
           existingRsvpData: payload.existingRsvpData,
           customFields: payload.rsvpFields
         };
         
-        console.log('🛡️ PostMessage - Preventing automatic acceptance:', {
+        console.log('✅ PostMessage - Allowing status from platform:', {
           payloadStatus: payload.status,
           finalGuestStatus: newPlatformData.guestStatus,
           hasResponded: newPlatformData.hasResponded
@@ -214,16 +212,16 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setRsvpFields(data.rsvpFields || []);
         setExistingRsvpData(data.existingRsvpData);
         
-        // Update platform data - Don't auto-accept from platform data
+        // Update platform data - Allow status from platform data
         if (platformData) {
           const updatedPlatformData = {
             ...platformData,
-            // Only set status if it's 'submitted', otherwise keep as 'invited' until user clicks
-            guestStatus: (data.status === 'submitted' ? 'submitted' : 'invited') as 'invited' | 'accepted' | 'submitted',
+            // Allow status from platform data
+            guestStatus: (data.status === 'submitted' ? 'submitted' : data.status === 'accepted' ? 'accepted' : 'invited') as 'invited' | 'accepted' | 'submitted',
             existingRsvpData: data.existingRsvpData
           };
           
-          console.log('🛡️ INVITATION_PAYLOAD_UPDATE - Preventing automatic acceptance:', {
+          console.log('✅ INVITATION_PAYLOAD_UPDATE - Allowing status from platform:', {
             dataStatus: data.status,
             finalGuestStatus: updatedPlatformData.guestStatus
           });
