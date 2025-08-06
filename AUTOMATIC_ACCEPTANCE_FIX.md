@@ -4,13 +4,14 @@
 The "Royal Indian Wedding" template was automatically accepting invitations when the URL contained parameters like `accepted=true` or `hasResponded=true`. This meant that guests would see the "Thank You" message immediately without having to click the "Accept Invitation" button.
 
 ## Root Cause
-The issue was in multiple files:
+The issue was in multiple files and systems:
 1. `src/hooks/useUrlParams.tsx` - Was parsing URL parameters and automatically setting `accepted: true` and `hasResponded: true` based on URL values
 2. `src/context/PlatformContext.tsx` - Was not preventing automatic acceptance from URL parameters and PostMessage data
 3. PostMessage handling was allowing automatic acceptance from platform data
+4. **DUAL RSVP SYSTEMS**: The `Invitation.tsx` file was using both an old `showThankYouMessage` state AND the new PlatformContext system, causing conflicts
 
 ## Solution
-Modified multiple files to prevent automatic acceptance from all sources:
+Modified multiple files to prevent automatic acceptance from all sources and unified the RSVP system:
 
 ### 1. useUrlParams.tsx Changes
 - Always set `hasResponded: false` regardless of URL parameters
@@ -29,6 +30,13 @@ Modified multiple files to prevent automatic acceptance from all sources:
 - `INVITATION_LOADED` messages: Always set `guestStatus: 'invited'` unless explicitly `'submitted'`
 - `INVITATION_PAYLOAD_UPDATE` messages: Always set `guestStatus: 'invited'` unless explicitly `'submitted'`
 - Added debugging logs for both message types
+
+### 4. **UNIFIED RSVP SYSTEM** (Final Fix)
+- **Removed old `showThankYouMessage` state** from `Invitation.tsx`
+- **Removed old `handleAcceptInvitation` function** that was bypassing PlatformContext
+- **Removed old thank you message rendering** that was conflicting with RSVPSection
+- **Now only uses RSVPSection component** which properly handles `guestStatus` from PlatformContext
+- **Single source of truth**: Only PlatformContext controls RSVP state
 
 ## Key Changes Made
 
@@ -61,11 +69,22 @@ guestStatus: payload.status === 'submitted' ? 'submitted' : 'invited',
 hasResponded: Boolean(platformData?.guestStatus === 'submitted'),
 ```
 
+### In Invitation.tsx (Final Fix):
+```typescript
+// Before (conflicting systems):
+const [showThankYouMessage, setShowThankYouMessage] = useState(false);
+{showThankYouMessage ? <ThankYouMessage /> : <RSVPSection />}
+
+// After (unified system):
+<RSVPSection /> // Only uses PlatformContext guestStatus
+```
+
 ## Result
 Now guests must explicitly click the "Accept Invitation" button to accept the invitation. The RSVP status will only change from "invited" to "accepted" when the user takes action, not automatically from:
 - URL parameters
 - Platform PostMessage data
 - Structured data parameters
+- **No more conflicting RSVP systems**
 
 ## Testing
 To test the fix:
@@ -84,4 +103,5 @@ To test the fix:
 ## Files Modified
 - `src/hooks/useUrlParams.tsx`
 - `src/context/PlatformContext.tsx`
+- `src/pages/Invitation.tsx` (removed old RSVP system)
 - `AUTOMATIC_ACCEPTANCE_FIX.md` (this file) 
