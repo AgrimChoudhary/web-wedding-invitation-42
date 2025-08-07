@@ -129,24 +129,25 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           rsvpFields: payload.rsvpFields
         });
         
-        // Update platform data - Don't auto-set guest status from platform data
+        // Update platform data - Use actual status from platform
         const newPlatformData: PlatformData = {
           eventId: payload.eventId,
           guestId: payload.guestId,
           guestName: payload.platformData.guestName,
-          // Don't auto-set hasResponded from platform data
-          hasResponded: false,
-          // Always start with 'invited' status, let user explicitly accept
-          guestStatus: 'invited',
+          // Use actual status from platform
+          hasResponded: payload.status === 'submitted' || payload.status === 'accepted',
+          // Use actual guest status from platform
+          guestStatus: payload.status === 'pending' ? 'invited' : payload.status,
           rsvpConfig: payload.rsvpFields.length > 0 ? 'detailed' : 'simple',
           existingRsvpData: payload.existingRsvpData,
           customFields: payload.rsvpFields
         };
         
-        console.log('✅ PostMessage - Allowing status from platform:', {
+        console.log('✅ PostMessage - Using actual status from platform:', {
           payloadStatus: payload.status,
           finalGuestStatus: newPlatformData.guestStatus,
-          hasResponded: newPlatformData.hasResponded
+          hasResponded: newPlatformData.hasResponded,
+          existingRsvpData: payload.existingRsvpData
         });
         
         setPlatformData(newPlatformData);
@@ -225,17 +226,21 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           rsvpFields: data.rsvpFields
         });
         
-        // Update platform data - Don't auto-set guest status from platform data
+        // Update platform data - Use actual status from platform
         if (platformData) {
           const updatedPlatformData = {
             ...platformData,
-            // Don't auto-set guest status from platform data, keep current status
+            // Use actual status from platform
+            guestStatus: data.status === 'pending' ? 'invited' : data.status,
+            hasResponded: data.status === 'submitted' || data.status === 'accepted',
             existingRsvpData: data.existingRsvpData
           };
           
-          console.log('✅ INVITATION_PAYLOAD_UPDATE - Allowing status from platform:', {
+          console.log('✅ INVITATION_PAYLOAD_UPDATE - Using actual status from platform:', {
             dataStatus: data.status,
-            finalGuestStatus: updatedPlatformData.guestStatus
+            finalGuestStatus: updatedPlatformData.guestStatus,
+            hasResponded: updatedPlatformData.hasResponded,
+            existingRsvpData: data.existingRsvpData
           });
           
           setPlatformData(updatedPlatformData);
