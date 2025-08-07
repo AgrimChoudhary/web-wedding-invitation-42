@@ -55,16 +55,16 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Initialize platform data from URL params and send TEMPLATE_READY
   useEffect(() => {
     if (urlPlatformData) {
-      // Allow URL status parameters to work
+      // Prevent automatic acceptance - always start as invited
       const platformData = {
         ...urlPlatformData,
-        // Use status from URL parameters if available
-        guestStatus: urlPlatformData.guestStatus || 'invited',
-        hasResponded: urlPlatformData.hasResponded || false,
-        accepted: urlPlatformData.accepted || false
+        // Always start with 'invited' status, prevent automatic acceptance
+        guestStatus: 'invited' as 'invited' | 'accepted' | 'submitted',
+        hasResponded: false,
+        accepted: false
       };
       
-      console.log('✅ Allowing status from URL parameters:', {
+      console.log('✅ Preventing automatic acceptance from URL parameters:', {
         original: { hasResponded: urlPlatformData.hasResponded, accepted: urlPlatformData.accepted, guestStatus: urlPlatformData.guestStatus },
         final: { hasResponded: platformData.hasResponded, accepted: platformData.accepted, guestStatus: platformData.guestStatus }
       });
@@ -108,6 +108,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [platformData, urlLoading, urlError]);
 
   // Process PostMessage data
+  // NOTE: We prevent automatic acceptance to ensure guests must explicitly RSVP
   useEffect(() => {
     if (!lastMessage) return;
 
@@ -143,7 +144,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           customFields: payload.rsvpFields
         };
         
-        console.log('✅ PostMessage - Allowing status from platform:', {
+        console.log('✅ PostMessage - Preventing automatic acceptance from platform:', {
           payloadStatus: payload.status,
           finalGuestStatus: newPlatformData.guestStatus,
           hasResponded: newPlatformData.hasResponded
