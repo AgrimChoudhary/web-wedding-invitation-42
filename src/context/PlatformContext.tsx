@@ -121,6 +121,12 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setShowSubmitButton(payload.showSubmitButton);
         setShowEditButton(payload.showEditButton);
         setRsvpFields(payload.rsvpFields || []);
+        console.log('🔍 PlatformContext: Setting existing RSVP data from INVITATION_LOADED:', {
+          existingRsvpData: payload.existingRsvpData,
+          dataType: typeof payload.existingRsvpData,
+          dataKeys: payload.existingRsvpData ? Object.keys(payload.existingRsvpData) : [],
+          rsvpFieldsCount: payload.rsvpFields?.length || 0
+        });
         setExistingRsvpData(payload.existingRsvpData);
         
         // Update platform data - Don't auto-set guest status from platform data
@@ -211,6 +217,12 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setShowSubmitButton(data.showSubmitButton);
         setShowEditButton(data.showEditButton);
         setRsvpFields(data.rsvpFields || []);
+        console.log('🔍 PlatformContext: Setting existing RSVP data from INVITATION_PAYLOAD_UPDATE:', {
+          existingRsvpData: data.existingRsvpData,
+          dataType: typeof data.existingRsvpData,
+          dataKeys: data.existingRsvpData ? Object.keys(data.existingRsvpData) : [],
+          rsvpFieldsCount: data.rsvpFields?.length || 0
+        });
         setExistingRsvpData(data.existingRsvpData);
         
         // Update platform data - Don't auto-set guest status from platform data
