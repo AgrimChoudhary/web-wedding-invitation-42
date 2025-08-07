@@ -55,16 +55,16 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Initialize platform data from URL params and send TEMPLATE_READY
   useEffect(() => {
     if (urlPlatformData) {
-      // Prevent automatic acceptance - always start as invited
+      // Allow URL status parameters to work
       const platformData = {
         ...urlPlatformData,
-        // Always start with 'invited' status, prevent automatic acceptance
-        guestStatus: 'invited' as 'invited' | 'accepted' | 'submitted',
-        hasResponded: false,
-        accepted: false
+        // Use status from URL parameters if available
+        guestStatus: urlPlatformData.guestStatus || 'invited',
+        hasResponded: urlPlatformData.hasResponded || false,
+        accepted: urlPlatformData.accepted || false
       };
       
-      console.log('✅ Preventing automatic acceptance from URL parameters:', {
+      console.log('✅ Allowing status from URL parameters:', {
         original: { hasResponded: urlPlatformData.hasResponded, accepted: urlPlatformData.accepted, guestStatus: urlPlatformData.guestStatus },
         final: { hasResponded: platformData.hasResponded, accepted: platformData.accepted, guestStatus: platformData.guestStatus }
       });
@@ -108,7 +108,6 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [platformData, urlLoading, urlError]);
 
   // Process PostMessage data
-  // NOTE: We prevent automatic acceptance to ensure guests must explicitly RSVP
   useEffect(() => {
     if (!lastMessage) return;
 
@@ -122,12 +121,6 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setShowSubmitButton(payload.showSubmitButton);
         setShowEditButton(payload.showEditButton);
         setRsvpFields(payload.rsvpFields || []);
-        console.log('🔍 PlatformContext: Setting existing RSVP data from INVITATION_LOADED:', {
-          existingRsvpData: payload.existingRsvpData,
-          dataType: typeof payload.existingRsvpData,
-          dataKeys: payload.existingRsvpData ? Object.keys(payload.existingRsvpData) : [],
-          rsvpFieldsCount: payload.rsvpFields?.length || 0
-        });
         setExistingRsvpData(payload.existingRsvpData);
         
         // Update platform data - Don't auto-set guest status from platform data
@@ -144,7 +137,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           customFields: payload.rsvpFields
         };
         
-        console.log('✅ PostMessage - Preventing automatic acceptance from platform:', {
+        console.log('✅ PostMessage - Allowing status from platform:', {
           payloadStatus: payload.status,
           finalGuestStatus: newPlatformData.guestStatus,
           hasResponded: newPlatformData.hasResponded
@@ -218,12 +211,6 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setShowSubmitButton(data.showSubmitButton);
         setShowEditButton(data.showEditButton);
         setRsvpFields(data.rsvpFields || []);
-        console.log('🔍 PlatformContext: Setting existing RSVP data from INVITATION_PAYLOAD_UPDATE:', {
-          existingRsvpData: data.existingRsvpData,
-          dataType: typeof data.existingRsvpData,
-          dataKeys: data.existingRsvpData ? Object.keys(data.existingRsvpData) : [],
-          rsvpFieldsCount: data.rsvpFields?.length || 0
-        });
         setExistingRsvpData(data.existingRsvpData);
         
         // Update platform data - Don't auto-set guest status from platform data

@@ -66,30 +66,29 @@ export const useUrlParams = () => {
       console.log('=== END FAMILY PARAMETERS DEBUG ===');
       
       // Try to parse the main data parameter first (recommended method)
-      // NOTE: We prevent automatic acceptance to ensure guests must explicitly RSVP
       const dataParam = urlParams.get('data');
       if (dataParam) {
         try {
           const decodedData = decodeURIComponent(dataParam);
           const parsedData: StructuredEventData = JSON.parse(decodedData);
-          console.log('Parsed data by agamon:', parsedData);
+          
           setPlatformData({
             eventId: parsedData.eventId,
             guestId: parsedData.guestId,
             guestName: parsedData.guestName,
-            // Prevent automatic acceptance - always start as invited
-            hasResponded: false,
-            accepted: false,
-            guestStatus: 'invited',
+            // Allow status from structured data
+            hasResponded: parsedData.hasResponded || false,
+            accepted: parsedData.accepted || false,
+            guestStatus: parsedData.accepted ? 'accepted' : 'invited',
             existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
             rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
             customFields: tryParseJSON(urlParams.get('customFields')) || [],
             structuredData: parsedData
           });
           
-          console.log('✅ Structured Data - Preventing automatic acceptance:', {
+          console.log('✅ Structured Data - Allowing status from data:', {
             original: { hasResponded: parsedData.hasResponded, accepted: parsedData.accepted },
-            final: { hasResponded: false, accepted: false, guestStatus: 'invited' }
+            final: { hasResponded: parsedData.hasResponded || false, accepted: parsedData.accepted || false, guestStatus: parsedData.accepted ? 'accepted' : 'invited' }
           });
           
           setIsLoading(false);
@@ -100,21 +99,26 @@ export const useUrlParams = () => {
       }
 
       // Fallback to individual parameters (legacy support)
-      // NOTE: We prevent automatic acceptance to ensure guests must explicitly RSVP
       const individualData: PlatformData = {
         eventId: urlParams.get('eventId') || undefined,
         guestId: urlParams.get('guestId') || undefined,
         guestName: urlParams.get('guestName') || undefined,
-        // Prevent automatic acceptance - always start as invited
-        hasResponded: false,
-        accepted: false,
-        guestStatus: 'invited',
+        // Allow URL status parameters to work
+        hasResponded: urlParams.get('hasResponded') === 'true',
+        accepted: urlParams.get('accepted') === 'true',
+        guestStatus: (() => {
+          const status = urlParams.get('guestStatus');
+          // Map platform status values to template status values
+          if (status === 'pending' || status === 'viewed') return 'invited';
+          if (status === 'accepted' || status === 'submitted') return status;
+          return 'invited';
+        })() as 'invited' | 'accepted' | 'submitted',
         existingRsvpData: tryParseJSON(urlParams.get('existingRsvpData')),
         rsvpConfig: parseRsvpConfig(urlParams.get('rsvpConfig')),
         customFields: tryParseJSON(urlParams.get('customFields')) || []
       };
 
-      console.log('✅ URL Parameters - Preventing automatic acceptance:', {
+      console.log('✅ URL Parameters - Allowing status from URL:', {
         urlHasResponded: urlParams.get('hasResponded'),
         urlAccepted: urlParams.get('accepted'),
         urlGuestStatus: urlParams.get('guestStatus'),

@@ -44,84 +44,33 @@ export const RSVPSection: React.FC = () => {
 
   const customFields = getCustomFields();
 
-  // Debug logging for modal state and data flow
+  // Debug logging for modal state
   useEffect(() => {
     console.log('🔍 RSVP Modal State Debug:', {
       showDetailedForm,
       guestStatus,
       rsvpConfig,
       customFieldsCount: customFields.length,
-      isPlatformMode,
-      existingRsvpData,
-      currentFormData: formData
+      isPlatformMode
     });
-  }, [showDetailedForm, guestStatus, rsvpConfig, customFields, isPlatformMode, existingRsvpData, formData]);
+  }, [showDetailedForm, guestStatus, rsvpConfig, customFields, isPlatformMode]);
 
-  // Load existing RSVP data when available - comprehensive logging and validation
+  // Load existing RSVP data when available
   useEffect(() => {
-    console.log('🔍 Loading existing RSVP data:', {
-      existingRsvpData,
-      existingRsvpDataType: typeof existingRsvpData,
-      customFieldsCount: customFields.length,
-      customFieldNames: customFields.map(f => f.field_name),
-      currentFormData: formData
-    });
-
     if (existingRsvpData && typeof existingRsvpData === 'object') {
       const initialData: Record<string, string> = {};
-      let fieldsLoaded = 0;
       
-      // Populate form data with existing values with comprehensive logging
+      // Populate form data with existing values
       customFields.forEach(field => {
         const existingValue = existingRsvpData[field.field_name];
-        console.log(`🔍 Processing field ${field.field_name}:`, {
-          fieldType: field.field_type,
-          existingValue,
-          existingValueType: typeof existingValue
-        });
-        
-        if (existingValue !== undefined && existingValue !== null) {
-          const stringValue = String(existingValue);
-          initialData[field.field_name] = stringValue;
-          fieldsLoaded++;
-          console.log(`✅ Loaded field ${field.field_name} with value: "${stringValue}"`);
-        } else {
-          console.log(`⚠️ No existing value for field ${field.field_name}`);
+        if (existingValue !== undefined) {
+          initialData[field.field_name] = String(existingValue);
         }
       });
       
-      console.log('🔍 Final initial data:', initialData, `(${fieldsLoaded} fields loaded)`);
       setFormData(initialData);
-    } else {
-      console.log('⚠️ No valid existing RSVP data found');
     }
   }, [existingRsvpData, customFields]);
-
-  // Additional effect to handle form pre-filling when dialog opens for edit
-  useEffect(() => {
-    if (showDetailedForm && guestStatus === 'submitted' && existingRsvpData) {
-      console.log('🔍 Dialog opened for edit mode - re-initializing form data:', {
-        existingRsvpData,
-        currentFormData: formData,
-        customFields: customFields.map(f => ({ name: f.field_name, type: f.field_type }))
-      });
-      
-      // Force re-initialization of form data when opening edit dialog
-      const editData: Record<string, string> = {};
-      let fieldsInitialized = 0;
-      
-      customFields.forEach(field => {
-        const existingValue = existingRsvpData[field.field_name];
-        if (existingValue !== undefined && existingValue !== null) {
-          editData[field.field_name] = String(existingValue);
-          fieldsInitialized++;
-        }
-      });
-      
-      console.log('🔍 Edit mode initialization complete:', editData, `(${fieldsInitialized} fields initialized)`);
-      setFormData(editData);
-    }
-  }, [showDetailedForm, guestStatus, existingRsvpData, customFields]);
 
   // Clear validation errors when reopening form after successful submission
   useEffect(() => {
@@ -304,12 +253,7 @@ export const RSVPSection: React.FC = () => {
                   <div className="flex justify-center mb-6">
                     <Button
                       onClick={() => {
-                        console.log('🔘 Submit RSVP Details button clicked - opening modal:', {
-                          guestStatus,
-                          existingRsvpData,
-                          currentFormData: formData,
-                          isEditMode: guestStatus === 'submitted'
-                        });
+                        console.log('🔘 Submit RSVP Details button clicked - opening modal');
                         setShowDetailedForm(true);
                       }}
                       disabled={isSubmitting}
