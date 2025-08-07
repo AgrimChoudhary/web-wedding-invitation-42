@@ -114,7 +114,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (lastMessage.type === 'INVITATION_LOADED') {
       try {
         console.log('=== PROCESSING INVITATION_LOADED ===');
-        const payload = lastMessage.payload;
+        const payload = lastMessage.data; // Changed from lastMessage.payload to lastMessage.data
         
         // Update RSVP state from platform
         setRsvpStatus(payload.status === 'pending' ? null : payload.status);
