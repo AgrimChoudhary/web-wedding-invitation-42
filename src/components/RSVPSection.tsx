@@ -223,8 +223,9 @@ export const RSVPSection: React.FC = () => {
       return "Thank you for accepting our invitation! We look forward to celebrating with you.";
     }
     
-    if (guestStatus === 'accepted') {
-      return "Thank you for accepting! Please provide additional details to help us plan better.";
+    // Prevent automatic acceptance - only show thank you for submitted status
+    if (guestStatus === 'submitted') {
+      return "Thank you for your RSVP! We have received your details and look forward to celebrating with you.";
     }
     
     return "Thank you for your RSVP! We have received your details and look forward to celebrating with you.";
@@ -234,12 +235,14 @@ export const RSVPSection: React.FC = () => {
     if (isSubmitting) {
       return guestStatus === 'submitted' ? 'Updating...' : 'Submitting...';
     }
+    // Prevent automatic acceptance - only show edit button for submitted status
     return guestStatus === 'submitted' ? 'Edit RSVP' : 'Submit RSVP';
   };
 
   // Show thank you message for accepted or submitted states
   // Only show if user has explicitly accepted (not from platform data)
-  if (guestStatus === 'accepted' || guestStatus === 'submitted') {
+  // Prevent automatic acceptance - only show if user has explicitly accepted
+  if (guestStatus === 'submitted') {
     return (
       <>
         <Confetti isActive={showConfetti} />
@@ -426,6 +429,14 @@ export const RSVPSection: React.FC = () => {
 
   // Show initial RSVP invitation (invited state)
   const handleSimpleAccept = async () => {
+    console.log('🎯 handleSimpleAccept: User manually clicked Accept (Simple)');
+    
+    // Prevent automatic acceptance - ensure this is user-initiated
+    if (guestStatus !== 'invited') {
+      console.log('⚠️ handleSimpleAccept: Already accepted, ignoring action');
+      return;
+    }
+    
     setIsSubmitting(true);
     try {
       sendRSVP();
@@ -446,6 +457,14 @@ export const RSVPSection: React.FC = () => {
   };
 
   const handleDetailedAccept = async () => {
+    console.log('🎯 handleDetailedAccept: User manually clicked Accept (Detailed)');
+    
+    // Prevent automatic acceptance - ensure this is user-initiated
+    if (guestStatus !== 'invited') {
+      console.log('⚠️ handleDetailedAccept: Already accepted, ignoring action');
+      return;
+    }
+    
     setIsSubmitting(true);
     try {
       sendRSVP(); // Send simple acceptance first

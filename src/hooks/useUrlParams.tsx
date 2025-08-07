@@ -72,7 +72,7 @@ export const useUrlParams = () => {
         try {
           const decodedData = decodeURIComponent(dataParam);
           const parsedData: StructuredEventData = JSON.parse(decodedData);
-          
+          console.log('Parsed data by agamon:', parsedData);
           setPlatformData({
             eventId: parsedData.eventId,
             guestId: parsedData.guestId,
