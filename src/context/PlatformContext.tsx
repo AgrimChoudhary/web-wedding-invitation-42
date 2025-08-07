@@ -123,14 +123,15 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setRsvpFields(payload.rsvpFields || []);
         setExistingRsvpData(payload.existingRsvpData);
         
-        // Update platform data - Allow status from platform data
+        // Update platform data - Don't auto-set guest status from platform data
         const newPlatformData: PlatformData = {
           eventId: payload.eventId,
           guestId: payload.guestId,
           guestName: payload.platformData.guestName,
-          // Allow status from platform data
-          hasResponded: payload.status === 'submitted' || payload.status === 'accepted',
-          guestStatus: payload.status === 'submitted' ? 'submitted' : payload.status === 'accepted' ? 'accepted' : 'invited',
+          // Don't auto-set hasResponded from platform data
+          hasResponded: false,
+          // Always start with 'invited' status, let user explicitly accept
+          guestStatus: 'invited',
           rsvpConfig: payload.rsvpFields.length > 0 ? 'detailed' : 'simple',
           existingRsvpData: payload.existingRsvpData,
           customFields: payload.rsvpFields
@@ -212,12 +213,11 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setRsvpFields(data.rsvpFields || []);
         setExistingRsvpData(data.existingRsvpData);
         
-        // Update platform data - Allow status from platform data
+        // Update platform data - Don't auto-set guest status from platform data
         if (platformData) {
           const updatedPlatformData = {
             ...platformData,
-            // Allow status from platform data
-            guestStatus: (data.status === 'submitted' ? 'submitted' : data.status === 'accepted' ? 'accepted' : 'invited') as 'invited' | 'accepted' | 'submitted',
+            // Don't auto-set guest status from platform data, keep current status
             existingRsvpData: data.existingRsvpData
           };
           
