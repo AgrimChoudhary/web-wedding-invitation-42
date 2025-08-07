@@ -40,7 +40,6 @@ const Invitation = () => {
   const [showRSVP, setShowRSVP] = useState(false);
   const [showWishesModal, setShowWishesModal] = useState(false);
   const [confetti, setConfetti] = useState(false);
-  // Prevent automatic acceptance - only show thank you message when user explicitly accepts
   const [showThankYouMessage, setShowThankYouMessage] = useState(false);
   const [showGaneshaTransition, setShowGaneshaTransition] = useState(false);
   const [hideGaneshaTransition, setHideGaneshaTransition] = useState(false);
@@ -256,9 +255,8 @@ const Invitation = () => {
       }, 100); // Reduced delay for immediate start
     }, 1500);
     
-    // Prevent automatic thank you message showing on page load
+    // Removed automatic thank you message showing on page load
     // The thank you message should only show after explicit user acceptance
-    // Block any automatic acceptance from URL parameters or platform data
     
     return () => clearTimeout(timer);
   }, []);
@@ -275,14 +273,11 @@ const Invitation = () => {
     console.log('🎯 handleAcceptInvitation: User manually clicked Accept Invitation');
     console.log('📊 Current state:', { guestId, showThankYouMessage });
     
-    // Prevent multiple rapid clicks and ensure this is only called by user action
+    // Prevent multiple rapid clicks
     if (showThankYouMessage) {
       console.log('⚠️ handleAcceptInvitation: Already accepted, ignoring duplicate action');
       return;
     }
-    
-    // Additional safety check - ensure this is not automatic
-    console.log('✅ handleAcceptInvitation: Confirming this is user-initiated action');
     
     setConfetti(true);
     
