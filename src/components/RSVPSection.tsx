@@ -44,33 +44,45 @@ export const RSVPSection: React.FC = () => {
 
   const customFields = getCustomFields();
 
-  // Debug logging for modal state
+  // Debug logging for modal state and data
   useEffect(() => {
     console.log('🔍 RSVP Modal State Debug:', {
       showDetailedForm,
       guestStatus,
       rsvpConfig,
       customFieldsCount: customFields.length,
-      isPlatformMode
+      isPlatformMode,
+      existingRsvpData,
+      formData
     });
-  }, [showDetailedForm, guestStatus, rsvpConfig, customFields, isPlatformMode]);
+  }, [showDetailedForm, guestStatus, rsvpConfig, customFields, isPlatformMode, existingRsvpData, formData]);
 
-  // Load existing RSVP data when available
+  // Load existing RSVP data when available or when form is opened
   useEffect(() => {
     if (existingRsvpData && typeof existingRsvpData === 'object') {
+      console.log('📥 Loading existing RSVP data:', existingRsvpData);
       const initialData: Record<string, string> = {};
       
       // Populate form data with existing values
       customFields.forEach(field => {
         const existingValue = existingRsvpData[field.field_name];
-        if (existingValue !== undefined) {
+        if (existingValue !== undefined && existingValue !== null) {
           initialData[field.field_name] = String(existingValue);
+          console.log(`📝 Setting ${field.field_name} to:`, existingValue);
         }
       });
       
       setFormData(initialData);
+    } else if (showDetailedForm && guestStatus === 'submitted') {
+      console.log('⚠️ No existing RSVP data found for edit mode');
+      // Initialize empty form data for all fields
+      const initialData: Record<string, string> = {};
+      customFields.forEach(field => {
+        initialData[field.field_name] = '';
+      });
+      setFormData(initialData);
     }
-  }, [existingRsvpData, customFields]);
+  }, [existingRsvpData, customFields, showDetailedForm, guestStatus]);
 
   // Clear validation errors when reopening form after successful submission
   useEffect(() => {
@@ -145,6 +157,7 @@ export const RSVPSection: React.FC = () => {
         }
       });
 
+      console.log('📤 Submitting RSVP data:', rsvpData);
       sendRSVP(rsvpData);
       setShowDetailedForm(false);
       setShowConfetti(true);
@@ -254,6 +267,8 @@ export const RSVPSection: React.FC = () => {
                     <Button
                       onClick={() => {
                         console.log('🔘 Submit RSVP Details button clicked - opening modal');
+                        console.log('📊 Current form data:', formData);
+                        console.log('📊 Existing RSVP data:', existingRsvpData);
                         setShowDetailedForm(true);
                       }}
                       disabled={isSubmitting}
@@ -298,10 +313,13 @@ export const RSVPSection: React.FC = () => {
           <DialogContent className="sm:max-w-lg w-[95vw] max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-lg border border-wedding-gold/30 rounded-2xl">
             <DialogHeader className="text-center mb-4">
               <DialogTitle className="text-center text-wedding-maroon font-great-vibes text-xl md:text-2xl">
-                RSVP Details
+                {guestStatus === 'submitted' ? 'Edit RSVP Details' : 'RSVP Details'}
               </DialogTitle>
               <p className="text-sm text-gray-600 mt-2">
-                Please provide your details for a better celebration experience
+                {guestStatus === 'submitted' 
+                  ? 'Update your details for a better celebration experience'
+                  : 'Please provide your details for a better celebration experience'
+                }
               </p>
             </DialogHeader>
             
@@ -312,9 +330,10 @@ export const RSVPSection: React.FC = () => {
                     key={field.field_name}
                     field={field}
                     value={formData[field.field_name] || ''}
-                    onChange={(value) => 
-                      setFormData(prev => ({ ...prev, [field.field_name]: value }))
-                    }
+                    onChange={(value) => {
+                      console.log(`📝 Updating ${field.field_name} to:`, value);
+                      setFormData(prev => ({ ...prev, [field.field_name]: value }));
+                    }}
                     error={validationErrors[field.field_name]}
                   />
                 ))
