@@ -44,86 +44,33 @@ export const RSVPSection: React.FC = () => {
 
   const customFields = getCustomFields();
 
-  // Debug logging for modal state and data
+  // Debug logging for modal state
   useEffect(() => {
     console.log('🔍 RSVP Modal State Debug:', {
       showDetailedForm,
       guestStatus,
       rsvpConfig,
       customFieldsCount: customFields.length,
-      isPlatformMode,
-      existingRsvpData,
-      formData,
-      platformData: platformData ? {
-        eventId: platformData.eventId,
-        guestId: platformData.guestId,
-        guestName: platformData.guestName,
-        hasExistingRsvpData: !!platformData.existingRsvpData,
-        existingRsvpDataKeys: platformData.existingRsvpData ? Object.keys(platformData.existingRsvpData) : []
-      } : null
+      isPlatformMode
     });
-  }, [showDetailedForm, guestStatus, rsvpConfig, customFields, isPlatformMode, existingRsvpData, formData, platformData]);
+  }, [showDetailedForm, guestStatus, rsvpConfig, customFields, isPlatformMode]);
 
-  // Load existing RSVP data when available or when form is opened
+  // Load existing RSVP data when available
   useEffect(() => {
-    console.log('🔄 Data Loading Effect Triggered:', {
-      existingRsvpData,
-      showDetailedForm,
-      guestStatus,
-      customFieldsCount: customFields.length,
-      platformDataExists: !!platformData,
-      platformExistingData: platformData?.existingRsvpData
-    });
-
     if (existingRsvpData && typeof existingRsvpData === 'object') {
-      console.log('📥 Loading existing RSVP data:', existingRsvpData);
       const initialData: Record<string, string> = {};
       
       // Populate form data with existing values
       customFields.forEach(field => {
         const existingValue = existingRsvpData[field.field_name];
-        if (existingValue !== undefined && existingValue !== null) {
+        if (existingValue !== undefined) {
           initialData[field.field_name] = String(existingValue);
-          console.log(`📝 Setting ${field.field_name} to:`, existingValue);
         }
       });
       
       setFormData(initialData);
-    } else if (showDetailedForm && guestStatus === 'submitted') {
-      console.log('⚠️ No existing RSVP data found for edit mode');
-      console.log('🔍 Debugging data sources:', {
-        existingRsvpData,
-        platformDataExistingRsvpData: platformData?.existingRsvpData,
-        platformDataKeys: platformData ? Object.keys(platformData) : [],
-        guestStatus,
-        showDetailedForm
-      });
-      
-      // Try to get data from platform data as fallback
-      if (platformData?.existingRsvpData && typeof platformData.existingRsvpData === 'object') {
-        console.log('🔄 Trying fallback to platform data:', platformData.existingRsvpData);
-        const initialData: Record<string, string> = {};
-        
-        customFields.forEach(field => {
-          const existingValue = platformData.existingRsvpData[field.field_name];
-          if (existingValue !== undefined && existingValue !== null) {
-            initialData[field.field_name] = String(existingValue);
-            console.log(`📝 Setting ${field.field_name} to:`, existingValue);
-          }
-        });
-        
-        setFormData(initialData);
-      } else {
-        console.log('❌ No data found in any source, initializing empty form');
-        // Initialize empty form data for all fields
-        const initialData: Record<string, string> = {};
-        customFields.forEach(field => {
-          initialData[field.field_name] = '';
-        });
-        setFormData(initialData);
-      }
     }
-  }, [existingRsvpData, customFields, showDetailedForm, guestStatus, platformData]);
+  }, [existingRsvpData, customFields]);
 
   // Clear validation errors when reopening form after successful submission
   useEffect(() => {
@@ -198,7 +145,6 @@ export const RSVPSection: React.FC = () => {
         }
       });
 
-      console.log('📤 Submitting RSVP data:', rsvpData);
       sendRSVP(rsvpData);
       setShowDetailedForm(false);
       setShowConfetti(true);
@@ -308,18 +254,6 @@ export const RSVPSection: React.FC = () => {
                     <Button
                       onClick={() => {
                         console.log('🔘 Submit RSVP Details button clicked - opening modal');
-                        console.log('📊 Current form data:', formData);
-                        console.log('📊 Existing RSVP data:', existingRsvpData);
-                        console.log('📊 Platform data:', platformData ? {
-                          eventId: platformData.eventId,
-                          guestId: platformData.guestId,
-                          guestName: platformData.guestName,
-                          hasExistingRsvpData: !!platformData.existingRsvpData,
-                          existingRsvpData: platformData.existingRsvpData,
-                          existingRsvpDataKeys: platformData.existingRsvpData ? Object.keys(platformData.existingRsvpData) : []
-                        } : null);
-                        console.log('📊 Guest status:', guestStatus);
-                        console.log('📊 Custom fields:', customFields);
                         setShowDetailedForm(true);
                       }}
                       disabled={isSubmitting}
@@ -364,13 +298,10 @@ export const RSVPSection: React.FC = () => {
           <DialogContent className="sm:max-w-lg w-[95vw] max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-lg border border-wedding-gold/30 rounded-2xl">
             <DialogHeader className="text-center mb-4">
               <DialogTitle className="text-center text-wedding-maroon font-great-vibes text-xl md:text-2xl">
-                {guestStatus === 'submitted' ? 'Edit RSVP Details' : 'RSVP Details'}
+                RSVP Details
               </DialogTitle>
               <p className="text-sm text-gray-600 mt-2">
-                {guestStatus === 'submitted' 
-                  ? 'Update your details for a better celebration experience'
-                  : 'Please provide your details for a better celebration experience'
-                }
+                Please provide your details for a better celebration experience
               </p>
             </DialogHeader>
             
@@ -381,10 +312,9 @@ export const RSVPSection: React.FC = () => {
                     key={field.field_name}
                     field={field}
                     value={formData[field.field_name] || ''}
-                    onChange={(value) => {
-                      console.log(`📝 Updating ${field.field_name} to:`, value);
-                      setFormData(prev => ({ ...prev, [field.field_name]: value }));
-                    }}
+                    onChange={(value) => 
+                      setFormData(prev => ({ ...prev, [field.field_name]: value }))
+                    }
                     error={validationErrors[field.field_name]}
                   />
                 ))
