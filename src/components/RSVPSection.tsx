@@ -53,12 +53,28 @@ export const RSVPSection: React.FC = () => {
       customFieldsCount: customFields.length,
       isPlatformMode,
       existingRsvpData,
-      formData
+      formData,
+      platformData: platformData ? {
+        eventId: platformData.eventId,
+        guestId: platformData.guestId,
+        guestName: platformData.guestName,
+        hasExistingRsvpData: !!platformData.existingRsvpData,
+        existingRsvpDataKeys: platformData.existingRsvpData ? Object.keys(platformData.existingRsvpData) : []
+      } : null
     });
-  }, [showDetailedForm, guestStatus, rsvpConfig, customFields, isPlatformMode, existingRsvpData, formData]);
+  }, [showDetailedForm, guestStatus, rsvpConfig, customFields, isPlatformMode, existingRsvpData, formData, platformData]);
 
   // Load existing RSVP data when available or when form is opened
   useEffect(() => {
+    console.log('🔄 Data Loading Effect Triggered:', {
+      existingRsvpData,
+      showDetailedForm,
+      guestStatus,
+      customFieldsCount: customFields.length,
+      platformDataExists: !!platformData,
+      platformExistingData: platformData?.existingRsvpData
+    });
+
     if (existingRsvpData && typeof existingRsvpData === 'object') {
       console.log('📥 Loading existing RSVP data:', existingRsvpData);
       const initialData: Record<string, string> = {};
@@ -75,14 +91,39 @@ export const RSVPSection: React.FC = () => {
       setFormData(initialData);
     } else if (showDetailedForm && guestStatus === 'submitted') {
       console.log('⚠️ No existing RSVP data found for edit mode');
-      // Initialize empty form data for all fields
-      const initialData: Record<string, string> = {};
-      customFields.forEach(field => {
-        initialData[field.field_name] = '';
+      console.log('🔍 Debugging data sources:', {
+        existingRsvpData,
+        platformDataExistingRsvpData: platformData?.existingRsvpData,
+        platformDataKeys: platformData ? Object.keys(platformData) : [],
+        guestStatus,
+        showDetailedForm
       });
-      setFormData(initialData);
+      
+      // Try to get data from platform data as fallback
+      if (platformData?.existingRsvpData && typeof platformData.existingRsvpData === 'object') {
+        console.log('🔄 Trying fallback to platform data:', platformData.existingRsvpData);
+        const initialData: Record<string, string> = {};
+        
+        customFields.forEach(field => {
+          const existingValue = platformData.existingRsvpData[field.field_name];
+          if (existingValue !== undefined && existingValue !== null) {
+            initialData[field.field_name] = String(existingValue);
+            console.log(`📝 Setting ${field.field_name} to:`, existingValue);
+          }
+        });
+        
+        setFormData(initialData);
+      } else {
+        console.log('❌ No data found in any source, initializing empty form');
+        // Initialize empty form data for all fields
+        const initialData: Record<string, string> = {};
+        customFields.forEach(field => {
+          initialData[field.field_name] = '';
+        });
+        setFormData(initialData);
+      }
     }
-  }, [existingRsvpData, customFields, showDetailedForm, guestStatus]);
+  }, [existingRsvpData, customFields, showDetailedForm, guestStatus, platformData]);
 
   // Clear validation errors when reopening form after successful submission
   useEffect(() => {
@@ -269,6 +310,16 @@ export const RSVPSection: React.FC = () => {
                         console.log('🔘 Submit RSVP Details button clicked - opening modal');
                         console.log('📊 Current form data:', formData);
                         console.log('📊 Existing RSVP data:', existingRsvpData);
+                        console.log('📊 Platform data:', platformData ? {
+                          eventId: platformData.eventId,
+                          guestId: platformData.guestId,
+                          guestName: platformData.guestName,
+                          hasExistingRsvpData: !!platformData.existingRsvpData,
+                          existingRsvpData: platformData.existingRsvpData,
+                          existingRsvpDataKeys: platformData.existingRsvpData ? Object.keys(platformData.existingRsvpData) : []
+                        } : null);
+                        console.log('📊 Guest status:', guestStatus);
+                        console.log('📊 Custom fields:', customFields);
                         setShowDetailedForm(true);
                       }}
                       disabled={isSubmitting}

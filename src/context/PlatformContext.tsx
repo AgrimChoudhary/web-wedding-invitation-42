@@ -123,6 +123,12 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setRsvpFields(payload.rsvpFields || []);
         setExistingRsvpData(payload.existingRsvpData);
         
+        console.log('📥 INVITATION_LOADED - Setting existingRsvpData:', {
+          payloadExistingRsvpData: payload.existingRsvpData,
+          payloadStatus: payload.status,
+          rsvpFields: payload.rsvpFields
+        });
+        
         // Update platform data - Don't auto-set guest status from platform data
         const newPlatformData: PlatformData = {
           eventId: payload.eventId,
@@ -212,6 +218,12 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setShowEditButton(data.showEditButton);
         setRsvpFields(data.rsvpFields || []);
         setExistingRsvpData(data.existingRsvpData);
+        
+        console.log('📥 INVITATION_PAYLOAD_UPDATE - Setting existingRsvpData:', {
+          dataExistingRsvpData: data.existingRsvpData,
+          dataStatus: data.status,
+          rsvpFields: data.rsvpFields
+        });
         
         // Update platform data - Don't auto-set guest status from platform data
         if (platformData) {
@@ -312,6 +324,17 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     sendRSVPUpdated: sendRSVPUpdatedHandler,
     trackInvitationViewed: trackInvitationViewedHandler
   };
+
+  // Debug logging for existingRsvpData
+  useEffect(() => {
+    console.log('🔍 PlatformContext existingRsvpData Debug:', {
+      existingRsvpData,
+      platformDataExistingRsvpData: platformData?.existingRsvpData,
+      finalExistingRsvpData: existingRsvpData || platformData?.existingRsvpData || null,
+      guestStatus: platformData?.guestStatus,
+      hasResponded: Boolean(platformData?.guestStatus === 'submitted')
+    });
+  }, [existingRsvpData, platformData]);
 
   return (
     <PlatformContext.Provider value={value}>
