@@ -13,6 +13,8 @@ const WelcomeForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [showIcon, setShowIcon] = useState(0);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [isPageReady, setIsPageReady] = useState(false);
   const { isPlaying, toggleMusic } = useAudio();
   const { guestName, isLoading: isGuestLoading, guestId } = useGuest();
   const { weddingData } = useWedding();
@@ -34,12 +36,54 @@ const WelcomeForm: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Track user interactions to prevent automatic navigation
+  React.useEffect(() => {
+    const handleUserInteraction = () => {
+      setHasUserInteracted(true);
+    };
+
+    // Listen for various user interaction events
+    document.addEventListener('click', handleUserInteraction, { once: true });
+    document.addEventListener('touchstart', handleUserInteraction, { once: true });
+    document.addEventListener('keydown', handleUserInteraction, { once: true });
+
+    return () => {
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+    };
+  }, []);
+
+  // Set page as ready after a delay to prevent immediate automatic navigation
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsPageReady(true);
+    }, 2000); // Wait 2 seconds before allowing any navigation
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleOpenInvitation = (event: React.MouseEvent) => {
-    // Prevent multiple clicks during processing
+    // Prevent any automatic triggering
+    if (!event || !event.isTrusted) {
+      console.log('⚠️ handleOpenInvitation: Untrusted event, ignoring');
+      return;
+    }
+    
+    // Prevent multiple clicks within short timeframe
     if (isLoading) {
       console.log('⚠️ handleOpenInvitation: Already processing, ignoring duplicate click');
       return;
     }
+    
+    // Check if page is ready for navigation
+    if (!isPageReady) {
+      console.log('⚠️ handleOpenInvitation: Page not ready yet, ignoring');
+      return;
+    }
+    
+    // Mark that user has interacted
+    setHasUserInteracted(true);
     
     console.log('🎯 handleOpenInvitation: User clicked Open Invitation button');
     setIsLoading(true);
@@ -64,8 +108,15 @@ const WelcomeForm: React.FC = () => {
       console.warn('⚠️ No guestId available for INVITATION_VIEWED message');
     }
     
-    // Navigate immediately after a short delay for better UX
+    // Simulate loading for better UX (user-initiated only)
     setTimeout(() => {
+      // Double-check that user has actually interacted
+      if (!hasUserInteracted) {
+        console.log('⚠️ handleOpenInvitation: No user interaction detected, canceling navigation');
+        setIsLoading(false);
+        return;
+      }
+      
       // Extract guestId from the path if present
       const pathParts = window.location.pathname.split('/').filter(Boolean);
       const currentGuestId = pathParts.length === 1 && pathParts[0] !== 'invitation' ? pathParts[0] : '';
@@ -77,7 +128,7 @@ const WelcomeForm: React.FC = () => {
       } else {
         navigate(`/invitation${window.location.search}`);
       }
-    }, 500); // Reduced delay for better responsiveness
+    }, 800);
   };
 
   // Determine which name to show first based on groomFirst flag
@@ -185,13 +236,21 @@ const WelcomeForm: React.FC = () => {
           onMouseLeave={() => setIsHovered(false)}
           onTouchStart={() => setIsHovered(true)}
           onTouchEnd={() => setIsHovered(false)}
+          onFocus={(e) => {
+            // Prevent automatic focus behavior
+            if (!hasUserInteracted) {
+              e.target.blur();
+            }
+          }}
         >
           <Button
             onClick={handleOpenInvitation}
-            disabled={isLoading}
+            disabled={isLoading || !isPageReady}
+            autoFocus={false}
+            tabIndex={0}
             className={`relative overflow-hidden bg-gradient-to-r from-wedding-blush to-wedding-blush/90 text-wedding-maroon hover:from-wedding-blush/90 hover:to-wedding-blush/80 px-10 py-7 rounded-2xl transition-all duration-500 border-2 border-wedding-gold/30 ${
               isHovered ? 'shadow-2xl shadow-wedding-gold/40 transform scale-105' : 'shadow-xl shadow-wedding-gold/20'
-            }`}
+            } ${!isPageReady ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isLoading ? (
               <span className="flex items-center">
@@ -200,6 +259,14 @@ const WelcomeForm: React.FC = () => {
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 Opening
+              </span>
+            ) : !isPageReady ? (
+              <span className="flex items-center font-semibold text-lg">
+                Loading...
+                <svg className="animate-spin ml-3 h-5 w-5 text-wedding-maroon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
               </span>
             ) : (
               <span className="flex items-center font-semibold text-lg">
