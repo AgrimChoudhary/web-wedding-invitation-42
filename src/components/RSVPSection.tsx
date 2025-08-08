@@ -68,28 +68,9 @@ export const RSVPSection: React.FC = () => {
         }
       });
       
-      console.log('🔄 Loading existing RSVP data:', { existingRsvpData, initialData });
       setFormData(initialData);
     }
   }, [existingRsvpData, customFields]);
-
-  // Re-initialize form data when dialog opens in edit mode
-  useEffect(() => {
-    if (showDetailedForm && guestStatus === 'submitted' && existingRsvpData) {
-      const editData: Record<string, string> = {};
-      
-      customFields.forEach(field => {
-        const existingValue = existingRsvpData[field.field_name];
-        if (existingValue !== undefined) {
-          editData[field.field_name] = String(existingValue);
-        }
-      });
-      
-      console.log('✏️ Initializing edit mode with data:', { editData, existingRsvpData });
-      setFormData(editData);
-      setValidationErrors({}); // Clear any previous validation errors
-    }
-  }, [showDetailedForm, guestStatus, existingRsvpData, customFields]);
 
   // Clear validation errors when reopening form after successful submission
   useEffect(() => {
