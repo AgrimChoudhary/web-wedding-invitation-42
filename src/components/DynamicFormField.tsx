@@ -18,6 +18,13 @@ export const DynamicFormField: React.FC<DynamicFormFieldProps> = ({
   onChange,
   error
 }) => {
+  // Debug logging for field values
+  console.log(`📝 DynamicFormField render:`, {
+    fieldName: field.field_name,
+    fieldType: field.field_type,
+    value,
+    isRequired: field.is_required
+  });
   const getFieldType = (fieldType: string): 'text' | 'textarea' | 'select' | 'email' | 'number' => {
     const validTypes = ['text', 'textarea', 'select', 'email', 'number'];
     return validTypes.includes(fieldType) ? fieldType as any : 'text';
