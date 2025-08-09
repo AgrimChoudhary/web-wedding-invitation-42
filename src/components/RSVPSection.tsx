@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Heart, Sparkles } from 'lucide-react';
 import { usePlatform } from '../context/PlatformContext';
 import { Button } from './ui/button';
@@ -42,7 +42,7 @@ export const RSVPSection: React.FC = () => {
     });
   };
 
-  const customFields = getCustomFields();
+  const customFields = useMemo(() => getCustomFields(), [platformData?.customFields]);
 
   // Debug logging for modal state
   useEffect(() => {
