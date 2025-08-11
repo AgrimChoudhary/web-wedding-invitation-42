@@ -9,11 +9,11 @@ export interface Wish {
   content: string;
   image_url?: string;
   likes_count: number;
-  replies_count: number;
+  replies_count?: number; // Optional - not in database
   is_approved: boolean;
   created_at: string;
-  updated_at: string;
-  hasLiked?: boolean; // Added for platform integration
+  updated_at?: string; // Optional - fallback to created_at
+  hasLiked?: boolean; // Optional - not in database
 }
 
 export interface WishLike {
@@ -59,21 +59,95 @@ export const useWishes = () => {
 
   // Set up message listener for platform communication
   useEffect(() => {
+    console.log('🚀 TEMPLATE: Setting up wish message listener...');
+    
     const handleMessage = (event: MessageEvent) => {
+      console.log('📥 TEMPLATE: Received message from platform:', event.data);
+      console.log('📍 TEMPLATE: Message origin:', event.origin);
+      
       // Security check
       if (!isTrustedOrigin(event.origin)) {
-        console.warn('Untrusted origin se message mila:', event.origin);
+        console.warn('⚠️ TEMPLATE: Untrusted origin se message mila:', event.origin);
         return;
       }
 
       const { type, payload } = event.data;
+      console.log('🔍 TEMPLATE: Processing message type:', type);
+      console.log('📦 TEMPLATE: Message payload:', payload);
 
       switch (type) {
-        case 'INITIAL_WISHES_DATA':
-          console.log('Received initial wishes data:', payload);
-          if (payload.wishes && Array.isArray(payload.wishes)) {
-            setWishes(payload.wishes);
-          }
+                    case 'INITIAL_WISHES_DATA':
+              console.log('✅ TEMPLATE: Received initial wishes data from platform!');
+              console.log('📊 TEMPLATE: Payload structure:', payload);
+              console.log('📊 TEMPLATE: Is wishes array?', Array.isArray(payload?.wishes));
+              console.log('📊 TEMPLATE: Wishes count:', payload?.wishes?.length || 0);
+              console.log('📊 TEMPLATE: Raw wishes data:', payload?.wishes);
+              
+              if (payload.wishes && Array.isArray(payload.wishes)) {
+                console.log('✅ TEMPLATE: Setting wishes in state:', payload.wishes.length, 'wishes');
+                
+                // Detailed analysis of each wish
+                console.log('\n🔍 TEMPLATE: DETAILED WISH DATA ANALYSIS:');
+                console.log('================================================');
+                
+                payload.wishes.forEach((wish, index) => {
+                  console.log(`\n📝 TEMPLATE: === WISH ${index + 1} ANALYSIS ===`);
+                  console.log('🎯 TEMPLATE: Complete wish object:', wish);
+                  
+                  // Check required fields
+                  const requiredFields = ['id', 'guest_id', 'guest_name', 'content', 'likes_count', 'is_approved', 'created_at'];
+                  const optionalFields = ['image_url', 'replies_count', 'updated_at', 'hasLiked'];
+                  
+                  console.log('✅ TEMPLATE: Required fields check:');
+                  requiredFields.forEach(field => {
+                    const exists = wish.hasOwnProperty(field);
+                    const value = wish[field];
+                    console.log(`   ${exists ? '✅' : '❌'} ${field}:`, exists ? value : 'MISSING!');
+                  });
+                  
+                  console.log('🔧 TEMPLATE: Optional fields check:');
+                  optionalFields.forEach(field => {
+                    const exists = wish.hasOwnProperty(field);
+                    const value = wish[field];
+                    console.log(`   ${exists ? '✅' : '⚪'} ${field}:`, exists ? value : 'Not provided (OK)');
+                  });
+                  
+                  // Data type validation
+                  console.log('🔍 TEMPLATE: Data types:');
+                  console.log(`   id: ${typeof wish.id} (should be string)`);
+                  console.log(`   guest_name: ${typeof wish.guest_name} (should be string)`);
+                  console.log(`   content: ${typeof wish.content} (should be string)`);
+                  console.log(`   likes_count: ${typeof wish.likes_count} (should be number)`);
+                  console.log(`   is_approved: ${typeof wish.is_approved} (should be boolean)`);
+                  
+                  // Check for any extra fields
+                  const allExpectedFields = [...requiredFields, ...optionalFields];
+                  const wishKeys = Object.keys(wish);
+                  const extraFields = wishKeys.filter(key => !allExpectedFields.includes(key));
+                  if (extraFields.length > 0) {
+                    console.log('🆕 TEMPLATE: Extra fields found:', extraFields);
+                    extraFields.forEach(field => {
+                      console.log(`   🆕 ${field}:`, wish[field]);
+                    });
+                  }
+                });
+                
+                console.log('\n📊 TEMPLATE: SUMMARY STATISTICS:');
+                console.log('================================================');
+                console.log(`Total wishes received: ${payload.wishes.length}`);
+                console.log(`Approved wishes: ${payload.wishes.filter(w => w.is_approved).length}`);
+                console.log(`Unapproved wishes: ${payload.wishes.filter(w => !w.is_approved).length}`);
+                console.log(`Wishes with images: ${payload.wishes.filter(w => w.image_url).length}`);
+                console.log(`Wishes with likes: ${payload.wishes.filter(w => w.likes_count > 0).length}`);
+                console.log('================================================\n');
+                
+                setWishes(payload.wishes);
+              } else {
+                console.warn('⚠️ TEMPLATE: Invalid wishes data received:', payload);
+                console.warn('⚠️ TEMPLATE: Expected format: { wishes: [...] }');
+              }
+          
+          console.log('⏰ TEMPLATE: Setting isLoading to false');
           setIsLoading(false);
           break;
         case 'WISH_SUBMITTED_SUCCESS':
@@ -137,18 +211,36 @@ export const useWishes = () => {
       }
     };
 
+    console.log('👂 TEMPLATE: Adding message event listener');
     window.addEventListener('message', handleMessage);
     
     // Request initial wishes data from platform
-    window.parent.postMessage({
+    console.log('📤 TEMPLATE: Requesting initial wishes data from platform...');
+    console.log('📤 TEMPLATE: Sending message to parent window');
+    
+    const wishRequest = {
       type: 'REQUEST_INITIAL_WISHES_DATA',
       payload: {}
-    }, '*');
+    };
+    console.log('📤 TEMPLATE: Request message:', wishRequest);
+    
+    window.parent.postMessage(wishRequest, '*');
+    
+    // Set a timeout to check if we get response
+    const responseTimeout = setTimeout(() => {
+      if (isLoading) {
+        console.error('⚠️ TEMPLATE: No response from platform after 10 seconds!');
+        console.error('⚠️ TEMPLATE: Platform may not be handling REQUEST_INITIAL_WISHES_DATA');
+        console.error('⚠️ TEMPLATE: Check if wish handlers are registered in platform');
+      }
+    }, 10000);
 
     return () => {
+      console.log('🧹 TEMPLATE: Cleaning up wish message listener');
       window.removeEventListener('message', handleMessage);
+      clearTimeout(responseTimeout);
     };
-  }, [toast]);
+  }, [toast, isLoading]);
 
   // Submit a new wish with optional image
   const submitWish = async (content: string, guestId: string, guestName: string, imageFile?: File) => {

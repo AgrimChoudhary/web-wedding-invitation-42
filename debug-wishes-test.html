@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Wishes Communication</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-box { border: 1px solid #ccc; padding: 15px; margin: 10px 0; }
+        .platform { background-color: #f0f8ff; }
+        .template { background-color: #f0fff0; }
+        button { padding: 10px 15px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Wish Communication Debug Tool</h1>
+    
+    <div class="debug-box platform">
+        <h2>📊 Platform Side (Main App)</h2>
+        <p>Check your browser console for logs starting with <code>PLATFORM:</code></p>
+        <ul>
+            <li>Look for wish handler registration</li>
+            <li>Check if database queries are successful</li>
+            <li>Verify message sending to template</li>
+        </ul>
+    </div>
+
+    <div class="debug-box template">
+        <h2>🎨 Template Side (Iframe)</h2>
+        <p>Check your browser console for logs starting with <code>TEMPLATE:</code></p>
+        <ul>
+            <li>Look for wish message listener setup</li>
+            <li>Check if initial data request is sent</li>
+            <li>Verify message reception from platform</li>
+        </ul>
+    </div>
+
+    <div class="debug-box">
+        <h2>🔍 Debug Checklist</h2>
+        <ol>
+            <li><strong>Template Loads:</strong> Should see "TEMPLATE: Setting up wish message listener..."</li>
+            <li><strong>Request Sent:</strong> Should see "TEMPLATE: Requesting initial wishes data..."</li>
+            <li><strong>Platform Receives:</strong> Should see "PLATFORM: Processing wish message with WishMessageHandlerService..."</li>
+            <li><strong>Handler Registration:</strong> Should see "PLATFORM: Wish message handler registered successfully"</li>
+            <li><strong>Database Query:</strong> Should see "PLATFORM: Database query successful!"</li>
+            <li><strong>Data Transform:</strong> Should see "PLATFORM: Transformed wishes for template"</li>
+            <li><strong>Message Send:</strong> Should see "PLATFORM: Message sent successfully!"</li>
+            <li><strong>Template Receives:</strong> Should see "TEMPLATE: Received initial wishes data from platform!"</li>
+            <li><strong>UI Update:</strong> Should see wishes displayed in carousel or "No wishes" message</li>
+        </ol>
+    </div>
+
+    <div class="debug-box">
+        <h2>🚨 Common Issues</h2>
+        <ul>
+            <li><strong>No Platform Logs:</strong> Message handler not registered</li>
+            <li><strong>No Database Results:</strong> Check event ID or wish approval status</li>
+            <li><strong>No Template Reception:</strong> iframe not found or communication blocked</li>
+            <li><strong>No UI Updates:</strong> State not updating or component not re-rendering</li>
+        </ul>
+    </div>
+
+    <div class="debug-box">
+        <h2>⚡ Next Steps</h2>
+        <p>1. Open your wedding invitation page</p>
+        <p>2. Open browser console (F12)</p>
+        <p>3. Look for the debug logs in order</p>
+        <p>4. Find where the flow breaks and report back</p>
+    </div>
+
+    <script>
+        console.log('🧪 Debug tool loaded - ready to analyze wish communication!');
+    </script>
+</body>
+</html>
