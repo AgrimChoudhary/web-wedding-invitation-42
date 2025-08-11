@@ -76,7 +76,39 @@ export const useWishes = () => {
       console.log('📦 TEMPLATE: Message payload:', payload);
 
       switch (type) {
-                    case 'INITIAL_WISHES_DATA':
+        case 'INVITATION_LOADED':
+          console.log('✅ TEMPLATE: Received INVITATION_LOADED with wishes data!');
+          console.log('📊 TEMPLATE: Full invitation data:', payload);
+          
+          // Check if wishes data is included in invitation data
+          if (payload.wishes && Array.isArray(payload.wishes)) {
+            console.log('🎁 TEMPLATE: Found wishes in invitation data:', payload.wishes.length, 'wishes');
+            
+            // Transform wishes to match expected format
+            const transformedWishes = payload.wishes.map(wish => ({
+              id: wish.id,
+              guest_id: wish.guest_id,
+              guest_name: wish.guest_name,
+              content: wish.content,
+              image_url: wish.image_url,
+              likes_count: wish.likes_count || 0,
+              is_approved: wish.is_approved,
+              created_at: wish.created_at
+            }));
+            
+            console.log('🔄 TEMPLATE: Transformed wishes from invitation data:', transformedWishes);
+            setWishes(transformedWishes);
+            setIsLoading(false);
+          } else {
+            console.log('📝 TEMPLATE: No wishes data in invitation, will request separately');
+            // If no wishes in invitation data, request them separately
+            window.parent.postMessage({
+              type: 'REQUEST_INITIAL_WISHES_DATA',
+              payload: {}
+            }, '*');
+          }
+          break;
+        case 'INITIAL_WISHES_DATA':
               console.log('✅ TEMPLATE: Received initial wishes data from platform!');
               console.log('📊 TEMPLATE: Payload structure:', payload);
               console.log('📊 TEMPLATE: Is wishes array?', Array.isArray(payload?.wishes));
