@@ -71,21 +71,26 @@ export const useWishes = () => {
         return;
       }
 
-      const { type, payload } = event.data;
+      const { type, data, payload } = event.data;
       console.log('🔍 TEMPLATE: Processing message type:', type);
+      console.log('📦 TEMPLATE: Full event data:', event.data);
+      console.log('📦 TEMPLATE: Message data:', data);
       console.log('📦 TEMPLATE: Message payload:', payload);
+      
+      // Use data if available, otherwise use payload
+      const messageData = data || payload;
 
       switch (type) {
         case 'INVITATION_LOADED':
           console.log('✅ TEMPLATE: Received INVITATION_LOADED with wishes data!');
-          console.log('📊 TEMPLATE: Full invitation data:', payload);
+          console.log('📊 TEMPLATE: Full invitation data:', messageData);
           
           // Check if wishes data is included in invitation data
-          if (payload.wishes && Array.isArray(payload.wishes)) {
-            console.log('🎁 TEMPLATE: Found wishes in invitation data:', payload.wishes.length, 'wishes');
+          if (messageData && messageData.wishes && Array.isArray(messageData.wishes)) {
+            console.log('🎁 TEMPLATE: Found wishes in invitation data:', messageData.wishes.length, 'wishes');
             
             // Transform wishes to match expected format
-            const transformedWishes = payload.wishes.map(wish => ({
+            const transformedWishes = messageData.wishes.map(wish => ({
               id: wish.id,
               guest_id: wish.guest_id,
               guest_name: wish.guest_name,
@@ -101,6 +106,7 @@ export const useWishes = () => {
             setIsLoading(false);
           } else {
             console.log('📝 TEMPLATE: No wishes data in invitation, will request separately');
+            console.log('📝 TEMPLATE: MessageData structure:', messageData);
             // If no wishes in invitation data, request them separately
             window.parent.postMessage({
               type: 'REQUEST_INITIAL_WISHES_DATA',
@@ -115,7 +121,7 @@ export const useWishes = () => {
               console.log('📊 TEMPLATE: Wishes count:', payload?.wishes?.length || 0);
               console.log('📊 TEMPLATE: Raw wishes data:', payload?.wishes);
               
-              if (payload.wishes && Array.isArray(payload.wishes)) {
+              if (payload && payload.wishes && Array.isArray(payload.wishes)) {
                 console.log('✅ TEMPLATE: Setting wishes in state:', payload.wishes.length, 'wishes');
                 
                 // Detailed analysis of each wish

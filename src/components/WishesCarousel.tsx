@@ -24,6 +24,24 @@ const WishesCarousel: React.FC<WishesCarouselProps> = ({ onViewAll }) => {
   const { wishes, isLoading, isSubmitting, submitWish, toggleLike } = useWishes();
   const { guestId, guestName } = useGuest();
 
+  // Debug logs for wishes data
+  console.log('🎠 WishesCarousel: Component rendered');
+  console.log('🎠 WishesCarousel: Wishes from hook:', wishes);
+  console.log('🎠 WishesCarousel: Wishes length:', wishes?.length || 0);
+  console.log('🎠 WishesCarousel: Is loading:', isLoading);
+  
+  // Log each wish for debugging
+  if (wishes && wishes.length > 0) {
+    wishes.forEach((wish, index) => {
+      console.log(`🎠 WishesCarousel: Wish ${index + 1}:`, {
+        id: wish.id,
+        guest_name: wish.guest_name,
+        content: wish.content,
+        is_approved: wish.is_approved
+      });
+    });
+  }
+
   const handleSubmitWish = async (content: string, imageFile?: File) => {
     if (!guestId || !guestName) {
       console.error('Missing guest info:', { guestId, guestName });
