@@ -114,7 +114,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (lastMessage.type === 'INVITATION_LOADED') {
       try {
         console.log('=== PROCESSING INVITATION_LOADED ===');
-        const payload = lastMessage.payload;
+        const payload: any = (lastMessage as any).payload ?? (lastMessage as any).data;
         
         // Update RSVP state from platform
         setRsvpStatus(payload.status === 'pending' ? null : payload.status);
@@ -146,7 +146,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setPlatformData(newPlatformData);
         
         // Map event details to wedding data if available
-        if (payload.eventDetails) {
+        if (payload?.eventDetails) {
           // Create a mock structured data to reuse existing mapper
           const mockStructuredData = {
             eventId: payload.eventId,

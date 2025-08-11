@@ -90,8 +90,8 @@ export const usePostMessage = () => {
       try {
         const message = event.data as PlatformMessage;
         
-        // Validate message structure
-        if (!message.type || !message.timestamp) {
+        // Validate message structure (type required; timestamp optional for backwards compatibility)
+        if (!message.type) {
           console.warn('⚠️ Invalid message structure:', message);
           return;
         }

@@ -92,16 +92,24 @@ export const useWishes = () => {
       console.log('📍 TEMPLATE: Message origin:', event.origin);
       
       // Security check
-      if (!isTrustedOrigin(event.origin)) {
+      const allowed = isTrustedOrigin(event.origin);
+      if (!allowed) {
         console.warn('⚠️ TEMPLATE: Untrusted origin se message mila:', event.origin);
+        console.warn('⚠️ TEMPLATE: Allowed origins:', getAllowedOrigins && getAllowedOrigins());
         return;
       }
 
-      const { type, data, payload } = event.data;
+      // Normalize message shape
+      const raw = event.data || {} as any;
+      const type = raw.type;
+      const data = raw.data;
+      const payload = raw.payload;
+      const timestamp = raw.timestamp;
       console.log('🔍 TEMPLATE: Processing message type:', type);
-      console.log('📦 TEMPLATE: Full event data:', event.data);
+      console.log('📦 TEMPLATE: Full event data:', raw);
       console.log('📦 TEMPLATE: Message data:', data);
       console.log('📦 TEMPLATE: Message payload:', payload);
+      console.log('⏱️ TEMPLATE: Message timestamp:', timestamp);
       
       // Use data if available, otherwise use payload
       const messageData = data || payload;
