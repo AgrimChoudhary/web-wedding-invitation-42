@@ -99,11 +99,18 @@ export const useWishes = () => {
                   const optionalFields = ['image_url', 'replies_count', 'updated_at', 'hasLiked'];
                   
                   console.log('✅ TEMPLATE: Required fields check:');
+                  let missingFields = [];
                   requiredFields.forEach(field => {
                     const exists = wish.hasOwnProperty(field);
                     const value = wish[field];
                     console.log(`   ${exists ? '✅' : '❌'} ${field}:`, exists ? value : 'MISSING!');
+                    if (!exists) missingFields.push(field);
                   });
+                  
+                  if (missingFields.length > 0) {
+                    console.error('❌ TEMPLATE: CRITICAL - Wish missing required fields:', missingFields);
+                    console.error('❌ TEMPLATE: This wish may not display correctly');
+                  }
                   
                   console.log('🔧 TEMPLATE: Optional fields check:');
                   optionalFields.forEach(field => {
@@ -120,6 +127,14 @@ export const useWishes = () => {
                   console.log(`   likes_count: ${typeof wish.likes_count} (should be number)`);
                   console.log(`   is_approved: ${typeof wish.is_approved} (should be boolean)`);
                   
+                  // Validate critical data
+                  if (!wish.is_approved) {
+                    console.warn('⚠️ TEMPLATE: Wish is not approved - will be filtered out:', wish.guest_name);
+                  }
+                  if (!wish.content || wish.content.trim() === '') {
+                    console.error('❌ TEMPLATE: Wish has empty content:', wish.guest_name);
+                  }
+                  
                   // Check for any extra fields
                   const allExpectedFields = [...requiredFields, ...optionalFields];
                   const wishKeys = Object.keys(wish);
@@ -135,16 +150,52 @@ export const useWishes = () => {
                 console.log('\n📊 TEMPLATE: SUMMARY STATISTICS:');
                 console.log('================================================');
                 console.log(`Total wishes received: ${payload.wishes.length}`);
-                console.log(`Approved wishes: ${payload.wishes.filter(w => w.is_approved).length}`);
-                console.log(`Unapproved wishes: ${payload.wishes.filter(w => !w.is_approved).length}`);
+                
+                const approvedWishes = payload.wishes.filter(w => w.is_approved);
+                const unapprovedWishes = payload.wishes.filter(w => !w.is_approved);
+                console.log(`Approved wishes: ${approvedWishes.length}`);
+                console.log(`Unapproved wishes: ${unapprovedWishes.length}`);
+                
+                if (approvedWishes.length === 0 && unapprovedWishes.length > 0) {
+                  console.warn('⚠️ TEMPLATE: ISSUE FOUND - Wishes received but none are approved!');
+                  console.warn('⚠️ TEMPLATE: Host needs to approve wishes in management panel');
+                  console.warn('⚠️ TEMPLATE: Unapproved wishes will not display in carousel');
+                } else if (approvedWishes.length === 0) {
+                  console.warn('⚠️ TEMPLATE: No wishes to display - either no wishes exist or none approved');
+                }
+                
                 console.log(`Wishes with images: ${payload.wishes.filter(w => w.image_url).length}`);
                 console.log(`Wishes with likes: ${payload.wishes.filter(w => w.likes_count > 0).length}`);
                 console.log('================================================\n');
                 
-                setWishes(payload.wishes);
+                // Validate wishes before setting state
+                const validWishes = payload.wishes.filter(wish => {
+                  const isValid = wish.id && wish.guest_name && wish.content && typeof wish.is_approved === 'boolean';
+                  if (!isValid) {
+                    console.warn('⚠️ TEMPLATE: Filtering out invalid wish:', wish);
+                  }
+                  return isValid;
+                });
+                
+                console.log('✅ TEMPLATE: Setting valid wishes in state:', validWishes.length);
+                setWishes(validWishes);
+                
+                // Trigger carousel check after state update
+                setTimeout(() => {
+                  const approvedForCarousel = validWishes.filter(w => w.is_approved);
+                  console.log('🎠 TEMPLATE: Wishes available for carousel display:', approvedForCarousel.length);
+                  if (approvedForCarousel.length === 0) {
+                    console.warn('⚠️ TEMPLATE: No approved wishes for carousel - carousel will show empty state');
+                  }
+                }, 100);
+                
               } else {
                 console.warn('⚠️ TEMPLATE: Invalid wishes data received:', payload);
                 console.warn('⚠️ TEMPLATE: Expected format: { wishes: [...] }');
+                console.error('❌ TEMPLATE: This means platform sent malformed data or communication failed');
+                
+                // Set empty array to clear loading state
+                setWishes([]);
               }
           
           console.log('⏰ TEMPLATE: Setting isLoading to false');
