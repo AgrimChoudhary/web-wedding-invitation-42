@@ -65,10 +65,9 @@ export const useWishes = () => {
       console.log('📥 TEMPLATE: Received message from platform:', event.data);
       console.log('📍 TEMPLATE: Message origin:', event.origin);
       
-      // Security check - enhanced with more detailed logging
+      // Security check
       if (!isTrustedOrigin(event.origin)) {
         console.warn('⚠️ TEMPLATE: Untrusted origin se message mila:', event.origin);
-        console.warn('⚠️ TEMPLATE: Expected origins:', TRUSTED_ORIGINS);
         return;
       }
 
@@ -266,27 +265,17 @@ export const useWishes = () => {
     console.log('👂 TEMPLATE: Adding message event listener');
     window.addEventListener('message', handleMessage);
     
-    // Request initial wishes data from platform with enhanced error handling
-    const sendWishRequest = () => {
-      console.log('📤 TEMPLATE: Requesting initial wishes data from platform...');
-      console.log('📤 TEMPLATE: Sending message to parent window');
-      
-      const wishRequest = {
-        type: 'REQUEST_INITIAL_WISHES_DATA',
-        payload: {}
-      };
-      console.log('📤 TEMPLATE: Request message:', wishRequest);
-      
-      try {
-        window.parent.postMessage(wishRequest, '*');
-        console.log('✅ TEMPLATE: Request sent successfully');
-      } catch (error) {
-        console.error('❌ TEMPLATE: Failed to send request:', error);
-      }
+    // Request initial wishes data from platform
+    console.log('📤 TEMPLATE: Requesting initial wishes data from platform...');
+    console.log('📤 TEMPLATE: Sending message to parent window');
+    
+    const wishRequest = {
+      type: 'REQUEST_INITIAL_WISHES_DATA',
+      payload: {}
     };
-
-    // Send initial request
-    sendWishRequest();
+    console.log('📤 TEMPLATE: Request message:', wishRequest);
+    
+        window.parent.postMessage(wishRequest, '*');
     
     // Set up heartbeat to show template is still waiting for response
     const heartbeat = setInterval(() => {
@@ -296,46 +285,26 @@ export const useWishes = () => {
       }
     }, 3000); // Log every 3 seconds
     
-    // Retry mechanism if no response within 5 seconds
-    const retryTimer = setTimeout(() => {
-      if (isLoading) {
-        console.warn('⚠️ TEMPLATE: No response after 5 seconds, retrying...');
-        sendWishRequest();
-      }
-    }, 5000);
-    
-    // Set a timeout to check if we get response
-    const responseTimeout = setTimeout(() => {
-      if (isLoading) {
-        console.error('⚠️ TEMPLATE: No response from platform after 15 seconds!');
-        console.error('⚠️ TEMPLATE: Platform may not be handling REQUEST_INITIAL_WISHES_DATA');
-        console.error('⚠️ TEMPLATE: Check if wish handlers are registered in platform');
-        console.error('⚠️ TEMPLATE: This means either:');
-        console.error('   - Platform is not receiving the message');
-        console.error('   - Database query is hanging/timing out'); 
-        console.error('   - Platform is not sending response back');
-        console.error('   - Message handler is not registered properly');
-        console.error('🔍 TEMPLATE: Current loading state:', isLoading);
-        console.error('🔍 TEMPLATE: Current wishes count:', wishes.length);
-        
-        // Set error state
-        setIsLoading(false);
-        setWishes([]);
-        
-        toast({
-          title: "❌ Connection Failed",
-          description: "Unable to connect to platform. Please refresh the page.",
-          variant: "destructive",
-          duration: 5000,
-        });
-      }
-    }, 15000); // 15 seconds timeout
+        // Set a timeout to check if we get response
+        const responseTimeout = setTimeout(() => {
+          if (isLoading) {
+            console.error('⚠️ TEMPLATE: No response from platform after 15 seconds!');
+            console.error('⚠️ TEMPLATE: Platform may not be handling REQUEST_INITIAL_WISHES_DATA');
+            console.error('⚠️ TEMPLATE: Check if wish handlers are registered in platform');
+            console.error('⚠️ TEMPLATE: This means either:');
+            console.error('   - Platform is not receiving the message');
+            console.error('   - Database query is hanging/timing out'); 
+            console.error('   - Platform is not sending response back');
+            console.error('   - Message handler is not registered properly');
+            console.error('🔍 TEMPLATE: Current loading state:', isLoading);
+            console.error('🔍 TEMPLATE: Current wishes count:', wishes.length);
+          }
+        }, 15000); // Increased to 15 seconds to allow for database timeout
 
     return () => {
       console.log('🧹 TEMPLATE: Cleaning up wish message listener');
       window.removeEventListener('message', handleMessage);
       clearTimeout(responseTimeout);
-      clearTimeout(retryTimer);
       clearInterval(heartbeat);
     };
   }, [toast, isLoading]);
