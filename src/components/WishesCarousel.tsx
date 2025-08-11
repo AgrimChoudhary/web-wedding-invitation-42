@@ -108,7 +108,7 @@ const WishesCarousel: React.FC<WishesCarouselProps> = ({ onViewAll }) => {
               ))}
             </div>
           </div>
-        ) : wishes.length > 0 ? (
+        ) : wishes.filter(wish => wish.is_approved).length > 0 ? (
           <div className="mb-8 md:mb-12 relative">
             <Carousel
               opts={{
@@ -118,7 +118,7 @@ const WishesCarousel: React.FC<WishesCarouselProps> = ({ onViewAll }) => {
               className="w-full max-w-4xl md:max-w-5xl mx-auto"
             >
               <CarouselContent className="-ml-4 md:-ml-6">
-                {wishes.map((wish, index) => (
+                {wishes.filter(wish => wish.is_approved).map((wish, index) => (
                   <CarouselItem key={wish.id} className="pl-4 md:pl-6 basis-4/5 sm:basis-3/5 md:basis-1/2 lg:basis-1/3">
                     <div 
                       className="animate-fade-in h-full"
@@ -142,7 +142,7 @@ const WishesCarousel: React.FC<WishesCarouselProps> = ({ onViewAll }) => {
               </CarouselNext>
             </Carousel>
 
-            {wishes.length > 5 && onViewAll && (
+            {wishes.filter(wish => wish.is_approved).length > 5 && onViewAll && (
               <div className="text-center mt-4 md:mt-6">
                 <button
                   onClick={onViewAll}

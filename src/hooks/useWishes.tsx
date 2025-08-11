@@ -97,6 +97,19 @@ export const useWishes = () => {
             variant: "destructive",
           });
           break;
+        case 'WISH_APPROVED':
+          console.log('Wish approved:', payload);
+          toast({
+            title: "✨ Wish Approved!",
+            description: "Your wish has been approved and is now visible to all guests",
+            duration: 4000,
+          });
+          // Refresh wishes data to get updated list
+          window.parent.postMessage({
+            type: 'REQUEST_WISHES_REFRESH',
+            payload: {}
+          }, '*');
+          break;
         case 'WISH_LIKE_UPDATED':
           console.log('Wish like updated:', payload);
           // Update local state with new like data

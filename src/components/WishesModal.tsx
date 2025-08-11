@@ -55,10 +55,11 @@ const WishesModal: React.FC<WishesModalProps> = ({ open, onOpenChange }) => {
     setReplyingToWishId(null);
   };
 
-  // Filter wishes based on search query
+  // Filter wishes based on search query and approval status
   const filteredWishes = wishes.filter(wish =>
-    wish.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    wish.guest_name.toLowerCase().includes(searchQuery.toLowerCase())
+    wish.is_approved && // Only show approved wishes to guests
+    (wish.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+     wish.guest_name.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   return (
