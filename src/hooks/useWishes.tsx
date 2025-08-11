@@ -224,21 +224,37 @@ export const useWishes = () => {
     };
     console.log('📤 TEMPLATE: Request message:', wishRequest);
     
-    window.parent.postMessage(wishRequest, '*');
+        window.parent.postMessage(wishRequest, '*');
     
-    // Set a timeout to check if we get response
-    const responseTimeout = setTimeout(() => {
+    // Set up heartbeat to show template is still waiting for response
+    const heartbeat = setInterval(() => {
       if (isLoading) {
-        console.error('⚠️ TEMPLATE: No response from platform after 10 seconds!');
-        console.error('⚠️ TEMPLATE: Platform may not be handling REQUEST_INITIAL_WISHES_DATA');
-        console.error('⚠️ TEMPLATE: Check if wish handlers are registered in platform');
+        console.log('💓 TEMPLATE: Still waiting for platform response...', new Date().toISOString());
+        console.log('💓 TEMPLATE: Loading state:', isLoading, '| Wishes count:', wishes.length);
       }
-    }, 10000);
+    }, 3000); // Log every 3 seconds
+    
+        // Set a timeout to check if we get response
+        const responseTimeout = setTimeout(() => {
+          if (isLoading) {
+            console.error('⚠️ TEMPLATE: No response from platform after 15 seconds!');
+            console.error('⚠️ TEMPLATE: Platform may not be handling REQUEST_INITIAL_WISHES_DATA');
+            console.error('⚠️ TEMPLATE: Check if wish handlers are registered in platform');
+            console.error('⚠️ TEMPLATE: This means either:');
+            console.error('   - Platform is not receiving the message');
+            console.error('   - Database query is hanging/timing out'); 
+            console.error('   - Platform is not sending response back');
+            console.error('   - Message handler is not registered properly');
+            console.error('🔍 TEMPLATE: Current loading state:', isLoading);
+            console.error('🔍 TEMPLATE: Current wishes count:', wishes.length);
+          }
+        }, 15000); // Increased to 15 seconds to allow for database timeout
 
     return () => {
       console.log('🧹 TEMPLATE: Cleaning up wish message listener');
       window.removeEventListener('message', handleMessage);
       clearTimeout(responseTimeout);
+      clearInterval(heartbeat);
     };
   }, [toast, isLoading]);
 
