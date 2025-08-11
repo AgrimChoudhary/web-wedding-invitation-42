@@ -24,16 +24,42 @@ export interface WishLike {
   created_at: string;
 }
 
-// Security: Define trusted origins
-const TRUSTED_ORIGINS = [
-  'https://utsavy-invitations.vercel.app',
+// Security: Define trusted origins (expanded) and include dynamic parent/referrer origins
+const STATIC_TRUSTED_ORIGINS = [
+  'https://utsavy-invitations.vercel.app', // template prod (if used)
+  'https://utsavy2.vercel.app',            // platform prod
+  'https://utsavytemplate1.vercel.app',    // legacy template host
   'http://localhost:3000',
   'http://localhost:5173',
+  'http://localhost:5174',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
   'http://localhost:8080'
 ];
 
+const getAllowedOrigins = (): string[] => {
+  const origins = new Set<string>([...STATIC_TRUSTED_ORIGINS, window.location.origin]);
+  try {
+    // If embedded, document.referrer is usually the platform origin
+    if (document.referrer) {
+      const refOrigin = new URL(document.referrer).origin;
+      origins.add(refOrigin);
+    }
+  } catch {}
+  try {
+    // Allow passing explicit parent origin via URL param for flexibility
+    const params = new URLSearchParams(window.location.search);
+    const parentOrigin = params.get('parentOrigin');
+    if (parentOrigin) {
+      const parsed = new URL(parentOrigin).origin;
+      origins.add(parsed);
+    }
+  } catch {}
+  return Array.from(origins);
+};
+
 const isTrustedOrigin = (origin: string): boolean => {
-  return TRUSTED_ORIGINS.includes(origin) || origin === window.location.origin;
+  return getAllowedOrigins().includes(origin);
 };
 
 // Helper function to convert file to base64

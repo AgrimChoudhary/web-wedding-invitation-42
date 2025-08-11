@@ -1,11 +1,27 @@
 import { useEffect, useState, useCallback } from 'react';
 import { PlatformMessage, TemplateMessage } from '../types/messages';
 
-const ALLOWED_ORIGINS = [
-  'https://utsavy2.vercel.app',
-  'https://platform-domain.com', // Replace with actual platform domain
-  window.location.origin
-];
+// Build allowed origins dynamically to work in prod and local
+const getAllowedOrigins = (): string[] => {
+  const origins = new Set<string>([
+    'https://utsavy2.vercel.app',
+    'https://platform-domain.com', // Replace with actual platform domain
+    window.location.origin
+  ]);
+  try {
+    if (document.referrer) {
+      origins.add(new URL(document.referrer).origin);
+    }
+  } catch {}
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const parentOrigin = params.get('parentOrigin');
+    if (parentOrigin) {
+      origins.add(new URL(parentOrigin).origin);
+    }
+  } catch {}
+  return Array.from(origins);
+};
 
 export const usePostMessage = () => {
   const [lastMessage, setLastMessage] = useState<PlatformMessage | null>(null);
@@ -66,7 +82,7 @@ export const usePostMessage = () => {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       // Validate origin for security
-      if (!ALLOWED_ORIGINS.includes(event.origin)) {
+      if (!getAllowedOrigins().includes(event.origin)) {
         console.warn('⚠️ Message from unauthorized origin:', event.origin);
         return;
       }
@@ -85,18 +101,25 @@ export const usePostMessage = () => {
           timestamp: message.timestamp,
           hasPayload: 'payload' in message ? !!message.payload : false
         });
-        setLastMessage(message);
+        // Normalize message so that INVITATION_LOADED always has payload
+        if (message.type === 'INVITATION_LOADED') {
+          const normalizedPayload = (message as any).payload ?? (message as any).data ?? null;
+          setLastMessage({ ...(message as any), payload: normalizedPayload } as any);
+        } else {
+          setLastMessage(message);
+        }
         setIsConnected(true);
         
         // Handle specific message types
-        if (message.type === 'INVITATION_LOADED' && 'payload' in message) {
+        if (message.type === 'INVITATION_LOADED') {
+          const payload: any = (message as any).payload ?? (message as any).data;
           console.log('=== 📨 INVITATION_LOADED RECEIVED ===');
-          console.log('Event ID:', message.payload?.eventId);
-          console.log('Guest ID:', message.payload?.guestId);
-          console.log('Status:', message.payload?.status);
-          console.log('RSVP Fields count:', message.payload?.rsvpFields?.length || 0);
-          console.log('Show Submit Button:', message.payload?.showSubmitButton);
-          console.log('Show Edit Button:', message.payload?.showEditButton);
+          console.log('Event ID:', payload?.eventId);
+          console.log('Guest ID:', payload?.guestId);
+          console.log('Status:', payload?.status);
+          console.log('RSVP Fields count:', payload?.rsvpFields?.length || 0);
+          console.log('Show Submit Button:', payload?.showSubmitButton);
+          console.log('Show Edit Button:', payload?.showEditButton);
           console.log('=== END INVITATION_LOADED ===');
         } else if (message.type === 'INVITATION_PAYLOAD_UPDATE' && 'data' in message) {
           console.log('📨 Invitation payload update:', message.data);
