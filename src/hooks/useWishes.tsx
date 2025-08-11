@@ -70,9 +70,16 @@ export const useWishes = () => {
 
       switch (type) {
         case 'INITIAL_WISHES_DATA':
-          console.log('Received initial wishes data:', payload);
+          console.log('✅ Received initial wishes data from platform:', payload);
+          console.log('📊 Total wishes in response:', payload.wishes?.length || 0);
+          console.log('🔍 Wishes details:', payload.wishes);
           if (payload.wishes && Array.isArray(payload.wishes)) {
+            const approvedWishes = payload.wishes.filter(w => w.is_approved);
+            console.log('✅ Approved wishes count:', approvedWishes.length);
+            console.log('🎯 Approved wishes list:', approvedWishes);
             setWishes(payload.wishes);
+          } else {
+            console.warn('⚠️ No wishes array in payload or payload is not array');
           }
           setIsLoading(false);
           break;
@@ -140,10 +147,20 @@ export const useWishes = () => {
     window.addEventListener('message', handleMessage);
     
     // Request initial wishes data from platform
+    console.log('🚀 Template starting - requesting initial wishes data from platform...');
     window.parent.postMessage({
       type: 'REQUEST_INITIAL_WISHES_DATA',
       payload: {}
     }, '*');
+    
+    // Add timeout to check if platform responds
+    setTimeout(() => {
+      if (isLoading) {
+        console.warn('⚠️ Platform did not respond to wishes request within 5 seconds');
+        console.warn('⚠️ Platform may not be handling REQUEST_INITIAL_WISHES_DATA properly');
+        console.warn('⚠️ Check if wish message handlers are registered');
+      }
+    }, 5000);
 
     return () => {
       window.removeEventListener('message', handleMessage);
