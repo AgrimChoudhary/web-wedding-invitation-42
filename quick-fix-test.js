@@ -82,3 +82,4 @@ console.log('🔍 DIAGNOSTIC COMPLETE - Check logs above for issues');
 console.log('💡 To remove the message listener, run: window.removeEventListener("message", messageListener)');
 
 
+
