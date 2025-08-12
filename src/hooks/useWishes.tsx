@@ -383,7 +383,10 @@ export const useWishes = () => {
 
   // Submit a new wish with optional image
   const submitWish = async (content: string, guestId: string, guestName: string, imageFile?: File) => {
+    console.log('🎁 TEMPLATE: submitWish called with:', { content: content?.substring(0, 50), guestId, guestName, hasImage: !!imageFile });
+    
     if (!content.trim() || content.length > 280) {
+      console.error('🚨 TEMPLATE: Invalid content length:', content.length);
       toast({
         title: "Invalid wish",
         description: "Please enter a wish between 1 and 280 characters.",
@@ -392,10 +395,36 @@ export const useWishes = () => {
       return false;
     }
     
-    if (!guestId || !guestName) {
-      console.error('🚨 TEMPLATE: Missing guest information!');
-      console.error('🚨 TEMPLATE: guestId:', guestId);
-      console.error('🚨 TEMPLATE: guestName:', guestName);
+    // Enhanced guest validation with URL fallback
+    let finalGuestId = guestId;
+    let finalGuestName = guestName;
+    
+    // Try to get from URL parameters if missing
+    if (!finalGuestId || !finalGuestName) {
+      console.log('🔍 TEMPLATE: Guest info missing, checking URL parameters...');
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlGuestId = urlParams.get('guestId');
+      const urlGuestName = urlParams.get('guestName');
+      
+      if (!finalGuestId && urlGuestId) {
+        finalGuestId = urlGuestId;
+        console.log('✅ TEMPLATE: Got guest ID from URL:', finalGuestId);
+      }
+      
+      if (!finalGuestName && urlGuestName) {
+        finalGuestName = urlGuestName;
+        console.log('✅ TEMPLATE: Got guest name from URL:', finalGuestName);
+      }
+    }
+    
+    if (!finalGuestId || !finalGuestName) {
+      console.error('🚨 TEMPLATE: Missing guest information after all checks!');
+      console.error('🚨 TEMPLATE: finalGuestId:', finalGuestId);
+      console.error('🚨 TEMPLATE: finalGuestName:', finalGuestName);
+      console.error('🚨 TEMPLATE: Original guestId:', guestId);
+      console.error('🚨 TEMPLATE: Original guestName:', guestName);
+      console.error('🚨 TEMPLATE: URL parameters:', Object.fromEntries(new URLSearchParams(window.location.search)));
+      
       toast({
         title: "Error",
         description: "Guest information is missing. Please refresh the page.",
@@ -406,8 +435,8 @@ export const useWishes = () => {
     
     setIsSubmitting(true);
     console.log('🎁 TEMPLATE: Starting wish submission process...');
-    console.log('🎁 TEMPLATE: Guest ID:', guestId);
-    console.log('🎁 TEMPLATE: Guest Name:', guestName);
+    console.log('🎁 TEMPLATE: Final Guest ID:', finalGuestId);
+    console.log('🎁 TEMPLATE: Final Guest Name:', finalGuestName);
     console.log('🎁 TEMPLATE: Content length:', content.length);
     console.log('🎁 TEMPLATE: Has image:', !!imageFile);
     
@@ -434,8 +463,8 @@ export const useWishes = () => {
       }
 
       const wishData = {
-        guest_id: guestId,
-        guest_name: guestName,
+        guest_id: finalGuestId,  // Use final resolved guest ID
+        guest_name: finalGuestName,  // Use final resolved guest name
         content: content.trim(),
         image_data: imageData, // Send as base64 string
         image_filename: imageFile?.name || null,
@@ -452,70 +481,72 @@ export const useWishes = () => {
         image_type: wishData.image_type
       });
 
-      // Create a promise to wait for platform response
-      const responsePromise = new Promise((resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-          reject(new Error('Platform response timeout'));
-        }, 10000); // 10 second timeout
+      // Send message to parent platform (simplified approach)
+      console.log('📡 TEMPLATE: Sending postMessage to platform...');
+      
+      try {
+        if (!window.parent) {
+          throw new Error('No parent window found - template not loaded in iframe');
+        }
         
-        const handleResponse = (event: MessageEvent) => {
-          console.log('📥 TEMPLATE: Received response from platform:', event.data);
-          
-          if (event.data.type === 'WISH_SUBMITTED_SUCCESS') {
-            clearTimeout(timeoutId);
-            window.removeEventListener('message', handleResponse);
-            console.log('✅ TEMPLATE: Wish submitted successfully!');
-            console.log('🎁 TEMPLATE: Wish data:', event.data.payload);
-            resolve(event.data.payload);
-          } else if (event.data.type === 'WISH_SUBMITTED_ERROR') {
-            clearTimeout(timeoutId);
-            window.removeEventListener('message', handleResponse);
-            console.error('❌ TEMPLATE: Platform returned error:', event.data.payload);
-            reject(new Error(event.data.payload.error || 'Platform error'));
-          }
+        const message = {
+          type: 'SUBMIT_NEW_WISH',
+          payload: wishData,
+          timestamp: Date.now(),
+          source: 'WEB_WEDDING_INVITATION_42'
         };
         
-        window.addEventListener('message', handleResponse);
-      });
-
-      // Send message to parent platform
-      console.log('📡 TEMPLATE: Sending postMessage to platform...');
-      window.parent.postMessage({
-        type: 'SUBMIT_NEW_WISH',
-        payload: wishData,
-        timestamp: Date.now(),
-        source: 'WEB_WEDDING_INVITATION_42'
-      }, '*');
-      
-      console.log('📡 TEMPLATE: Message sent, waiting for response...');
-
-      // Wait for platform response
-      await responsePromise;
-      
-      console.log('🎉 TEMPLATE: Wish submission completed successfully!');
-      
-      toast({
-        title: "Wish submitted!",
-        description: "Your wish has been submitted and will appear after approval.",
-      });
-
-      return true;
+        console.log('📡 TEMPLATE: Message to send:', message);
+        
+        window.parent.postMessage(message, '*');
+        
+        console.log('✅ TEMPLATE: Message sent successfully to platform');
+        
+        // Show immediate success message (don't wait for platform response)
+        toast({
+          title: "Wish submitted!",
+          description: "Your wish has been submitted and will appear after approval.",
+        });
+        
+        console.log('🎉 TEMPLATE: Wish submission process completed!');
+        
+        return true;
+        
+      } catch (postMessageError) {
+        console.error('❌ TEMPLATE: PostMessage failed:', postMessageError);
+        throw new Error('Failed to send message to platform: ' + postMessageError.message);
+      }
       
     } catch (error) {
       console.error('❌ TEMPLATE: Error submitting wish:', error);
       console.error('❌ TEMPLATE: Error type:', typeof error);
-      console.error('❌ TEMPLATE: Error message:', error.message);
+      console.error('❌ TEMPLATE: Error instanceof Error:', error instanceof Error);
+      console.error('❌ TEMPLATE: Error message:', error?.message);
+      console.error('❌ TEMPLATE: Error stack:', error?.stack);
       console.error('❌ TEMPLATE: Full error object:', error);
       
+      // Additional debug info
+      console.error('❌ TEMPLATE: Submission failed at step - checking variables:');
+      console.error('❌ TEMPLATE: window.parent exists:', !!window.parent);
+      console.error('❌ TEMPLATE: finalGuestId:', finalGuestId);
+      console.error('❌ TEMPLATE: finalGuestName:', finalGuestName);
+      console.error('❌ TEMPLATE: content length:', content?.length);
+      
       let errorMessage = "Failed to submit wish. Please try again.";
-      if (error.message?.includes('timeout')) {
+      const errorMsg = error?.message || '';
+      
+      if (errorMsg.includes('timeout')) {
         errorMessage = "Request timed out. Please check your connection and try again.";
-      } else if (error.message?.includes('not found')) {
+      } else if (errorMsg.includes('not found')) {
         errorMessage = "Event or guest information not found. Please refresh the page.";
-      } else if (error.message?.includes('disabled')) {
+      } else if (errorMsg.includes('disabled')) {
         errorMessage = "Wishes feature is currently disabled for this event.";
-      } else if (error.message?.includes('permission')) {
+      } else if (errorMsg.includes('permission')) {
         errorMessage = "You don't have permission to submit wishes for this event.";
+      } else if (errorMsg.includes('parent window')) {
+        errorMessage = "Template communication error. Please refresh the page.";
+      } else if (errorMsg.includes('postMessage')) {
+        errorMessage = "Communication error with platform. Please try again.";
       }
       
       toast({
