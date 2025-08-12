@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Wish Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+        .box { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; border: 2px solid #ddd; }
+        .success { border-color: green; background: #f0fff0; }
+        .error { border-color: red; background: #fff0f0; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        input, textarea { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; }
+        #result { font-family: monospace; white-space: pre-wrap; background: #f8f9fa; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Simple Wish Test</h1>
+    
+    <div class="box">
+        <h3>Current Page Info</h3>
+        <div id="page-info"></div>
+    </div>
+    
+    <div class="box">
+        <h3>Test Wish Submission</h3>
+        <input type="text" id="guestName" placeholder="Guest Name" value="Test Guest">
+        <input type="text" id="guestId" placeholder="Guest ID" value="test-guest-123">
+        <textarea id="wishContent" placeholder="Enter your wish..." rows="3">Congratulations on your special day! Wishing you both a lifetime of happiness and love. 🎉💕</textarea>
+        <button onclick="testWish()">Submit Test Wish</button>
+        <button onclick="clearResult()">Clear Result</button>
+    </div>
+    
+    <div class="box">
+        <h3>Result</h3>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const result = document.getElementById('result');
+            const timestamp = new Date().toLocaleTimeString();
+            result.textContent += `[${timestamp}] ${message}\n`;
+            console.log(message);
+        }
+
+        function clearResult() {
+            document.getElementById('result').textContent = '';
+        }
+
+        // Show page info
+        function showPageInfo() {
+            const info = document.getElementById('page-info');
+            const urlParams = new URLSearchParams(window.location.search);
+            const params = Object.fromEntries(urlParams.entries());
+            
+            info.innerHTML = `
+                <div><strong>URL:</strong> ${window.location.href}</div>
+                <div><strong>Is in iframe:</strong> ${window.parent !== window ? 'Yes' : 'No'}</div>
+                <div><strong>URL Parameters:</strong> ${JSON.stringify(params, null, 2)}</div>
+            `;
+            
+            // Auto-fill from URL
+            if (params.guestName) document.getElementById('guestName').value = params.guestName;
+            if (params.guestId) document.getElementById('guestId').value = params.guestId;
+        }
+
+        // Test wish submission
+        function testWish() {
+            log('🧪 Starting wish test...');
+            
+            const guestName = document.getElementById('guestName').value;
+            const guestId = document.getElementById('guestId').value;
+            const content = document.getElementById('wishContent').value;
+            
+            if (!guestName || !guestId || !content) {
+                log('❌ Missing required fields');
+                return;
+            }
+            
+            log(`📝 Guest: ${guestName} (${guestId})`);
+            log(`💭 Content: ${content.substring(0, 50)}...`);
+            
+            // Check if we're in iframe
+            if (window.parent === window) {
+                log('⚠️ WARNING: Not in iframe - test may not work properly');
+            } else {
+                log('✅ In iframe - ready to test');
+            }
+            
+            try {
+                const wishData = {
+                    guest_id: guestId,
+                    guest_name: guestName,
+                    content: content,
+                    image_data: null,
+                    image_filename: null,
+                    image_type: null
+                };
+                
+                const message = {
+                    type: 'SUBMIT_NEW_WISH',
+                    payload: wishData,
+                    timestamp: Date.now(),
+                    source: 'SIMPLE_TEST'
+                };
+                
+                log('📤 Sending message to platform...');
+                log(`📦 Message: ${JSON.stringify(message, null, 2)}`);
+                
+                window.parent.postMessage(message, '*');
+                
+                log('✅ Message sent successfully!');
+                log('💡 Check platform console for response');
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`);
+            }
+        }
+
+        // Listen for responses
+        window.addEventListener('message', function(event) {
+            log(`📥 Received message: ${JSON.stringify(event.data, null, 2)}`);
+        });
+
+        // Initialize
+        showPageInfo();
+        log('🚀 Simple test loaded');
+    </script>
+</body>
+</html>
