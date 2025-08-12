@@ -393,6 +393,9 @@ export const useWishes = () => {
     }
     
     if (!guestId || !guestName) {
+      console.error('🚨 TEMPLATE: Missing guest information!');
+      console.error('🚨 TEMPLATE: guestId:', guestId);
+      console.error('🚨 TEMPLATE: guestName:', guestName);
       toast({
         title: "Error",
         description: "Guest information is missing. Please refresh the page.",
@@ -402,17 +405,26 @@ export const useWishes = () => {
     }
     
     setIsSubmitting(true);
+    console.log('🎁 TEMPLATE: Starting wish submission process...');
+    console.log('🎁 TEMPLATE: Guest ID:', guestId);
+    console.log('🎁 TEMPLATE: Guest Name:', guestName);
+    console.log('🎁 TEMPLATE: Content length:', content.length);
+    console.log('🎁 TEMPLATE: Has image:', !!imageFile);
+    
     try {
-      console.log('Submitting wish:', { content, guestId, guestName, hasImage: !!imageFile });
-      
       let imageData = null;
       if (imageFile) {
-        console.log('Converting image to base64:', imageFile.name, 'Size:', imageFile.size);
+        console.log('🖼️ TEMPLATE: Converting image to base64...');
+        console.log('🖼️ TEMPLATE: Image name:', imageFile.name);
+        console.log('🖼️ TEMPLATE: Image size:', imageFile.size);
+        console.log('🖼️ TEMPLATE: Image type:', imageFile.type);
+        
         try {
           imageData = await fileToBase64(imageFile);
-          console.log('Image converted to base64 successfully');
+          console.log('✅ TEMPLATE: Image converted to base64 successfully');
+          console.log('📏 TEMPLATE: Base64 length:', imageData?.length || 0);
         } catch (error) {
-          console.error('Error converting image to base64:', error);
+          console.error('❌ TEMPLATE: Error converting image to base64:', error);
           toast({
             title: "Image processing failed",
             description: "Could not process image, but wish will be submitted without it.",
@@ -430,25 +442,91 @@ export const useWishes = () => {
         image_type: imageFile?.type || null
       };
 
-      console.log('Sending wish data to platform:', wishData);
+      console.log('📤 TEMPLATE: Sending wish data to platform...');
+      console.log('📦 TEMPLATE: Wish data structure:', {
+        guest_id: wishData.guest_id,
+        guest_name: wishData.guest_name,
+        content: wishData.content?.substring(0, 50) + '...',
+        has_image: !!wishData.image_data,
+        image_filename: wishData.image_filename,
+        image_type: wishData.image_type
+      });
+
+      // Create a promise to wait for platform response
+      const responsePromise = new Promise((resolve, reject) => {
+        const timeoutId = setTimeout(() => {
+          reject(new Error('Platform response timeout'));
+        }, 10000); // 10 second timeout
+        
+        const handleResponse = (event: MessageEvent) => {
+          console.log('📥 TEMPLATE: Received response from platform:', event.data);
+          
+          if (event.data.type === 'WISH_SUBMITTED_SUCCESS') {
+            clearTimeout(timeoutId);
+            window.removeEventListener('message', handleResponse);
+            console.log('✅ TEMPLATE: Wish submitted successfully!');
+            console.log('🎁 TEMPLATE: Wish data:', event.data.payload);
+            resolve(event.data.payload);
+          } else if (event.data.type === 'WISH_SUBMITTED_ERROR') {
+            clearTimeout(timeoutId);
+            window.removeEventListener('message', handleResponse);
+            console.error('❌ TEMPLATE: Platform returned error:', event.data.payload);
+            reject(new Error(event.data.payload.error || 'Platform error'));
+          }
+        };
+        
+        window.addEventListener('message', handleResponse);
+      });
 
       // Send message to parent platform
+      console.log('📡 TEMPLATE: Sending postMessage to platform...');
       window.parent.postMessage({
         type: 'SUBMIT_NEW_WISH',
-        payload: wishData
+        payload: wishData,
+        timestamp: Date.now(),
+        source: 'WEB_WEDDING_INVITATION_42'
       }, '*');
+      
+      console.log('📡 TEMPLATE: Message sent, waiting for response...');
+
+      // Wait for platform response
+      await responsePromise;
+      
+      console.log('🎉 TEMPLATE: Wish submission completed successfully!');
+      
+      toast({
+        title: "Wish submitted!",
+        description: "Your wish has been submitted and will appear after approval.",
+      });
 
       return true;
+      
     } catch (error) {
-      console.error('Error submitting wish:', error);
+      console.error('❌ TEMPLATE: Error submitting wish:', error);
+      console.error('❌ TEMPLATE: Error type:', typeof error);
+      console.error('❌ TEMPLATE: Error message:', error.message);
+      console.error('❌ TEMPLATE: Full error object:', error);
+      
+      let errorMessage = "Failed to submit wish. Please try again.";
+      if (error.message?.includes('timeout')) {
+        errorMessage = "Request timed out. Please check your connection and try again.";
+      } else if (error.message?.includes('not found')) {
+        errorMessage = "Event or guest information not found. Please refresh the page.";
+      } else if (error.message?.includes('disabled')) {
+        errorMessage = "Wishes feature is currently disabled for this event.";
+      } else if (error.message?.includes('permission')) {
+        errorMessage = "You don't have permission to submit wishes for this event.";
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to submit wish. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
       return false;
     } finally {
       setIsSubmitting(false);
+      console.log('🏁 TEMPLATE: Wish submission process finished');
     }
   };
 
