@@ -79,32 +79,14 @@ const WishCard: React.FC<WishCardProps> = ({
         </div>
 
         {/* Wish Content */}
-        <div className="flex-1 flex flex-col items-center justify-center mb-3 md:mb-4 px-2">
-          <div className="relative mb-3">
+        <div className="flex-1 flex items-center justify-center mb-3 md:mb-4 px-2">
+          <div className="relative">
             <div className="absolute -top-2 -left-2 text-wedding-gold/30 text-2xl md:text-3xl font-serif">"</div>
             <p className="text-gray-700 leading-relaxed font-poppins italic text-xs md:text-sm line-clamp-4 text-center relative z-10">
               {wish.content}
             </p>
             <div className="absolute -bottom-2 -right-2 text-wedding-gold/30 text-2xl md:text-3xl font-serif rotate-180">"</div>
           </div>
-          
-          {/* Wish Image Display */}
-          {wish.image_url && (
-            <div className="mt-2 mb-2">
-              <div className="relative rounded-lg overflow-hidden border-2 border-wedding-gold/30 shadow-lg">
-                <img 
-                  src={wish.image_url} 
-                  alt={`Wish from ${wish.guest_name}`}
-                  className="w-full h-32 md:h-40 object-cover"
-                  onError={(e) => {
-                    console.error('Error loading wish image:', wish.image_url);
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Bottom Actions with luxury styling */}
