@@ -71,6 +71,24 @@ const Invitation = () => {
       setGuestId(guestIdParam);
     }
 
+    // Wishes via URL (for immediate render)
+    const wishesParam = params.get('wishes');
+    if (wishesParam) {
+      try {
+        const decoded = JSON.parse(wishesParam);
+        if (Array.isArray(decoded)) {
+          // Broadcast to wishes hook via postMessage-style dispatch
+          window.postMessage({
+            type: 'INITIAL_WISHES_DATA',
+            payload: { wishes: decoded }
+          }, window.location.origin);
+          console.log('✅ URL wishes parsed and dispatched to wishes hook:', decoded.length);
+        }
+      } catch (e) {
+        console.warn('Failed to parse wishes from URL:', e);
+      }
+    }
+
     // Start with a copy of current wedding data
     let updatedWeddingData = { ...weddingData };
 
