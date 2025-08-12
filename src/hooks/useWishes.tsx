@@ -86,9 +86,23 @@ export const useWishes = () => {
           break;
 
         case 'WISH_SUBMITTED_ERROR':
+          const errorMsg = messageData?.error || "Failed to submit wish. Please try again.";
+          let userFriendlyMsg = errorMsg;
+          
+          // Make error messages more user-friendly
+          if (errorMsg.includes('Event not found')) {
+            userFriendlyMsg = "Event not found. Please refresh the page or contact support.";
+          } else if (errorMsg.includes('Guest not found')) {
+            userFriendlyMsg = "Guest information not found. Please refresh the page.";
+          } else if (errorMsg.includes('wishes are disabled')) {
+            userFriendlyMsg = "Wishes feature is currently disabled for this event.";
+          } else if (errorMsg.includes('Event ID is missing')) {
+            userFriendlyMsg = "Event information is missing. Please refresh the page.";
+          }
+          
           toast({
             title: "Error",
-            description: messageData?.error || "Failed to submit wish. Please try again.",
+            description: userFriendlyMsg,
             variant: "destructive",
           });
           setIsSubmitting(false);
@@ -169,20 +183,39 @@ export const useWishes = () => {
       return false;
     }
     
-    // Get guest info from URL if not provided
+    // Get guest info and event info from URL if not provided
     let finalGuestId = guestId;
     let finalGuestName = guestName;
+    let eventId = '';
+    
+    const urlParams = new URLSearchParams(window.location.search);
     
     if (!finalGuestId || !finalGuestName) {
-      const urlParams = new URLSearchParams(window.location.search);
       finalGuestId = finalGuestId || urlParams.get('guestId');
       finalGuestName = finalGuestName || urlParams.get('guestName');
+    }
+    
+    // Get event ID from URL
+    eventId = urlParams.get('eventId') || '';
+    
+    // Debug info (can be removed in production)
+    if (!eventId) {
+      console.log('Missing eventId from URL:', window.location.href);
     }
     
     if (!finalGuestId || !finalGuestName) {
       toast({
         title: "Error",
         description: "Guest information is missing. Please refresh the page.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    if (!eventId) {
+      toast({
+        title: "Error", 
+        description: "Event information is missing. Please refresh the page.",
         variant: "destructive",
       });
       return false;
@@ -201,8 +234,9 @@ export const useWishes = () => {
         }
       }
 
-      // Create wish data
+      // Create wish data with event ID
       const wishData = {
+        event_id: eventId,  // Add event ID to payload
         guest_id: finalGuestId,
         guest_name: finalGuestName,
         content: content.trim(),
@@ -210,6 +244,8 @@ export const useWishes = () => {
         image_filename: imageFile?.name || null,
         image_type: imageFile?.type || null
       };
+
+      // Wish data ready for submission
 
       // Send to platform
       if (!window.parent || window.parent === window) {

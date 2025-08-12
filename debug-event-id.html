@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event ID Debug Tool</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .box { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; border: 2px solid #ddd; }
+        .error { border-color: red; background: #ffe6e6; }
+        .success { border-color: green; background: #e6ffe6; }
+        .warning { border-color: orange; background: #fff3e6; }
+        .info { border-color: blue; background: #e6f3ff; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Event ID Debug Tool</h1>
+    <p>यह tool आपके Event ID की problem diagnose करेगा।</p>
+    
+    <div class="box info">
+        <h3>📊 Current Page Information</h3>
+        <div id="page-info"></div>
+    </div>
+
+    <div class="box" id="url-analysis">
+        <h3>🔗 URL Parameters Analysis</h3>
+        <div id="url-details"></div>
+    </div>
+
+    <div class="box" id="event-check">
+        <h3>🎯 Event ID Validation</h3>
+        <div id="event-validation"></div>
+    </div>
+
+    <div class="box">
+        <h3>🧪 Test Wish Submission</h3>
+        <button onclick="testWishSubmission()">Test Event ID in Wish Submission</button>
+        <div id="test-result"></div>
+    </div>
+
+    <script>
+        function updatePageInfo() {
+            const pageInfo = document.getElementById('page-info');
+            pageInfo.innerHTML = `
+                <strong>Current URL:</strong><br>
+                <pre>${window.location.href}</pre>
+                <strong>In iframe:</strong> ${window.parent !== window ? 'Yes ✅' : 'No ❌'}<br>
+                <strong>Page loaded at:</strong> ${new Date().toLocaleString()}
+            `;
+        }
+
+        function analyzeURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const params = Object.fromEntries(urlParams.entries());
+            const urlBox = document.getElementById('url-analysis');
+            const urlDetails = document.getElementById('url-details');
+            
+            if (Object.keys(params).length === 0) {
+                urlBox.className = 'box error';
+                urlDetails.innerHTML = `
+                    <p><strong>❌ NO URL PARAMETERS FOUND!</strong></p>
+                    <p>यह main problem है। आपके URL में कोई parameters नहीं हैं।</p>
+                    <p><strong>Solution:</strong> Platform के through invitation page open करें, direct नहीं।</p>
+                `;
+                return;
+            }
+
+            const eventId = params.eventId;
+            const guestId = params.guestId;
+            const guestName = params.guestName;
+
+            let status = 'success';
+            let issues = [];
+
+            if (!eventId) {
+                issues.push('❌ eventId parameter missing');
+                status = 'error';
+            }
+            if (!guestId) {
+                issues.push('❌ guestId parameter missing');
+                status = 'error';
+            }
+            if (!guestName) {
+                issues.push('❌ guestName parameter missing');
+                status = 'warning';
+            }
+
+            if (status === 'success') {
+                urlBox.className = 'box success';
+                urlDetails.innerHTML = `
+                    <p><strong>✅ All Required Parameters Found!</strong></p>
+                    <p><strong>Event ID:</strong> ${eventId}</p>
+                    <p><strong>Guest ID:</strong> ${guestId}</p>
+                    <p><strong>Guest Name:</strong> ${guestName}</p>
+                    <p><strong>All Parameters:</strong></p>
+                    <pre>${JSON.stringify(params, null, 2)}</pre>
+                `;
+            } else {
+                urlBox.className = `box ${status}`;
+                urlDetails.innerHTML = `
+                    <p><strong>⚠️ Issues Found:</strong></p>
+                    <ul>${issues.map(issue => `<li>${issue}</li>`).join('')}</ul>
+                    <p><strong>Available Parameters:</strong></p>
+                    <pre>${JSON.stringify(params, null, 2)}</pre>
+                    <p><strong>Solution:</strong> Platform के invitation URL को properly open करें।</p>
+                `;
+            }
+        }
+
+        function validateEventID() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventId = urlParams.get('eventId');
+            const eventBox = document.getElementById('event-check');
+            const eventValidation = document.getElementById('event-validation');
+
+            if (!eventId) {
+                eventBox.className = 'box error';
+                eventValidation.innerHTML = `
+                    <p><strong>❌ No Event ID Found</strong></p>
+                    <p>Event ID URL parameters में नहीं मिली।</p>
+                    <p><strong>यह main reason है "Event not found" error का।</strong></p>
+                `;
+                return;
+            }
+
+            // Check event ID format
+            const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(eventId);
+            const isCustomID = !isUUID && eventId.length > 0;
+
+            eventBox.className = 'box success';
+            eventValidation.innerHTML = `
+                <p><strong>✅ Event ID Found</strong></p>
+                <p><strong>Event ID:</strong> <code>${eventId}</code></p>
+                <p><strong>Format:</strong> ${isUUID ? 'UUID Format ✅' : 'Custom ID Format ✅'}</p>
+                <p><strong>Length:</strong> ${eventId.length} characters</p>
+                <p>यह Event ID platform को भेजी जाएगी wish submission के साथ।</p>
+            `;
+        }
+
+        function testWishSubmission() {
+            const resultDiv = document.getElementById('test-result');
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            const eventId = urlParams.get('eventId');
+            const guestId = urlParams.get('guestId');
+            const guestName = urlParams.get('guestName');
+
+            resultDiv.innerHTML = '<p>🧪 Testing wish submission data...</p>';
+
+            const testData = {
+                event_id: eventId,
+                guest_id: guestId,
+                guest_name: guestName,
+                content: 'Test wish for debugging',
+                image_data: null,
+                image_filename: null,
+                image_type: null
+            };
+
+            console.log('DEBUG - Test wish data that would be sent:', testData);
+
+            let html = '<h4>🔍 Test Results:</h4>';
+            
+            if (!eventId) {
+                html += '<p>❌ <strong>CRITICAL:</strong> Event ID missing - यही reason है error का!</p>';
+            } else {
+                html += `<p>✅ Event ID ready: <code>${eventId}</code></p>`;
+            }
+
+            if (!guestId) {
+                html += '<p>❌ Guest ID missing</p>';
+            } else {
+                html += `<p>✅ Guest ID ready: <code>${guestId}</code></p>`;
+            }
+
+            if (!guestName) {
+                html += '<p>⚠️ Guest name missing</p>';
+            } else {
+                html += `<p>✅ Guest name ready: <code>${guestName}</code></p>`;
+            }
+
+            html += '<h4>📤 Message that would be sent to platform:</h4>';
+            html += `<pre>${JSON.stringify({
+                type: 'SUBMIT_NEW_WISH',
+                payload: testData,
+                timestamp: Date.now()
+            }, null, 2)}</pre>`;
+
+            if (eventId && guestId && guestName) {
+                html += '<p>✅ <strong>All data ready!</strong> Wish submission should work.</p>';
+                
+                if (window.parent && window.parent !== window) {
+                    html += '<p>🧪 Sending test message to platform...</p>';
+                    
+                    // Send actual test message
+                    window.parent.postMessage({
+                        type: 'SUBMIT_NEW_WISH',
+                        payload: testData,
+                        timestamp: Date.now()
+                    }, '*');
+                    
+                    html += '<p>📡 Test message sent! Check platform console for response.</p>';
+                } else {
+                    html += '<p>⚠️ Not in iframe - cannot send test message</p>';
+                }
+            } else {
+                html += '<p>❌ <strong>Cannot proceed:</strong> Missing required data</p>';
+                html += '<p><strong>Solution:</strong> Platform के proper invitation URL से open करें।</p>';
+            }
+
+            resultDiv.innerHTML = html;
+        }
+
+        // Initialize
+        updatePageInfo();
+        analyzeURL();
+        validateEventID();
+
+        // Listen for platform responses
+        window.addEventListener('message', function(event) {
+            const resultDiv = document.getElementById('test-result');
+            const currentHTML = resultDiv.innerHTML;
+            
+            if (event.data && event.data.type) {
+                resultDiv.innerHTML = currentHTML + `
+                    <h4>📥 Platform Response:</h4>
+                    <pre>${JSON.stringify(event.data, null, 2)}</pre>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
