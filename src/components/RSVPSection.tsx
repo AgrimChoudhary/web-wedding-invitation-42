@@ -398,6 +398,8 @@ export const RSVPSection: React.FC = () => {
         title: "Invitation Accepted",
         description: `Thank you ${guestName}! Please provide additional details.`,
       });
+      // Open the detailed form immediately after acceptance
+      setShowDetailedForm(true);
     } catch (error) {
       toast({
         title: "Error",

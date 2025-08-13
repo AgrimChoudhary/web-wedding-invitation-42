@@ -123,21 +123,34 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setRsvpFields(payload.rsvpFields || []);
         setExistingRsvpData(payload.existingRsvpData);
         
-        // Update platform data - Don't auto-set guest status from platform data
+        // Map platform status to template guestStatus
+        const mappedGuestStatus: 'invited' | 'accepted' | 'submitted' = (() => {
+          switch (payload.status) {
+            case 'submitted':
+              return 'submitted';
+            case 'accepted':
+              return 'accepted';
+            case 'viewed':
+            case 'pending':
+            default:
+              return 'invited';
+          }
+        })();
+
+        // Update platform data with platform-provided status
         const newPlatformData: PlatformData = {
           eventId: payload.eventId,
           guestId: payload.guestId,
           guestName: payload.platformData.guestName,
-          // Don't auto-set hasResponded from platform data
-          hasResponded: false,
-          // Always start with 'invited' status, let user explicitly accept
-          guestStatus: 'invited',
+          // Mark responded only when fully submitted
+          hasResponded: mappedGuestStatus === 'submitted',
+          guestStatus: mappedGuestStatus,
           rsvpConfig: payload.rsvpFields.length > 0 ? 'detailed' : 'simple',
           existingRsvpData: payload.existingRsvpData,
           customFields: payload.rsvpFields
         };
         
-        console.log('✅ PostMessage - Allowing status from platform:', {
+        console.log('✅ PostMessage - Setting status from platform:', {
           payloadStatus: payload.status,
           finalGuestStatus: newPlatformData.guestStatus,
           hasResponded: newPlatformData.hasResponded
@@ -213,19 +226,33 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setRsvpFields(data.rsvpFields || []);
         setExistingRsvpData(data.existingRsvpData);
         
-        // Update platform data - Don't auto-set guest status from platform data
+        // Map and update guestStatus based on incoming payload updates
         if (platformData) {
+          const mappedGuestStatus: 'invited' | 'accepted' | 'submitted' = (() => {
+            switch (data.status) {
+              case 'submitted':
+                return 'submitted';
+              case 'accepted':
+                return 'accepted';
+              case 'viewed':
+              case 'pending':
+              default:
+                return 'invited';
+            }
+          })();
+
           const updatedPlatformData = {
             ...platformData,
-            // Don't auto-set guest status from platform data, keep current status
+            guestStatus: mappedGuestStatus,
+            hasResponded: mappedGuestStatus === 'submitted',
             existingRsvpData: data.existingRsvpData
           };
-          
-          console.log('✅ INVITATION_PAYLOAD_UPDATE - Allowing status from platform:', {
+
+          console.log('✅ INVITATION_PAYLOAD_UPDATE - Setting status from platform:', {
             dataStatus: data.status,
             finalGuestStatus: updatedPlatformData.guestStatus
           });
-          
+
           setPlatformData(updatedPlatformData);
         }
         
