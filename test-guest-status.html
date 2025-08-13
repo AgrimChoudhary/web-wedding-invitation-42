@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guest Status Test - Wedding Invitation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            display: inline-block;
+            background: #8B5CF6;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        .test-button:hover {
+            background: #7C3AED;
+        }
+        .status-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status-invited { background: #FEF3C7; color: #92400E; }
+        .status-accepted { background: #D1FAE5; color: #065F46; }
+        .status-submitted { background: #DBEAFE; color: #1E40AF; }
+        
+        h1 { color: #4C1D95; text-align: center; }
+        h2 { color: #6B21A8; border-bottom: 2px solid #E0E7FF; padding-bottom: 10px; }
+        .description { color: #6B7280; margin-bottom: 15px; font-style: italic; }
+        .expected { background: #F0FDF4; padding: 10px; border-left: 4px solid #10B981; margin: 10px 0; }
+        .url-params { background: #FEF3C7; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🎉 Guest Status Test Cases</h1>
+    <p style="text-align: center; color: #6B7280; margin-bottom: 30px;">
+        Testing different guest statuses to verify RSVP button behavior after the fix
+    </p>
+
+    <div class="test-section">
+        <h2>Test Case 1: New Guest (Invited Status) <span class="status-tag status-invited">INVITED</span></h2>
+        <div class="description">
+            A guest who hasn't responded yet. Should show "Accept Invitation" button.
+        </div>
+        <div class="expected">
+            <strong>Expected:</strong> Should see "Accept Invitation" button for initial RSVP
+        </div>
+        <div class="url-params">
+            ?guestName=राहुल%20शर्मा&guestId=test123&guestStatus=pending&rsvpConfig=detailed&customFields=[]
+        </div>
+        <a href="/invitation?guestName=राहुल%20शर्मा&guestId=test123&guestStatus=pending&rsvpConfig=detailed&customFields=[]" 
+           class="test-button" target="_blank">
+            Test New Guest
+        </a>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Case 2: Guest Who Accepted <span class="status-tag status-accepted">ACCEPTED</span></h2>
+        <div class="description">
+            A guest who clicked accept but hasn't submitted detailed form yet.
+        </div>
+        <div class="expected">
+            <strong>Expected:</strong> Should see thank you message + "Submit RSVP" button for detailed form
+        </div>
+        <div class="url-params">
+            ?guestName=प्रिया%20गुप्ता&guestId=test456&guestStatus=accepted&rsvpConfig=detailed&customFields=[{"field_name":"guests_count","field_label":"Number of Guests","field_type":"select","field_options":["1","2","3","4"],"is_required":true}]
+        </div>
+        <a href="/invitation?guestName=प्रिया%20गुप्ता&guestId=test456&guestStatus=accepted&rsvpConfig=detailed&customFields=[{%22field_name%22:%22guests_count%22,%22field_label%22:%22Number%20of%20Guests%22,%22field_type%22:%22select%22,%22field_options%22:[%221%22,%222%22,%223%22,%224%22],%22is_required%22:true}]" 
+           class="test-button" target="_blank">
+            Test Accepted Guest
+        </a>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Case 3: Guest Who Already Submitted (MAIN FIX) <span class="status-tag status-submitted">SUBMITTED</span></h2>
+        <div class="description">
+            A guest who already completed their RSVP. This was showing "Accept Invitation" before the fix.
+        </div>
+        <div class="expected">
+            <strong>Expected:</strong> Should see thank you message + "Edit RSVP" button (NOT "Accept Invitation")
+        </div>
+        <div class="url-params">
+            ?guestName=अनिल%20कुमार&guestId=test789&guestStatus=submitted&rsvpConfig=detailed&existingRsvpData={"guests_count":"2","dietary_restrictions":"Vegetarian"}&customFields=[{"field_name":"guests_count","field_label":"Number of Guests","field_type":"select","field_options":["1","2","3","4"],"is_required":true},{"field_name":"dietary_restrictions","field_label":"Dietary Requirements","field_type":"text","is_required":false}]
+        </div>
+        <a href="/invitation?guestName=अनिल%20कुमार&guestId=test789&guestStatus=submitted&rsvpConfig=detailed&existingRsvpData={%22guests_count%22:%222%22,%22dietary_restrictions%22:%22Vegetarian%22}&customFields=[{%22field_name%22:%22guests_count%22,%22field_label%22:%22Number%20of%20Guests%22,%22field_type%22:%22select%22,%22field_options%22:[%221%22,%222%22,%223%22,%224%22],%22is_required%22:true},{%22field_name%22:%22dietary_restrictions%22,%22field_label%22:%22Dietary%20Requirements%22,%22field_type%22:%22text%22,%22is_required%22:false}]" 
+           class="test-button" target="_blank">
+            🔧 Test Fixed Submitted Guest
+        </a>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Case 4: Simple RSVP - Submitted Guest <span class="status-tag status-submitted">SUBMITTED</span></h2>
+        <div class="description">
+            A guest who submitted simple RSVP (no detailed form). Should show thank you message only.
+        </div>
+        <div class="expected">
+            <strong>Expected:</strong> Should see thank you message (no edit button for simple RSVP)
+        </div>
+        <div class="url-params">
+            ?guestName=सुनीता%20वर्मा&guestId=test000&guestStatus=submitted&rsvpConfig=simple&hasResponded=true
+        </div>
+        <a href="/invitation?guestName=सुनीता%20वर्मा&guestId=test000&guestStatus=submitted&rsvpConfig=simple&hasResponded=true" 
+           class="test-button" target="_blank">
+            Test Simple RSVP
+        </a>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Debug Information</h2>
+        <div class="description">
+            Check browser console for debug logs. Look for messages starting with:
+        </div>
+        <ul>
+            <li><code>✅ URL Parameters - Allowing status from URL</code></li>
+            <li><code>🔍 RSVP Modal State Debug</code></li>
+            <li><code>✅ PostMessage - Allowing status from platform</code></li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>✅ Success Criteria</h2>
+        <div class="expected">
+            <strong>Fix is successful if:</strong>
+            <ul>
+                <li>Test Case 3 shows "Thank You for Your RSVP!" message (not "Accept Invitation")</li>
+                <li>Test Case 3 shows "Edit RSVP" button when clicked</li>
+                <li>Test Case 3 pre-fills existing data in the form</li>
+                <li>Form shows "Edit RSVP" as button text, not "Submit RSVP"</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Auto-highlight current URL for easy comparison
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 Guest Status Test Page Loaded');
+            console.log('🔗 Current URL:', window.location.href);
+            
+            // Add click tracking
+            document.querySelectorAll('.test-button').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    console.log('🔘 Testing:', this.textContent.trim());
+                    console.log('🌐 URL:', this.href);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
