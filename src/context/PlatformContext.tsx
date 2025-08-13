@@ -145,7 +145,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           // Mark responded only when fully submitted
           hasResponded: mappedGuestStatus === 'submitted',
           guestStatus: mappedGuestStatus,
-          rsvpConfig: payload.rsvpFields.length > 0 ? 'detailed' : 'simple',
+          // Preserve RSVP type from URL params; do not infer from fields
+          rsvpConfig: (platformData?.rsvpConfig as 'simple' | 'detailed') || 'simple',
           existingRsvpData: payload.existingRsvpData,
           customFields: payload.rsvpFields
         };
@@ -245,7 +246,9 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             ...platformData,
             guestStatus: mappedGuestStatus,
             hasResponded: mappedGuestStatus === 'submitted',
-            existingRsvpData: data.existingRsvpData
+            existingRsvpData: data.existingRsvpData,
+            // Preserve RSVP type previously parsed from URL
+            rsvpConfig: (platformData.rsvpConfig as 'simple' | 'detailed') || platformData.rsvpConfig
           };
 
           console.log('✅ INVITATION_PAYLOAD_UPDATE - Setting status from platform:', {
