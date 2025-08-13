@@ -282,7 +282,6 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
     }
   }, [lastMessage]);
-
   // RSVP handlers
   const sendRSVP = (rsvpData?: any) => {
     console.log('🎯 sendRSVP called with:', { rsvpData, isPlatformMode, platformData });
