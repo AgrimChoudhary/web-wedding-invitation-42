@@ -47,7 +47,7 @@ const Invitation = () => {
   const { guestName, isLoading: isGuestLoading, updateGuestStatus, guestId, hasAccepted, setGuestName, setGuestId } = useGuest();
   const { weddingData, setAllWeddingData } = useWedding();
   const { isPlaying, toggleMusic } = useAudio();
-  const { isPlatformMode, trackInvitationViewed, guestStatus, hasResponded } = usePlatform();
+  const { isPlatformMode, trackInvitationViewed } = usePlatform();
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -490,8 +490,8 @@ const Invitation = () => {
               <div className="absolute -inset-4 md:-inset-6 rounded-2xl border border-wedding-gold/30 opacity-40"></div>
               
               <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-8 md:p-12 shadow-2xl border border-wedding-gold/20">
-                {/* Check if user has explicitly accepted or already responded via platform */}
-                {showThankYouMessage || guestStatus === 'accepted' || guestStatus === 'submitted' || hasResponded ? (
+                {/* Check if user has explicitly accepted (not from platform data) */}
+                {showThankYouMessage ? (
                   <div className="text-center">
                     <h3 className="text-xl md:text-2xl font-playfair text-wedding-maroon mb-2">
                       {isGuestLoading ? (
@@ -509,15 +509,8 @@ const Invitation = () => {
                         </>
                       )}
                     </h3>
-                    <h3 className="text-xl md:text-2xl font-playfair text-wedding-maroon mb-4">
-                      {guestStatus === 'submitted' ? 'Thank You for Your RSVP!' : 'Thank You for Accepting!'}
-                    </h3>
-                    <p className="text-gray-600 mb-4 font-poppins">
-                      {guestStatus === 'submitted' 
-                        ? 'We have received your RSVP details and are extremely excited to celebrate our special day with you!' 
-                        : 'We are extremely excited to celebrate our special day with you!'
-                      }
-                    </p>
+                    <h3 className="text-xl md:text-2xl font-playfair text-wedding-maroon mb-4">Thank You for Accepting!</h3>
+                    <p className="text-gray-600 mb-4 font-poppins">We are extremely excited to celebrate our special day with you!</p>
                     <p className="text-sm text-wedding-maroon italic font-poppins">
                       We are truly honored to have you join us in our celebration of love and commitment.
                     </p>

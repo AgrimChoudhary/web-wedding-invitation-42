@@ -186,40 +186,107 @@ export const RSVPSection: React.FC = () => {
     return guestStatus === 'submitted' ? 'Edit RSVP' : 'Submit RSVP';
   };
 
-  // Show RSVP form interface for accepted or submitted guests
+  // Show thank you message for accepted or submitted states
+  // Only show if user has explicitly accepted (not from platform data)
   if (guestStatus === 'accepted' || guestStatus === 'submitted') {
     return (
       <>
         <Confetti isActive={showConfetti} />
-        {/* Show Submit/Edit RSVP button for detailed RSVP config */}
-        {rsvpConfig === 'detailed' && (
-          <div className="flex justify-center mb-6">
-            <Button
-              onClick={() => {
-                console.log('🔘 Submit RSVP Details button clicked - opening modal');
-                setShowDetailedForm(true);
-              }}
-              disabled={isSubmitting}
-              className="bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-6 md:px-10 py-3 md:py-4 text-base md:text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[56px] group"
-            >
-              {isSubmitting ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  {getButtonText()}
-                </>
-              ) : (
-                <>
-                  <Heart className="w-5 h-5 md:w-6 md:h-6 mr-2 group-hover:animate-pulse" />
-                  {getButtonText()}
-                  <Sparkles className="w-4 h-4 ml-2 opacity-70" />
-                </>
-              )}
-            </Button>
+        <section className="w-full py-8 md:py-12 bg-gradient-to-br from-wedding-cream/60 via-wedding-blush/10 to-wedding-cream/60 relative overflow-hidden">
+          {/* Elegant royal pattern background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-wedding-gold/5 via-transparent to-wedding-maroon/5"></div>
+          <div className="absolute top-0 left-0 w-full h-full opacity-10" 
+               style={{
+                 backgroundImage: `radial-gradient(circle at 25% 25%, hsl(var(--wedding-gold)) 2px, transparent 2px), 
+                                   radial-gradient(circle at 75% 75%, hsl(var(--wedding-maroon)) 1px, transparent 1px)`,
+                 backgroundSize: '60px 60px'
+               }}>
           </div>
-        )}
+          
+          <div className="w-full max-w-6xl mx-auto px-4 md:px-8 relative z-10">
+            <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-2xl border-2 border-wedding-gold/20 text-center relative overflow-hidden">
+              {/* Luxury gold accent borders */}
+              <div className="absolute top-0 left-0 w-20 h-20 border-l-4 border-t-4 border-wedding-gold/40 rounded-tl-3xl"></div>
+              <div className="absolute top-0 right-0 w-20 h-20 border-r-4 border-t-4 border-wedding-gold/40 rounded-tr-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-20 h-20 border-l-4 border-b-4 border-wedding-gold/40 rounded-bl-3xl"></div>
+              <div className="absolute bottom-0 right-0 w-20 h-20 border-r-4 border-b-4 border-wedding-gold/40 rounded-br-3xl"></div>
+              
+              <div className="relative z-10">
+                <div className="flex justify-center items-center mb-4 md:mb-6">
+                  <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-wedding-gold animate-pulse mr-3" />
+                  <Heart className="w-10 h-10 md:w-14 md:h-14 text-wedding-gold animate-pulse" />
+                  <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-wedding-gold animate-pulse ml-3" />
+                </div>
+                
+                {/* Personalized Thank You Message */}
+                <div className="mb-5 md:mb-6">
+                  <h2 className="font-great-vibes text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-2 md:mb-3">
+                    Dear <span className="text-wedding-gold bg-gradient-to-r from-wedding-gold to-wedding-gold/80 bg-clip-text text-transparent">{guestName}</span>,
+                  </h2>
+                  <h3 className="font-great-vibes text-xl md:text-3xl lg:text-4xl text-wedding-maroon mb-3">
+                    Thank You for Accepting!
+                  </h3>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto text-left mb-6">
+                  <div className="bg-wedding-gold/5 p-4 md:p-6 rounded-2xl border border-wedding-gold/20">
+                    <p className="text-base md:text-lg text-gray-700 font-medium mb-2">
+                      🎉 We are absolutely thrilled!
+                    </p>
+                    <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                      {getThankYouMessage()}
+                    </p>
+                  </div>
+                  
+                  <div className="bg-wedding-maroon/5 p-4 md:p-6 rounded-2xl border border-wedding-maroon/20">
+                    <p className="text-base md:text-lg text-wedding-maroon font-medium mb-2">
+                      💝 Save the Date!
+                    </p>
+                    <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                      Get ready for an unforgettable celebration of love, tradition, and togetherness.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Show Submit/Edit RSVP button for detailed RSVP config */}
+                {rsvpConfig === 'detailed' && (
+                  <div className="flex justify-center mb-6">
+                    <Button
+                      onClick={() => {
+                        console.log('🔘 Submit RSVP Details button clicked - opening modal');
+                        setShowDetailedForm(true);
+                      }}
+                      disabled={isSubmitting}
+                      className="bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-6 md:px-10 py-3 md:py-4 text-base md:text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[56px] group"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          {getButtonText()}
+                        </>
+                      ) : (
+                        <>
+                          <Heart className="w-5 h-5 md:w-6 md:h-6 mr-2 group-hover:animate-pulse" />
+                          {getButtonText()}
+                          <Sparkles className="w-4 h-4 ml-2 opacity-70" />
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
+                
+                <div className="pt-5 border-t border-wedding-gold/20">
+                  <p className="font-great-vibes text-lg md:text-2xl text-wedding-gold italic">
+                    "Your presence will make our celebration complete"
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Detailed RSVP Form Dialog */}
         <Dialog open={showDetailedForm} onOpenChange={(open) => {
