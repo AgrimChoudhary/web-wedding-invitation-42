@@ -47,7 +47,7 @@ const Invitation = () => {
   const { guestName, isLoading: isGuestLoading, updateGuestStatus, guestId, hasAccepted, setGuestName, setGuestId } = useGuest();
   const { weddingData, setAllWeddingData } = useWedding();
   const { isPlaying, toggleMusic } = useAudio();
-  const { isPlatformMode, trackInvitationViewed, guestStatus, rsvpConfig } = usePlatform();
+  const { isPlatformMode, trackInvitationViewed, guestStatus, rsvpConfig, wishesEnabled } = usePlatform();
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -476,8 +476,10 @@ const Invitation = () => {
             title="Our Photo Gallery" 
           />
 
-          {/* New Wishes Carousel Section */}
-          <WishesCarousel onViewAll={() => setShowWishesModal(true)} />
+          {/* New Wishes Carousel Section (controlled by platform toggle) */}
+          {(wishesEnabled === undefined || wishesEnabled) && (
+            <WishesCarousel onViewAll={() => setShowWishesModal(true)} />
+          )}
           
           {/* Enhanced Accept Invitation Section with Visual Focus */}
           <div className="py-16 w-full text-center relative overflow-hidden">
@@ -507,7 +509,9 @@ const Invitation = () => {
           <Footer />
           
           {/* RSVPSection is now used earlier in the component */}
-          <WishesModal open={showWishesModal} onOpenChange={setShowWishesModal} />
+          {(wishesEnabled === undefined || wishesEnabled) && (
+            <WishesModal open={showWishesModal} onOpenChange={setShowWishesModal} />
+          )}
         </div>
       )}
     </div>

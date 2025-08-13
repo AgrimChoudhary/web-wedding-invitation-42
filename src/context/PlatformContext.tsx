@@ -18,6 +18,7 @@ interface PlatformContextType {
   showSubmitButton: boolean;
   showEditButton: boolean;
   rsvpFields: Array<any>;
+  wishesEnabled?: boolean;
   sendRSVP: (rsvpData?: any) => void;
   sendRSVPSubmitted: (rsvpData: Record<string, any>) => void;
   sendRSVPUpdated: (rsvpData: Record<string, any>) => void;
@@ -48,6 +49,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [showEditButton, setShowEditButton] = useState(false);
   const [rsvpFields, setRsvpFields] = useState<Array<any>>([]);
   const [existingRsvpData, setExistingRsvpData] = useState<Record<string, any> | null>(null);
+  const [wishesEnabled, setWishesEnabled] = useState<boolean | undefined>(undefined);
 
   // Track if we're in platform mode (iframe with platform data)
   const isPlatformMode = Boolean(platformData?.eventId || lastMessage);
@@ -122,6 +124,9 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setShowEditButton(payload.showEditButton);
         setRsvpFields(payload.rsvpFields || []);
         setExistingRsvpData(payload.existingRsvpData);
+        if (typeof payload.wishesEnabled === 'boolean') {
+          setWishesEnabled(payload.wishesEnabled);
+        }
         
         // Map platform status to template guestStatus
         const mappedGuestStatus: 'invited' | 'accepted' | 'submitted' = (() => {
@@ -148,7 +153,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           // Preserve RSVP type from URL params; do not infer from fields
           rsvpConfig: (platformData?.rsvpConfig as 'simple' | 'detailed') || 'simple',
           existingRsvpData: payload.existingRsvpData,
-          customFields: payload.rsvpFields
+          customFields: payload.rsvpFields,
+          wishesEnabled: typeof payload.wishesEnabled === 'boolean' ? payload.wishesEnabled : platformData?.wishesEnabled
         };
         
         console.log('✅ PostMessage - Setting status from platform:', {
@@ -221,11 +227,23 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         const data = lastMessage.data;
         
         // Update RSVP state from platform
-        setRsvpStatus(data.status as "accepted" | "submitted" | null);
+        setRsvpStatus((() => {
+          switch (data.status) {
+            case 'submitted':
+              return 'submitted';
+            case 'accepted':
+              return 'accepted';
+            default:
+              return null;
+          }
+        })());
         setShowSubmitButton(data.showSubmitButton);
         setShowEditButton(data.showEditButton);
         setRsvpFields(data.rsvpFields || []);
         setExistingRsvpData(data.existingRsvpData);
+        if (typeof (data as any).wishesEnabled === 'boolean') {
+          setWishesEnabled((data as any).wishesEnabled);
+        }
         
         // Map and update guestStatus based on incoming payload updates
         if (platformData) {
@@ -235,8 +253,6 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 return 'submitted';
               case 'accepted':
                 return 'accepted';
-              case 'viewed':
-              case 'pending':
               default:
                 return 'invited';
             }
@@ -248,7 +264,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             hasResponded: mappedGuestStatus === 'submitted',
             existingRsvpData: data.existingRsvpData,
             // Preserve RSVP type previously parsed from URL
-            rsvpConfig: (platformData.rsvpConfig as 'simple' | 'detailed') || platformData.rsvpConfig
+            rsvpConfig: (platformData.rsvpConfig as 'simple' | 'detailed') || platformData.rsvpConfig,
+            wishesEnabled: typeof (data as any).wishesEnabled === 'boolean' ? (data as any).wishesEnabled : platformData.wishesEnabled
           };
 
           console.log('✅ INVITATION_PAYLOAD_UPDATE - Setting status from platform:', {
@@ -337,6 +354,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     showSubmitButton,
     showEditButton,
     rsvpFields,
+    wishesEnabled: wishesEnabled ?? platformData?.wishesEnabled,
     sendRSVP,
     sendRSVPSubmitted: sendRSVPSubmittedHandler,
     sendRSVPUpdated: sendRSVPUpdatedHandler,

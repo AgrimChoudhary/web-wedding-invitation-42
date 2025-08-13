@@ -87,4 +87,5 @@ export interface PlatformData {
   rsvpConfig?: 'simple' | 'detailed';
   structuredData?: StructuredEventData;
   customFields?: CustomField[];
+  wishesEnabled?: boolean;
 }
