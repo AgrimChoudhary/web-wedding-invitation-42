@@ -47,7 +47,7 @@ const Invitation = () => {
   const { guestName, isLoading: isGuestLoading, updateGuestStatus, guestId, hasAccepted, setGuestName, setGuestId } = useGuest();
   const { weddingData, setAllWeddingData } = useWedding();
   const { isPlaying, toggleMusic } = useAudio();
-  const { isPlatformMode, trackInvitationViewed } = usePlatform();
+  const { isPlatformMode, trackInvitationViewed, guestStatus, rsvpConfig } = usePlatform();
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -278,6 +278,14 @@ const Invitation = () => {
     
     return () => clearTimeout(timer);
   }, []);
+
+  // Auto-show Thank You in simple mode if guest already accepted (from platform)
+  useEffect(() => {
+    if (rsvpConfig === 'simple' && guestStatus === 'accepted') {
+      setShowThankYouMessage(true);
+    }
+    // For detailed: do not force thank-you; allow RSVPSection to show Submit/Edit
+  }, [rsvpConfig, guestStatus]);
   
   const handleOpenRSVP = () => {
     setConfetti(true);
