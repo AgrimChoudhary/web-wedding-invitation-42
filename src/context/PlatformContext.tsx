@@ -167,6 +167,11 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         
         // Map event details to wedding data if available
         if (payload?.eventDetails) {
+          // Preserve previously parsed family data from URL if eventDetails doesn't provide it
+          const existingStructuredFamily = (platformData as any)?.structuredData?.weddingData?.family;
+          const preservedBrideFamily = existingStructuredFamily?.bride_family;
+          const preservedGroomFamily = existingStructuredFamily?.groom_family;
+
           // Create a mock structured data to reuse existing mapper
           const mockStructuredData = {
             eventId: payload.eventId,
@@ -194,8 +199,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 mapLink: ''
               },
               family: {
-                bride_family: { family_photo: '', parents_name: '', members: [] },
-                groom_family: { family_photo: '', parents_name: '', members: [] }
+                bride_family: preservedBrideFamily || { family_photo: '', parents_name: '', members: [] },
+                groom_family: preservedGroomFamily || { family_photo: '', parents_name: '', members: [] }
               },
               contacts: [],
               gallery: payload.eventDetails.photos?.map((photo, index) => ({
