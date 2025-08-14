@@ -15,9 +15,7 @@ export const RSVPSection: React.FC = () => {
     rsvpConfig, 
     sendRSVP, 
     isPlatformMode, 
-    platformData,
-    showSubmitButton,
-    showEditButton
+    platformData 
   } = usePlatform();
   const { toast } = useToast();
   
@@ -250,8 +248,8 @@ export const RSVPSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Show Submit/Edit RSVP button for detailed RSVP config respecting platform flags */}
-                {rsvpConfig === 'detailed' && ((guestStatus === 'accepted' && showSubmitButton) || (guestStatus === 'submitted' && showEditButton)) && (
+                {/* Show Submit/Edit RSVP button for detailed RSVP config */}
+                {rsvpConfig === 'detailed' && (
                   <div className="flex justify-center mb-6">
                     <Button
                       onClick={() => {
