@@ -47,7 +47,7 @@ const Invitation = () => {
   const { guestName, isLoading: isGuestLoading, updateGuestStatus, guestId, hasAccepted, setGuestName, setGuestId } = useGuest();
   const { weddingData, setAllWeddingData } = useWedding();
   const { isPlaying, toggleMusic } = useAudio();
-  const { isPlatformMode, trackInvitationViewed, guestStatus, rsvpConfig, wishesEnabled, showEditButton } = usePlatform();
+  const { isPlatformMode, trackInvitationViewed, guestStatus, rsvpConfig, wishesEnabled } = usePlatform();
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -500,43 +500,8 @@ const Invitation = () => {
               <div className="absolute -inset-4 md:-inset-6 rounded-2xl border border-wedding-gold/30 opacity-40"></div>
               
               <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-8 md:p-12 shadow-2xl border border-wedding-gold/20">
-                {
-                  // Force Thank You message in the following cases:
-                  // 1) Simple RSVP and user accepted
-                  // 2) Detailed RSVP, Edit OFF, and user accepted or submitted
-                  ( (rsvpConfig === 'simple' && guestStatus === 'accepted') ||
-                    (rsvpConfig === 'detailed' && !showEditButton && (guestStatus === 'accepted' || guestStatus === 'submitted'))
-                  ) ? (
-                    <div className="text-center">
-                      <h3 className="text-xl md:text-2xl font-playfair text-wedding-maroon mb-2">
-                        {isGuestLoading ? (
-                          <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mx-auto"></div>
-                        ) : (
-                          <>
-                            Dear{' '}
-                            <AnimatedGuestName 
-                              name={guestName}
-                              animationType="brush"
-                              className="font-playfair text-wedding-maroon"
-                              delay={700}
-                              fallback="Guest Name"
-                            />,
-                          </>
-                        )}
-                      </h3>
-                      <h3 className="text-xl md:text-2xl font-playfair text-wedding-maroon mb-4">Thank You for Accepting!</h3>
-                      <p className="text-gray-600 mb-4 font-poppins">We are extremely excited to celebrate our special day with you!</p>
-                      <p className="text-sm text-wedding-maroon italic font-poppins">
-                        We are truly honored to have you join us in our celebration of love and commitment.
-                      </p>
-                    </div>
-                  ) : (
-                    // Otherwise delegate to RSVPSection which will handle:
-                    // - Detailed + accepted → Submit
-                    // - Detailed + submitted (edit ON) → Edit
-                    <RSVPSection />
-                  )
-                }
+                {/* Always use the real RSVPSection so Thank You/Submit/Edit render from one source */}
+                  <RSVPSection />
               </div>
             </div>
           </div>
