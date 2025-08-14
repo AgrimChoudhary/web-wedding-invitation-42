@@ -29,6 +29,7 @@ const STATIC_TRUSTED_ORIGINS = [
   'https://utsavy-invitations.vercel.app', // template prod (if used)
   'https://utsavy2.vercel.app',            // platform prod
   'https://utsavytemplate1.vercel.app',    // legacy template host
+  'https://preview--utsavy1-05.lovable.app', // preview domain
   'http://localhost:3000',
   'http://localhost:5173',
   'http://localhost:5174',

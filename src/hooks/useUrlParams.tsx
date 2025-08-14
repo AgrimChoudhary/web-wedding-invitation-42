@@ -55,6 +55,8 @@ export const useUrlParams = () => {
       console.log('=== FAMILY PARAMETERS DEBUG ===');
       console.log('bride_family:', urlParams.get('bride_family'));
       console.log('groom_family:', urlParams.get('groom_family'));
+      console.log('brideFamily:', urlParams.get('brideFamily'));
+      console.log('groomFamily:', urlParams.get('groomFamily'));
       console.log('brideFamilyPhoto:', urlParams.get('brideFamilyPhoto'));
       console.log('bride_family_photo:', urlParams.get('bride_family_photo'));
       console.log('brideParentsNames:', urlParams.get('brideParentsNames'));
@@ -162,6 +164,20 @@ export const useUrlParams = () => {
                 if (brideFamilyData) {
                   return brideFamilyData;
                 }
+                // Support platform's camelCase brideFamily param
+                const brideFamilyCamel = tryParseJSON(urlParams.get('brideFamily'));
+                if (brideFamilyCamel) {
+                  return {
+                    family_photo: brideFamilyCamel.familyPhoto || '',
+                    parents_name: brideFamilyCamel.parentsNames || '',
+                    members: Array.isArray(brideFamilyCamel.members) ? brideFamilyCamel.members.map((m: any) => ({
+                      name: m.name || '',
+                      relation: m.relation || '',
+                      description: m.description || '',
+                      photo: m.photo || ''
+                    })) : []
+                  };
+                }
                 
                 // Fallback to individual parameters
                 return {
@@ -175,6 +191,20 @@ export const useUrlParams = () => {
                 const groomFamilyData = tryParseJSON(urlParams.get('groom_family'));
                 if (groomFamilyData) {
                   return groomFamilyData;
+                }
+                // Support platform's camelCase groomFamily param
+                const groomFamilyCamel = tryParseJSON(urlParams.get('groomFamily'));
+                if (groomFamilyCamel) {
+                  return {
+                    family_photo: groomFamilyCamel.familyPhoto || '',
+                    parents_name: groomFamilyCamel.parentsNames || '',
+                    members: Array.isArray(groomFamilyCamel.members) ? groomFamilyCamel.members.map((m: any) => ({
+                      name: m.name || '',
+                      relation: m.relation || '',
+                      description: m.description || '',
+                      photo: m.photo || ''
+                    })) : []
+                  };
                 }
                 
                 // Fallback to individual parameters
