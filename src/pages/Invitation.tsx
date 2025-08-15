@@ -47,7 +47,7 @@ const Invitation = () => {
   const { guestName, isLoading: isGuestLoading, updateGuestStatus, guestId, hasAccepted, setGuestName, setGuestId } = useGuest();
   const { weddingData, setAllWeddingData } = useWedding();
   const { isPlaying, toggleMusic } = useAudio();
-  const { isPlatformMode, trackInvitationViewed, guestStatus, rsvpConfig, wishesEnabled } = usePlatform();
+  const { isPlatformMode, trackInvitationViewed, guestStatus, rsvpConfig, wishesEnabled, showEditButton } = usePlatform();
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
@@ -286,6 +286,13 @@ const Invitation = () => {
     }
     // For detailed: do not force thank-you; allow RSVPSection to show Submit/Edit
   }, [rsvpConfig, guestStatus]);
+
+  // Auto-show Thank You in detailed mode if Edit button is OFF and user has submitted
+  useEffect(() => {
+    if (rsvpConfig === 'detailed' && !showEditButton && guestStatus === 'submitted') {
+      setShowThankYouMessage(true);
+    }
+  }, [rsvpConfig, showEditButton, guestStatus]);
   
   const handleOpenRSVP = () => {
     setConfetti(true);
