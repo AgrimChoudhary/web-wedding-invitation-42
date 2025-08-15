@@ -150,8 +150,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           // Mark responded only when fully submitted
           hasResponded: mappedGuestStatus === 'submitted',
           guestStatus: mappedGuestStatus,
-          // Preserve RSVP type from URL params; do not infer from fields
-          rsvpConfig: (platformData?.rsvpConfig as 'simple' | 'detailed') || 'simple',
+          // Use RSVP config from platform, fallback to URL params
+          rsvpConfig: (payload as any).rsvpConfig || (platformData?.rsvpConfig as 'simple' | 'detailed') || 'simple',
           existingRsvpData: payload.existingRsvpData,
           customFields: payload.rsvpFields,
           wishesEnabled: typeof payload.wishesEnabled === 'boolean' ? payload.wishesEnabled : platformData?.wishesEnabled
@@ -268,8 +268,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             guestStatus: mappedGuestStatus,
             hasResponded: mappedGuestStatus === 'submitted',
             existingRsvpData: data.existingRsvpData,
-            // Preserve RSVP type previously parsed from URL
-            rsvpConfig: (platformData.rsvpConfig as 'simple' | 'detailed') || platformData.rsvpConfig,
+            // Use RSVP config from platform, fallback to existing
+            rsvpConfig: (data as any).rsvpConfig || (platformData.rsvpConfig as 'simple' | 'detailed') || 'simple',
             wishesEnabled: typeof (data as any).wishesEnabled === 'boolean' ? (data as any).wishesEnabled : platformData.wishesEnabled
           };
 
