@@ -15,7 +15,8 @@ export const RSVPSection: React.FC = () => {
     rsvpConfig, 
     sendRSVP, 
     isPlatformMode, 
-    platformData 
+    platformData,
+    showEditButton
   } = usePlatform();
   const { toast } = useToast();
   
@@ -51,9 +52,10 @@ export const RSVPSection: React.FC = () => {
       guestStatus,
       rsvpConfig,
       customFieldsCount: customFields.length,
-      isPlatformMode
+      isPlatformMode,
+      showEditButton
     });
-  }, [showDetailedForm, guestStatus, rsvpConfig, customFields, isPlatformMode]);
+  }, [showDetailedForm, guestStatus, rsvpConfig, customFields, isPlatformMode, showEditButton]);
 
   // Load existing RSVP data when available
   useEffect(() => {
@@ -249,7 +251,18 @@ export const RSVPSection: React.FC = () => {
                 </div>
 
                 {/* Show Submit/Edit RSVP button for detailed RSVP config */}
-                {rsvpConfig === 'detailed' && (
+                {/* Only show edit button if showEditButton is true, or if it's the initial submit (not edit) */}
+                {(() => {
+                  const shouldShowButton = rsvpConfig === 'detailed' && (guestStatus === 'accepted' || (guestStatus === 'submitted' && showEditButton));
+                  console.log('🔘 RSVP Button Visibility Check:', {
+                    rsvpConfig,
+                    guestStatus,
+                    showEditButton,
+                    shouldShowButton,
+                    reason: guestStatus === 'accepted' ? 'Initial submit' : guestStatus === 'submitted' && showEditButton ? 'Edit allowed' : 'Edit not allowed'
+                  });
+                  return shouldShowButton;
+                })() && (
                   <div className="flex justify-center mb-6">
                     <Button
                       onClick={() => {
