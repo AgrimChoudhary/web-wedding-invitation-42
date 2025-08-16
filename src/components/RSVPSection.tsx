@@ -62,12 +62,14 @@ export const RSVPSection: React.FC = () => {
         guestStatus,
         rsvpConfig,
         showEditButton,
+        showEditButtonType: typeof showEditButton,
+        showEditButtonBoolean: Boolean(showEditButton),
         willShowButton: rsvpConfig === 'detailed' && (
           guestStatus === 'accepted' || 
-          (guestStatus === 'submitted' && showEditButton)
+          (guestStatus === 'submitted' && Boolean(showEditButton))
         ),
         reason: guestStatus === 'accepted' ? 'Initial submit - always show' : 
-               guestStatus === 'submitted' && showEditButton ? 'Edit allowed - show button' : 
+               guestStatus === 'submitted' && Boolean(showEditButton) ? 'Edit allowed - show button' : 
                'Edit not allowed - hide button'
       });
     }
@@ -269,17 +271,44 @@ export const RSVPSection: React.FC = () => {
                 {/* Show Submit/Edit RSVP button for detailed RSVP config */}
                 {/* Show button for initial submit (accepted) OR for edit if showEditButton is true */}
                 {(() => {
-                  const shouldShowButton = rsvpConfig === 'detailed' && (
-                    guestStatus === 'accepted' || // Always show for initial submit
-                    (guestStatus === 'submitted' && showEditButton) // Only show edit button if showEditButton is true
-                  );
+                  // CRITICAL DEBUG: Log all values to understand what's happening
+                  console.log('🔍 CRITICAL DEBUG - All RSVP Values:', {
+                    rsvpConfig,
+                    guestStatus,
+                    showEditButton,
+                    showEditButtonType: typeof showEditButton,
+                    showEditButtonBoolean: Boolean(showEditButton),
+                    customFieldsCount: customFields.length
+                  });
+                  
+                  // SIMPLE LOGIC: Only show button for initial submit OR if edit is allowed
+                  let shouldShowButton = false;
+                  
+                  if (rsvpConfig === 'detailed') {
+                    if (guestStatus === 'accepted') {
+                      shouldShowButton = true; // Always show for initial submit
+                    } else if (guestStatus === 'submitted') {
+                      shouldShowButton = Boolean(showEditButton); // Only show if edit is allowed
+                    }
+                  }
+                  
+                  // ADDITIONAL DEBUG: Show exactly what's happening
+                  if (guestStatus === 'submitted') {
+                    console.log('🚨 SUBMITTED STATUS DEBUG:', {
+                      showEditButton,
+                      showEditButtonBoolean: Boolean(showEditButton),
+                      shouldShowButton,
+                      willShowButton: shouldShowButton
+                    });
+                  }
+                  
                   console.log('🔘 RSVP Button Visibility Check:', {
                     rsvpConfig,
                     guestStatus,
                     showEditButton,
                     shouldShowButton,
                     reason: guestStatus === 'accepted' ? 'Initial submit - always show' : 
-                           guestStatus === 'submitted' && showEditButton ? 'Edit allowed - show button' : 
+                           guestStatus === 'submitted' && Boolean(showEditButton) ? 'Edit allowed - show button' : 
                            'Edit not allowed - hide button'
                   });
                   return shouldShowButton;
