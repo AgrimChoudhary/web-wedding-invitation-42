@@ -75,16 +75,8 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
 
   const FamilyCard = ({ family }: { family: FamilyData }) => (
     <motion.div 
-      className="relative rounded-xl overflow-hidden luxury-card cursor-pointer group"
+      className="relative rounded-xl overflow-hidden luxury-card group"
       whileHover={{ scale: 1.01, transition: { duration: 0.2 } }}
-      onClick={(e) => {
-        // Prevent automatic clicks
-        if (!e.isTrusted) {
-          console.log('🚫 Blocked automatic family card click');
-          return;
-        }
-        handleShowFamily(family);
-      }}
     >
       <div className="absolute inset-0 luxury-glow-border opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
       <div className="relative bg-gradient-to-br from-white/95 to-wedding-cream/80 backdrop-blur-sm p-8">
@@ -98,43 +90,30 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
         
         {/* Round Family Photo */}
         <div className="flex justify-center mb-6">
-          {family.familyPhotoUrl && family.familyPhotoUrl.trim() !== '' ? (
-            <div className="relative">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-wedding-gold/30 shadow-lg group-hover:border-wedding-gold/50 transition-all duration-300">
-                <img 
-                  src={family.familyPhotoUrl} 
-                  alt={`${family.title} Photo`}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="eager"
-                  decoding="async"
-                  onError={(e) => {
-                    console.warn(`Failed to load family photo for ${family.title}:`, family.familyPhotoUrl);
-                    const target = e.target as HTMLImageElement;
-                    target.src = family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg";
-                  }}
-                />
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-wedding-gold rounded-full flex items-center justify-center shadow-lg">
-                <Heart size={12} className="text-background drop-shadow-md" />
-              </div>
+          <div className="relative">
+            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-wedding-gold/30 shadow-lg group-hover:border-wedding-gold/50 transition-all duration-300 bg-wedding-cream/50">
+              <img 
+                src={family.familyPhotoUrl || (family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg")} 
+                alt={`${family.title} Photo`}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-0 animate-fade-in"
+                loading="lazy"
+                decoding="async"
+                onLoad={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.opacity = '1';
+                }}
+                onError={(e) => {
+                  console.warn(`Failed to load family photo for ${family.title}:`, family.familyPhotoUrl);
+                  const target = e.target as HTMLImageElement;
+                  target.src = family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg";
+                  target.style.opacity = '1';
+                }}
+              />
             </div>
-          ) : (
-            /* No Family Photo - Use Placeholder Image */
-            <div className="relative">
-              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-wedding-gold/30 shadow-lg group-hover:border-wedding-gold/50 transition-all duration-300">
-                <img 
-                  src={family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg"} 
-                  alt={`${family.title} Photo`}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="eager"
-                  decoding="async"
-                />
-              </div>
-              <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-wedding-gold rounded-full flex items-center justify-center shadow-lg">
-                <Heart size={12} className="text-background drop-shadow-md" />
-              </div>
+            <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-wedding-gold rounded-full flex items-center justify-center shadow-lg">
+              <Heart size={12} className="text-background drop-shadow-md" />
             </div>
-          )}
+          </div>
         </div>
         
         {/* Parents Names */}
@@ -158,11 +137,18 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
 
         {/* View Details Button */}
         <div className="flex items-center justify-center">
-          <Badge variant="outline" className="bg-wedding-gold/10 text-wedding-maroon border-wedding-gold/30 group-hover:bg-wedding-gold/20 group-hover:border-wedding-gold/50 transition-all duration-300 px-4 py-2">
-            <Users size={14} className="mr-2" /> 
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log('👨‍👩‍👧‍👦 Family button clicked:', family.title);
+              handleShowFamily(family);
+            }}
+            className="bg-wedding-gold/10 text-wedding-maroon border border-wedding-gold/30 hover:bg-wedding-gold/20 hover:border-wedding-gold/50 transition-all duration-300 px-4 py-2 rounded-full flex items-center gap-2 cursor-pointer"
+          >
+            <Users size={14} /> 
             <span className="text-sm font-medium">View Family Details</span>
-            <Sparkles size={12} className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </Badge>
+            <Sparkles size={12} className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </button>
         </div>
       </div>
     </motion.div>
