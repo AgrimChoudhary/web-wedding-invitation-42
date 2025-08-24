@@ -238,33 +238,55 @@ export const RSVPSection: React.FC = () => {
                   <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-wedding-gold animate-pulse ml-3" />
                 </div>
                 
-                {/* Personalized Thank You Message */}
-                <div className="mb-5 md:mb-6">
-                  <h2 className="font-great-vibes text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-2 md:mb-3">
-                    Dear <span className="text-wedding-gold bg-gradient-to-r from-wedding-gold to-wedding-gold/80 bg-clip-text text-transparent">{guestName}</span>,
+                {/* Luxury Personalized Thank You Message */}
+                <div className="mb-6 md:mb-8 relative">
+                  {/* Floating sparkles animation */}
+                  <div className="absolute -top-4 -left-4 w-3 h-3 bg-wedding-gold/30 rounded-full animate-float"></div>
+                  <div className="absolute -top-2 -right-6 w-2 h-2 bg-wedding-blush/40 rounded-full animate-bounce-light" style={{animationDelay: '0.5s'}}></div>
+                  <div className="absolute -bottom-3 -left-2 w-2 h-2 bg-wedding-gold/20 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+                  
+                  <h2 className="font-great-vibes text-3xl md:text-5xl lg:text-6xl text-wedding-maroon mb-3 md:mb-4 animate-fade-in-up leading-tight tracking-wide">
+                    Dear <span className="bg-gradient-to-r from-wedding-gold via-wedding-deep-gold to-wedding-gold bg-clip-text text-transparent drop-shadow-sm animate-shimmer bg-[length:200%_100%] inline-block transform hover:scale-105 transition-transform duration-300">{guestName}</span>,
                   </h2>
-                  <h3 className="font-great-vibes text-xl md:text-3xl lg:text-4xl text-wedding-maroon mb-3">
+                  <h3 className="font-great-vibes text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-2 animate-slide-in-left" style={{animationDelay: '0.3s'}}>
                     Thank You for Accepting!
                   </h3>
+                  
+                  {/* Elegant divider */}
+                  <div className="flex justify-center items-center mt-4 mb-2">
+                    <div className="h-px bg-gradient-to-r from-transparent via-wedding-gold to-transparent w-24 md:w-32"></div>
+                    <div className="mx-3 w-2 h-2 bg-wedding-gold rounded-full animate-pulse"></div>
+                    <div className="h-px bg-gradient-to-r from-transparent via-wedding-gold to-transparent w-24 md:w-32"></div>
+                  </div>
                 </div>
                 
-                <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto text-left mb-6">
-                  <div className="bg-wedding-gold/5 p-4 md:p-6 rounded-2xl border border-wedding-gold/20">
-                    <p className="text-base md:text-lg text-gray-700 font-medium mb-2">
-                      🎉 We are absolutely thrilled!
-                    </p>
-                    <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                      {getThankYouMessage()}
-                    </p>
+                <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto text-left mb-6 md:mb-8">
+                  <div className="group bg-gradient-to-br from-wedding-gold/8 to-wedding-gold/4 p-5 md:p-7 rounded-3xl border-2 border-wedding-gold/25 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 relative overflow-hidden">
+                    {/* Subtle shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <div className="relative z-10">
+                      <p className="text-lg md:text-xl text-wedding-maroon font-semibold mb-3 flex items-center">
+                        <span className="text-2xl mr-3 animate-bounce-light">🎉</span>
+                        We are absolutely thrilled!
+                      </p>
+                      <p className="text-sm md:text-base text-gray-700 leading-relaxed font-medium">
+                        {getThankYouMessage()}
+                      </p>
+                    </div>
                   </div>
                   
-                  <div className="bg-wedding-maroon/5 p-4 md:p-6 rounded-2xl border border-wedding-maroon/20">
-                    <p className="text-base md:text-lg text-wedding-maroon font-medium mb-2">
-                      💝 Save the Date!
-                    </p>
-                    <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                      Get ready for an unforgettable celebration of love, tradition, and togetherness.
-                    </p>
+                  <div className="group bg-gradient-to-br from-wedding-maroon/8 to-wedding-maroon/4 p-5 md:p-7 rounded-3xl border-2 border-wedding-maroon/25 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 relative overflow-hidden">
+                    {/* Subtle shimmer effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" style={{animationDelay: '0.2s'}}></div>
+                    <div className="relative z-10">
+                      <p className="text-lg md:text-xl text-wedding-maroon font-semibold mb-3 flex items-center">
+                        <span className="text-2xl mr-3 animate-bounce-light" style={{animationDelay: '0.3s'}}>💝</span>
+                        Save the Date!
+                      </p>
+                      <p className="text-sm md:text-base text-gray-700 leading-relaxed font-medium">
+                        Get ready for an unforgettable celebration of love, tradition, and togetherness.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
