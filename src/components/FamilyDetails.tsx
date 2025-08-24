@@ -76,8 +76,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
   const FamilyCard = ({ family }: { family: FamilyData }) => (
     <motion.div 
       className="relative rounded-xl overflow-hidden luxury-card cursor-pointer group"
-      whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ scale: 1.01, transition: { duration: 0.2 } }}
       onClick={(e) => {
         // Prevent automatic clicks
         if (!e.isTrusted) {
@@ -264,7 +263,6 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
 
         .luxury-card:hover {
           box-shadow: 0 20px 60px rgba(139,69,19,0.15), 0 8px 20px rgba(212,175,55,0.25);
-          transform: translateY(-4px);
         }
 
         .luxury-glow-border {
