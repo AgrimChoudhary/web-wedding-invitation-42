@@ -88,71 +88,70 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
       }}
     >
       <div className="absolute inset-0 luxury-glow-border opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-      <div className="relative bg-gradient-to-br from-white/95 to-wedding-cream/80 backdrop-blur-sm">
-        {/* Family Photo Section */}
-        {family.familyPhotoUrl && family.familyPhotoUrl.trim() !== '' ? (
-          <div className="relative h-48 overflow-hidden">
-            <AspectRatio ratio={16/9} className="bg-wedding-cream">
-              <img 
-                src={family.familyPhotoUrl} 
-                alt={`${family.title} Photo`}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                loading="eager"
-                decoding="async"
-                onError={(e) => {
-                  console.warn(`Failed to load family photo for ${family.title}:`, family.familyPhotoUrl);
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-            </AspectRatio>
-            
-            {/* Family Title Overlay */}
-            <div className="absolute bottom-3 left-3 right-3">
-              <h3 className="text-white font-playfair text-lg flex items-center gap-2">
-                <Crown size={16} className="text-wedding-gold" />
-                {family.title}
-              </h3>
-            </div>
-          </div>
-        ) : (
-          /* No Family Photo - Show Placeholder */
-          <div className="relative h-32 bg-gradient-to-br from-wedding-cream/50 to-wedding-blush/30 flex items-center justify-center">
-            <div className="text-center">
-              <Crown size={24} className="text-wedding-gold mx-auto mb-2" />
-              <h3 className="text-wedding-maroon font-playfair text-lg">
-                {family.title}
-              </h3>
-            </div>
-          </div>
-        )}
+      <div className="relative bg-gradient-to-br from-white/95 to-wedding-cream/80 backdrop-blur-sm p-8">
+        {/* Family Title */}
+        <div className="text-center mb-6">
+          <h3 className="text-wedding-maroon font-playfair text-xl flex items-center justify-center gap-2">
+            <Crown size={18} className="text-wedding-gold" />
+            {family.title}
+          </h3>
+        </div>
         
-        {/* Family Details Section */}
-        <div className="p-6">
-          {/* Combined Parents Names */}
-          {family.parentsNameCombined && family.parentsNameCombined.trim() !== '' ? (
-            <div className="text-center mb-4">
-              <h4 className="font-playfair text-lg text-wedding-maroon mb-1">
-                {family.parentsNameCombined}
-              </h4>
-              <p className="text-sm text-gray-600 italic">Parents</p>
+        {/* Round Family Photo */}
+        <div className="flex justify-center mb-6">
+          {family.familyPhotoUrl && family.familyPhotoUrl.trim() !== '' ? (
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-wedding-gold/30 shadow-lg group-hover:border-wedding-gold/50 transition-all duration-300">
+                <img 
+                  src={family.familyPhotoUrl} 
+                  alt={`${family.title} Photo`}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="eager"
+                  decoding="async"
+                  onError={(e) => {
+                    console.warn(`Failed to load family photo for ${family.title}:`, family.familyPhotoUrl);
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-wedding-gold rounded-full flex items-center justify-center shadow-lg">
+                <Heart size={12} className="text-white" />
+              </div>
             </div>
           ) : (
-            /* No Parents Names - Show Member Count */
-            <div className="text-center mb-4">
-              <p className="text-sm text-gray-600">
-                {family.members.length > 0 ? `${family.members.length} family members` : 'Family details'}
-              </p>
+            /* No Family Photo - Show Crown Icon */
+            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-wedding-cream to-wedding-blush/50 border-4 border-wedding-gold/30 flex items-center justify-center shadow-lg">
+              <Crown size={32} className="text-wedding-gold" />
             </div>
           )}
-
-          <div className="flex items-center justify-center">
-            <Badge variant="outline" className="bg-wedding-gold/10 text-wedding-maroon border-wedding-gold/30 group-hover:bg-wedding-gold/20 group-hover:border-wedding-gold/50 transition-all duration-300">
-              <Users size={14} className="mr-1" /> 
-              <span className="text-xs">View Family Details</span>
-              <Sparkles size={12} className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </Badge>
+        </div>
+        
+        {/* Parents Names */}
+        {family.parentsNameCombined && family.parentsNameCombined.trim() !== '' ? (
+          <div className="text-center mb-6">
+            <h4 className="font-playfair text-lg text-wedding-maroon mb-1 leading-relaxed">
+              {family.parentsNameCombined}
+            </h4>
+            <p className="text-sm text-gray-600 italic font-medium">
+              Parents of the {family.title.includes("Groom") ? "Groom" : "Bride"}
+            </p>
           </div>
+        ) : (
+          /* No Parents Names - Show Member Count */
+          <div className="text-center mb-6">
+            <p className="text-sm text-gray-600">
+              {family.members.length > 0 ? `${family.members.length} family members` : 'Family details'}
+            </p>
+          </div>
+        )}
+
+        {/* View Details Button */}
+        <div className="flex items-center justify-center">
+          <Badge variant="outline" className="bg-wedding-gold/10 text-wedding-maroon border-wedding-gold/30 group-hover:bg-wedding-gold/20 group-hover:border-wedding-gold/50 transition-all duration-300 px-4 py-2">
+            <Users size={14} className="mr-2" /> 
+            <span className="text-sm font-medium">View Family Details</span>
+            <Sparkles size={12} className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </Badge>
         </div>
       </div>
     </motion.div>
