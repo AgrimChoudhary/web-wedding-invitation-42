@@ -392,7 +392,7 @@ const Invitation = () => {
           </div>
         </div>
       ) : (
-        <div className="min-h-screen w-full flex flex-col relative overflow-hidden">
+        <main id="main-content" className="min-h-screen w-full flex flex-col relative overflow-hidden">
           {/* Enhanced Transitioning Ganesha Image with faster animation */}
           {showGaneshaTransition && !hideGaneshaTransition && (
             <div 
@@ -519,7 +519,7 @@ const Invitation = () => {
           {(wishesEnabled === undefined || wishesEnabled) && (
             <WishesModal open={showWishesModal} onOpenChange={setShowWishesModal} />
           )}
-        </div>
+        </main>
       )}
     </div>
   );

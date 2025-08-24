@@ -170,7 +170,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ weddingDate, weddingTim
                         
                         {/* Corner decorations with lighter colors */}
                         <div className="absolute top-2 left-2">
-                          <div className="w-3 h-3 border-t-2 border-l-2 border-white/30 rounded-tl-lg"></div>
+                          <IconComponent size={14} className="text-background drop-shadow-md" />
                         </div>
                         <div className="absolute top-2 right-2">
                           <div className="w-3 h-3 border-t-2 border-r-2 border-white/30 rounded-tr-lg"></div>
@@ -185,7 +185,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ weddingDate, weddingTim
                       
                       {/* Floating icon with lighter colors */}
                       <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-wedding-gold/80 to-wedding-gold/60 rounded-full flex items-center justify-center shadow-md group-hover/card:animate-bounce">
-                        <IconComponent size={14} className="text-white" />
+                        <IconComponent size={14} className="text-background drop-shadow-md" />
                       </div>
                       
                       {/* Label */}
@@ -206,7 +206,7 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ weddingDate, weddingTim
               <div className="inline-flex items-center gap-3 bg-white/60 px-6 py-4 rounded-2xl shadow-md border border-wedding-gold/15 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
                 <div className="flex items-center gap-2">
                   <div className="w-10 h-10 bg-gradient-to-br from-wedding-gold/80 to-wedding-gold/60 rounded-full flex items-center justify-center">
-                    <Calendar size={18} className="text-white" />
+                    <Calendar size={18} className="text-foreground" />
                   </div>
                   <div className="text-left">
                     <p className="font-semibold text-wedding-maroon/90 text-sm md:text-base font-playfair">{displayDate}</p>

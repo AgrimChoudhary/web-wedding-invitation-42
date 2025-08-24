@@ -9,6 +9,8 @@ import { GuestProvider } from "./context/GuestContext";
 import { AudioProvider } from "./context/AudioContext";
 import { WeddingProvider } from "./context/WeddingContext";
 import { PlatformProvider } from "./context/PlatformContext";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { AccessibilityHelper } from "./components/AccessibilityHelper";
 import Index from "./pages/Index";
 import Invitation from "./pages/Invitation";
 import GuestManagement from "./pages/GuestManagement";
@@ -47,32 +49,36 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <PlatformProvider>
-            <WeddingProvider>
-              <GuestProvider>
-                <AudioProvider isDisabledOnRoutes={["/guest-management"]}>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/invitation" element={<Invitation />} />
-                    <Route path="/guest-management" element={<GuestManagement />} />
-                    {/* Support for guest-specific routes */}
-                    <Route path="/:guestId" element={<Index />} />
-                    <Route path="/invitation/:guestId" element={<Invitation />} />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </AudioProvider>
-              </GuestProvider>
-            </WeddingProvider>
-          </PlatformProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <AccessibilityHelper>
+        <QueryClientProvider client={queryClient}>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <PlatformProvider>
+                <WeddingProvider>
+                  <GuestProvider>
+                    <AudioProvider isDisabledOnRoutes={["/guest-management"]}>
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/invitation" element={<Invitation />} />
+                        <Route path="/guest-management" element={<GuestManagement />} />
+                        {/* Support for guest-specific routes */}
+                        <Route path="/:guestId" element={<Index />} />
+                        <Route path="/invitation/:guestId" element={<Invitation />} />
+                        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </AudioProvider>
+                  </GuestProvider>
+                </WeddingProvider>
+              </PlatformProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </QueryClientProvider>
+      </AccessibilityHelper>
+    </ErrorBoundary>
   );
 };
 

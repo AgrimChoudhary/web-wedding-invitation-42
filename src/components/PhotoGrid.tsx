@@ -304,9 +304,9 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({
                   <div className="absolute inset-[6px] pointer-events-none border border-wedding-gold/20"></div>
                   
                   <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
-                    <h4 className="text-white font-medium text-sm sm:text-base">{photosWithLikes[currentIndex]?.title}</h4>
+                    <h4 className="text-background font-medium text-sm sm:text-base drop-shadow-lg">{photosWithLikes[currentIndex]?.title}</h4>
                     {photosWithLikes[currentIndex]?.description && (
-                      <p className="text-white/80 text-xs sm:text-sm mt-1">{photosWithLikes[currentIndex]?.description}</p>
+                      <p className="text-background/90 text-xs sm:text-sm mt-1 drop-shadow-md">{photosWithLikes[currentIndex]?.description}</p>
                     )}
                   </div>
                   
@@ -321,7 +321,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({
                   >
                     <Heart 
                       size={16} 
-                      className={photosWithLikes[currentIndex]?.hasLiked ? "text-red-500 fill-red-500" : "text-white"} 
+                      className={photosWithLikes[currentIndex]?.hasLiked ? "text-red-500 fill-red-500" : "text-background drop-shadow-lg"}
                     />
                   </Button>
                   

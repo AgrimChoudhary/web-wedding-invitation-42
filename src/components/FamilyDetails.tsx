@@ -115,7 +115,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
                 />
               </div>
               <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-wedding-gold rounded-full flex items-center justify-center shadow-lg">
-                <Heart size={12} className="text-white" />
+                <Heart size={12} className="text-background drop-shadow-md" />
               </div>
             </div>
           ) : (
@@ -131,7 +131,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
                 />
               </div>
               <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-wedding-gold rounded-full flex items-center justify-center shadow-lg">
-                <Heart size={12} className="text-white" />
+                <Heart size={12} className="text-background drop-shadow-md" />
               </div>
             </div>
           )}
