@@ -110,7 +110,8 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
                   decoding="async"
                   onError={(e) => {
                     console.warn(`Failed to load family photo for ${family.title}:`, family.familyPhotoUrl);
-                    (e.target as HTMLImageElement).style.display = 'none';
+                    const target = e.target as HTMLImageElement;
+                    target.src = family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg";
                   }}
                 />
               </div>
@@ -119,9 +120,20 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
               </div>
             </div>
           ) : (
-            /* No Family Photo - Show Crown Icon */
-            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-wedding-cream to-wedding-blush/50 border-4 border-wedding-gold/30 flex items-center justify-center shadow-lg">
-              <Crown size={32} className="text-wedding-gold" />
+            /* No Family Photo - Use Placeholder Image */
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-wedding-gold/30 shadow-lg group-hover:border-wedding-gold/50 transition-all duration-300">
+                <img 
+                  src={family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg"} 
+                  alt={`${family.title} Photo`}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-wedding-gold rounded-full flex items-center justify-center shadow-lg">
+                <Heart size={12} className="text-white" />
+              </div>
             </div>
           )}
         </div>

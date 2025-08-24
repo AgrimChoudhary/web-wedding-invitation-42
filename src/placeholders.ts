@@ -17,6 +17,8 @@ export const defaultWeddingData: WeddingData = {
   family: {
     groomFamily: {
       title: "Groom's Family",
+      familyPhotoUrl: "/images/groom-family-placeholder.jpg",
+      parentsNameCombined: "Mr. Sunil & Mrs. Rimma Malhotra",
       members: [
         { 
           id: "groom-parents",
@@ -53,6 +55,8 @@ export const defaultWeddingData: WeddingData = {
     },
     brideFamily: {
       title: "Bride's Family",
+      familyPhotoUrl: "/images/bride-family-placeholder.jpg",
+      parentsNameCombined: "Mr. Jagdeep & Mrs. Genevieve Advani",
       members: [
         { 
           id: "bride-parents",
