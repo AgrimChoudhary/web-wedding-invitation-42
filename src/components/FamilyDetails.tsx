@@ -53,7 +53,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
   console.log('=== END FAMILY DETAILS DEBUG ===');
 
   const handleShowFamily = (family: FamilyData) => {
-    console.log('👨‍👩‍👧‍👦 Opening family dialog for:', family.title);
+    console.log('👨‍👩‍👧‍👦 User manually clicked on family:', family.title);
     setSelectedFamily(family);
     setIsDialogOpen(true);
   };
@@ -77,10 +77,13 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
     <motion.div 
       className="relative rounded-xl overflow-hidden luxury-card cursor-pointer group"
       whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
+      whileTap={{ scale: 0.98 }}
       onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('🔍 Family card clicked:', family.title);
+        // Prevent automatic clicks
+        if (!e.isTrusted) {
+          console.log('🚫 Blocked automatic family card click');
+          return;
+        }
         handleShowFamily(family);
       }}
     >
@@ -261,6 +264,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
 
         .luxury-card:hover {
           box-shadow: 0 20px 60px rgba(139,69,19,0.15), 0 8px 20px rgba(212,175,55,0.25);
+          transform: translateY(-4px);
         }
 
         .luxury-glow-border {
