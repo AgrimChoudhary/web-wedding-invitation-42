@@ -197,16 +197,13 @@ const WishesCarousel: React.FC<WishesCarouselProps> = ({ onViewAll }) => {
           </div>
         ) : (
           <div className="mb-8 md:mb-12 flex justify-center px-4">
-            {(() => {
-              console.log('🎠 WishesCarousel: Showing "No Approved Wishes" state');
-              console.log('🎠 WishesCarousel: Debug - wishes data:', {
-                totalWishes: wishes?.length || 0,
-                approvedWishes: wishes?.filter(w => w.is_approved)?.length || 0,
-                isLoading,
-                allWishes: wishes
-              });
-              return null;
-            })()}
+            {console.log('🎠 WishesCarousel: Showing "No Approved Wishes" state')}
+            {console.log('🎠 WishesCarousel: Debug - wishes data:', {
+              totalWishes: wishes?.length || 0,
+              approvedWishes: wishes?.filter(w => w.is_approved)?.length || 0,
+              isLoading,
+              allWishes: wishes
+            })}
             <Card className="max-w-sm md:max-w-lg h-48 md:h-56 flex flex-col items-center justify-center text-center p-4 md:p-6 bg-gradient-to-br from-wedding-cream/90 via-white/95 to-wedding-blush/20 border-2 border-wedding-gold/30 shadow-2xl">
               <div className="p-3 md:p-4 rounded-full bg-wedding-gold/20 mb-3 md:mb-4 border-2 border-wedding-gold/30 shadow-lg">
                 <Sparkles size={20} className="md:w-6 md:h-6 text-wedding-gold animate-pulse" />
