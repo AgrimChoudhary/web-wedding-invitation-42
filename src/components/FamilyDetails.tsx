@@ -50,13 +50,13 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
   const groomFamily = propGroomFamily || weddingData.family.groomFamily || {
     title: "Groom's Family",
     members: [],
-    familyPhotoUrl: "/images/groom-family-placeholder.jpg",
+    familyPhotoUrl: "",
     parentsNameCombined: "Parents of the Groom"
   };
   const brideFamily = propBrideFamily || weddingData.family.brideFamily || {
     title: "Bride's Family", 
     members: [],
-    familyPhotoUrl: "/images/bride-family-placeholder.jpg",
+    familyPhotoUrl: "",
     parentsNameCombined: "Parents of the Bride"
   };
 
@@ -112,7 +112,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
           <div className="relative">
             <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-wedding-gold/30 shadow-lg group-hover:border-wedding-gold/50 transition-all duration-300 bg-wedding-cream/50">
               <img 
-                src={family.familyPhotoUrl || (family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg")} 
+                src={family.familyPhotoUrl && family.familyPhotoUrl.trim() !== '' ? family.familyPhotoUrl : (family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg")} 
                 alt={`${family.title} Photo`}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-0 animate-fade-in"
                 loading="lazy"
@@ -120,9 +120,12 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
                 onLoad={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.style.opacity = '1';
+                  if (family.familyPhotoUrl && family.familyPhotoUrl.trim() !== '') {
+                    console.log(`✅ Successfully loaded family photo for ${family.title}:`, family.familyPhotoUrl);
+                  }
                 }}
                 onError={(e) => {
-                  console.warn(`Failed to load family photo for ${family.title}:`, family.familyPhotoUrl);
+                  console.warn(`❌ Failed to load family photo for ${family.title}:`, family.familyPhotoUrl);
                   const target = e.target as HTMLImageElement;
                   target.src = family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg";
                   target.style.opacity = '1';
