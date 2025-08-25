@@ -159,77 +159,73 @@ export const useUrlParams = () => {
             },
             family: {
               bride_family: (() => {
-                // Try to parse the full bride_family JSON structure first
-                const brideFamilyData = tryParseJSON(urlParams.get('bride_family'));
-                console.debug('🔍 FAMILY DATA DEBUG - Bride Family Raw:', urlParams.get('bride_family'));
+                // Try to parse the structured brideFamily param as per GitHub spec
+                const brideFamilyData = tryParseJSON(urlParams.get('brideFamily'));
+                console.debug('🔍 FAMILY DATA DEBUG - Bride Family Raw:', urlParams.get('brideFamily'));
                 console.debug('🔍 FAMILY DATA DEBUG - Bride Family Parsed:', brideFamilyData);
                 
                 if (brideFamilyData) {
-                  console.debug('✅ Using structured bride_family data');
-                  return brideFamilyData;
+                  console.debug('✅ Using structured brideFamily data');
+                  // Map to the expected format
+                  return {
+                    title: brideFamilyData.title || "Bride's Family",
+                    familyPhoto: brideFamilyData.familyPhoto || '',
+                    parentsNames: brideFamilyData.parentsNames || '',
+                    members: Array.isArray(brideFamilyData.members) ? brideFamilyData.members : []
+                  };
                 }
                 
-                // Support platform's camelCase brideFamily param
-                const brideFamilyCamel = tryParseJSON(urlParams.get('brideFamily'));
-                console.debug('🔍 FAMILY DATA DEBUG - Bride Family Camel:', brideFamilyCamel);
+                // Try snake_case bride_family param 
+                const brideFamilySnake = tryParseJSON(urlParams.get('bride_family'));
+                console.debug('🔍 FAMILY DATA DEBUG - Bride Family Snake:', brideFamilySnake);
                 
-                if (brideFamilyCamel) {
-                  console.debug('✅ Using camelCase brideFamily data');
-                  return {
-                    family_photo: brideFamilyCamel.familyPhoto || '',
-                    parents_name: brideFamilyCamel.parentsNames || '',
-                    members: Array.isArray(brideFamilyCamel.members) ? brideFamilyCamel.members.map((m: any) => ({
-                      name: m.name || '',
-                      relation: m.relation || '',
-                      description: m.description || '',
-                      photo: m.photo || ''
-                    })) : []
-                  };
+                if (brideFamilySnake) {
+                  console.debug('✅ Using snake_case bride_family data');
+                  return brideFamilySnake;
                 }
                 
                 // Fallback to individual parameters
                 const fallbackBrideFamily = {
-                  family_photo: urlParams.get('brideFamilyPhoto') || urlParams.get('bride_family_photo') || '',
-                  parents_name: urlParams.get('brideParentsNames') || urlParams.get('bride_parents_name') || '',
-                  members: tryParseJSON(urlParams.get('bride_family_members')) || []
+                  title: "Bride's Family",
+                  familyPhoto: urlParams.get('brideFamilyPhoto') || '',
+                  parentsNames: urlParams.get('brideParentsNames') || '',
+                  members: []
                 };
                 console.debug('⚠️ Using fallback bride family parameters:', fallbackBrideFamily);
                 return fallbackBrideFamily;
               })(),
               groom_family: (() => {
-                // Try to parse the full groom_family JSON structure first
-                const groomFamilyData = tryParseJSON(urlParams.get('groom_family'));
-                console.debug('🔍 FAMILY DATA DEBUG - Groom Family Raw:', urlParams.get('groom_family'));
+                // Try to parse the structured groomFamily param as per GitHub spec
+                const groomFamilyData = tryParseJSON(urlParams.get('groomFamily'));
+                console.debug('🔍 FAMILY DATA DEBUG - Groom Family Raw:', urlParams.get('groomFamily'));
                 console.debug('🔍 FAMILY DATA DEBUG - Groom Family Parsed:', groomFamilyData);
                 
                 if (groomFamilyData) {
-                  console.debug('✅ Using structured groom_family data');
-                  return groomFamilyData;
+                  console.debug('✅ Using structured groomFamily data');
+                  // Map to the expected format
+                  return {
+                    title: groomFamilyData.title || "Groom's Family",
+                    familyPhoto: groomFamilyData.familyPhoto || '',
+                    parentsNames: groomFamilyData.parentsNames || '',
+                    members: Array.isArray(groomFamilyData.members) ? groomFamilyData.members : []
+                  };
                 }
                 
-                // Support platform's camelCase groomFamily param
-                const groomFamilyCamel = tryParseJSON(urlParams.get('groomFamily'));
-                console.debug('🔍 FAMILY DATA DEBUG - Groom Family Camel:', groomFamilyCamel);
+                // Try snake_case groom_family param
+                const groomFamilySnake = tryParseJSON(urlParams.get('groom_family'));
+                console.debug('🔍 FAMILY DATA DEBUG - Groom Family Snake:', groomFamilySnake);
                 
-                if (groomFamilyCamel) {
-                  console.debug('✅ Using camelCase groomFamily data');
-                  return {
-                    family_photo: groomFamilyCamel.familyPhoto || '',
-                    parents_name: groomFamilyCamel.parentsNames || '',
-                    members: Array.isArray(groomFamilyCamel.members) ? groomFamilyCamel.members.map((m: any) => ({
-                      name: m.name || '',
-                      relation: m.relation || '',
-                      description: m.description || '',
-                      photo: m.photo || ''
-                    })) : []
-                  };
+                if (groomFamilySnake) {
+                  console.debug('✅ Using snake_case groom_family data');
+                  return groomFamilySnake;
                 }
                 
                 // Fallback to individual parameters
                 const fallbackGroomFamily = {
-                  family_photo: urlParams.get('groomFamilyPhoto') || urlParams.get('groom_family_photo') || '',
-                  parents_name: urlParams.get('groomParentsNames') || urlParams.get('groom_parents_name') || '',
-                  members: tryParseJSON(urlParams.get('groom_family_members')) || []
+                  title: "Groom's Family",
+                  familyPhoto: urlParams.get('groomFamilyPhoto') || '',
+                  parentsNames: urlParams.get('groomParentsNames') || '',
+                  members: []
                 };
                 console.debug('⚠️ Using fallback groom family parameters:', fallbackGroomFamily);
                 return fallbackGroomFamily;

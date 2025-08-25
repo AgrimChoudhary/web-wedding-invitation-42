@@ -203,8 +203,8 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 mapLink: ''
               },
               family: {
-                bride_family: preservedBrideFamily || { family_photo: '', parents_name: '', members: [] },
-                groom_family: preservedGroomFamily || { family_photo: '', parents_name: '', members: [] }
+                bride_family: payload.eventDetails.bride_family || preservedBrideFamily || { title: "Bride's Family", familyPhoto: '', parentsNames: '', members: [] },
+                groom_family: payload.eventDetails.groom_family || preservedGroomFamily || { title: "Groom's Family", familyPhoto: '', parentsNames: '', members: [] }
               },
               contacts: [],
               gallery: payload.eventDetails.photos?.map((photo, index) => ({

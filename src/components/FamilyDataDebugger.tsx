@@ -25,27 +25,41 @@ const FamilyDataDebugger: React.FC = () => {
     
     console.log('Has Groom Family Data:', hasGroomFamilyData);
     console.log('Has Bride Family Data:', hasBrideFamilyData);
+    console.log('Groom Family Member Count:', weddingData?.family?.groomFamily?.members?.length || 0);
+    console.log('Bride Family Member Count:', weddingData?.family?.brideFamily?.members?.length || 0);
     
     if (hasGroomFamilyData) {
       console.log('Groom Family Details:', {
+        title: weddingData?.family?.groomFamily?.title,
         photo: weddingData?.family?.groomFamily?.familyPhotoUrl,
         parents: weddingData?.family?.groomFamily?.parentsNameCombined,
+        memberCount: weddingData?.family?.groomFamily?.members?.length,
         members: weddingData?.family?.groomFamily?.members
       });
     }
     
     if (hasBrideFamilyData) {
       console.log('Bride Family Details:', {
+        title: weddingData?.family?.brideFamily?.title,
         photo: weddingData?.family?.brideFamily?.familyPhotoUrl,
         parents: weddingData?.family?.brideFamily?.parentsNameCombined,
+        memberCount: weddingData?.family?.brideFamily?.members?.length,
         members: weddingData?.family?.brideFamily?.members
       });
     }
     
+    // Check URL params and platform data for family info
+    if (platformData && (platformData as any).eventDetails) {
+      console.log('Platform Event Details bride_family:', (platformData as any).eventDetails.bride_family);
+      console.log('Platform Event Details groom_family:', (platformData as any).eventDetails.groom_family);
+    }
+    
     console.groupEnd();
     
-    // Show toast with results
-    const message = `Family Data Check: Groom ${hasGroomFamilyData ? '✅' : '❌'}, Bride ${hasBrideFamilyData ? '✅' : '❌'}`;
+    // Show toast with detailed results
+    const groomCount = weddingData?.family?.groomFamily?.members?.length || 0;
+    const brideCount = weddingData?.family?.brideFamily?.members?.length || 0;
+    const message = `Family Data: Groom ${hasGroomFamilyData ? `✅ (${groomCount})` : '❌'}, Bride ${hasBrideFamilyData ? `✅ (${brideCount})` : '❌'}`;
     toast(message, {
       description: `Platform Mode: ${isPlatformMode ? 'Yes' : 'No'}`,
       duration: 5000

@@ -6,12 +6,70 @@ export const mapPlatformDataToWeddingData = (platformData: StructuredEventData):
   
   // Debug logging for family data
   console.log('=== DATA MAPPER DEBUG ===');
+  console.log('Full platformData:', platformData);
   console.log('Full weddingData:', weddingData);
   console.log('weddingData.family:', weddingData.family);
   console.log('bride_family:', weddingData.family?.bride_family);
   console.log('groom_family:', weddingData.family?.groom_family);
   console.log('=== END DATA MAPPER DEBUG ===');
   
+  // Process family data from multiple possible sources as per GitHub spec
+  let groomFamily = null;
+  let brideFamily = null;
+
+  // Check for family data in multiple locations (URL params vs postMessage)
+  const groomFamilySource = 
+    (platformData as any).groom_family || 
+    (platformData as any).groomFamily || 
+    weddingData.family?.groom_family;
+    
+  const brideFamilySource = 
+    (platformData as any).bride_family || 
+    (platformData as any).brideFamily || 
+    weddingData.family?.bride_family;
+
+  if (groomFamilySource) {
+    console.debug('🤵 Processing groom family data from source:', groomFamilySource);
+    groomFamily = {
+      title: groomFamilySource.title || "Groom's Family",
+      members: (groomFamilySource.members || []).map((member: any, index: number) => ({
+        id: member.id || `groom-member-${index}`,
+        name: member.name || 'Unknown',
+        relation: member.relation || 'Family Member',
+        description: member.description || '',
+        image: member.photo || member.image || '',
+        showInDialogOnly: false
+      })),
+      familyPhotoUrl: groomFamilySource.familyPhoto || groomFamilySource.family_photo || '',
+      parentsNameCombined: groomFamilySource.parentsNames || groomFamilySource.parents_names || groomFamilySource.parentsNameCombined || ''
+    };
+    console.debug('✅ Mapped groom family:', groomFamily);
+    console.debug(`🤵 Groom family member count: ${groomFamily.members.length}`);
+  } else {
+    console.debug('❌ No groom family data found in any source');
+  }
+
+  if (brideFamilySource) {
+    console.debug('👰 Processing bride family data from source:', brideFamilySource);
+    brideFamily = {
+      title: brideFamilySource.title || "Bride's Family",
+      members: (brideFamilySource.members || []).map((member: any, index: number) => ({
+        id: member.id || `bride-member-${index}`,
+        name: member.name || 'Unknown',
+        relation: member.relation || 'Family Member',
+        description: member.description || '',
+        image: member.photo || member.image || '',
+        showInDialogOnly: false
+      })),
+      familyPhotoUrl: brideFamilySource.familyPhoto || brideFamilySource.family_photo || '',
+      parentsNameCombined: brideFamilySource.parentsNames || brideFamilySource.parents_names || brideFamilySource.parentsNameCombined || ''
+    };
+    console.debug('✅ Mapped bride family:', brideFamily);
+    console.debug(`👰 Bride family member count: ${brideFamily.members.length}`);
+  } else {
+    console.debug('❌ No bride family data found in any source');
+  }
+
   return {
     couple: {
       groomFirstName: extractFirstName(weddingData.couple.groomName),
@@ -23,35 +81,17 @@ export const mapPlatformDataToWeddingData = (platformData: StructuredEventData):
       coupleImageUrl: weddingData.couple.coupleImage
     },
     family: {
-      groomFamily: {
+      groomFamily: groomFamily || {
         title: "Groom's Family",
-        members: (weddingData.family?.groom_family?.members || []).map((member, index) => {
-          console.debug(`🔍 DATA MAPPER - Groom Family Member ${index}:`, member);
-          return {
-            id: `groom-${index}`,
-            name: member.name || '',
-            relation: member.relation || '',
-            description: member.description || '',
-            image: member.photo || ''
-          };
-        }),
-        familyPhotoUrl: weddingData.family?.groom_family?.family_photo || '',
-        parentsNameCombined: weddingData.family?.groom_family?.parents_name || ''
+        members: [],
+        familyPhotoUrl: '',
+        parentsNameCombined: ''
       },
-      brideFamily: {
+      brideFamily: brideFamily || {
         title: "Bride's Family",
-        members: (weddingData.family?.bride_family?.members || []).map((member, index) => {
-          console.debug(`🔍 DATA MAPPER - Bride Family Member ${index}:`, member);
-          return {
-            id: `bride-${index}`,
-            name: member.name || '',
-            relation: member.relation || '',
-            description: member.description || '',
-            image: member.photo || ''
-          };
-        }),
-        familyPhotoUrl: weddingData.family?.bride_family?.family_photo || '',
-        parentsNameCombined: weddingData.family?.bride_family?.parents_name || ''
+        members: [],
+        familyPhotoUrl: '',
+        parentsNameCombined: ''
       }
     },
     mainWedding: {
