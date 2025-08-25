@@ -4,9 +4,11 @@ import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useWedding } from '@/context/WeddingContext';
 import { useGuest } from '@/context/GuestContext';
+import { usePlatform } from '@/context/PlatformContext';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 
 interface PhotoGridProps {
   title?: string;
@@ -49,12 +51,21 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({
   
   // Initialize photos with default like data
   useEffect(() => {
+    console.log('🔍 PHOTO GRID - Wedding Data Photos:', weddingData.photoGallery);
     const initialPhotos: PhotoWithLikes[] = weddingData.photoGallery.map(photo => ({
       ...photo,
       likes_count: 0,
       hasLiked: false
     }));
     setPhotosWithLikes(initialPhotos);
+    
+    // Show toast when photos are loaded
+    if (initialPhotos.length > 0) {
+      toast(`${initialPhotos.length} photos loaded from gallery`, {
+        description: 'Your photo gallery is now ready to view',
+        duration: 2000
+      });
+    }
   }, [weddingData.photoGallery]);
 
   // Set up message listener for platform communication

@@ -21,6 +21,14 @@ const EventTimeline: React.FC = () => {
   const isMobile = useIsMobile();
   const { weddingData } = useWedding();
   
+  // Log events data for debugging
+  useEffect(() => {
+    console.log('🔍 EVENT TIMELINE - Wedding Data Events:', weddingData.events);
+    if (weddingData.events.length > 0) {
+      console.log('📊 EVENT TIMELINE - Events loaded:', weddingData.events.length);
+    }
+  }, [weddingData.events]);
+
   // Convert wedding data events to timeline events
   const events: Event[] = weddingData.events.map((event, index) => {
     const icons = [

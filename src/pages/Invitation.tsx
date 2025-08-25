@@ -22,6 +22,7 @@ import { ArrowLeftCircle, Heart, MapPin, User, Music, Volume2, VolumeX, Sparkles
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import AnimatedGuestName from '../components/AnimatedGuestName';
+import DataVerificationLogger from '@/components/DataVerificationLogger';
 
 // Security: Define trusted origins
 const TRUSTED_ORIGINS = [
@@ -234,9 +235,38 @@ const Invitation = () => {
         return;
       }
 
-      const { type, payload } = event.data;
+      const { type, payload, data } = event.data;
+      
+      // Log all received messages for debugging
+      console.log('🎯 INVITATION TEMPLATE - Received message:', {
+        type,
+        timestamp: new Date().toISOString(),
+        hasPayload: !!payload,
+        hasData: !!data,
+        origin: event.origin
+      });
 
       switch (type) {
+        case 'INVITATION_LOADED':
+          console.log('🎯 INVITATION_LOADED received in Invitation.tsx:', { payload, data });
+          // Handle the comprehensive invitation data from UTSAVY
+          const invitationData = payload || data;
+          if (invitationData?.eventDetails) {
+            console.log('📊 INVITATION_LOADED - Event Details:', invitationData.eventDetails);
+            console.log('📊 INVITATION_LOADED - Bride Family:', invitationData.eventDetails.bride_family);
+            console.log('📊 INVITATION_LOADED - Groom Family:', invitationData.eventDetails.groom_family);
+            console.log('📊 INVITATION_LOADED - Photos:', invitationData.eventDetails.photos);
+            console.log('📊 INVITATION_LOADED - Events:', invitationData.eventDetails.events);
+            console.log('📊 INVITATION_LOADED - Contacts:', invitationData.eventDetails.contacts);
+          }
+          break;
+        case 'WEDDING_DATA_READY':
+          console.log('🎯 WEDDING_DATA_READY received in Invitation.tsx:', { payload, data });
+          const weddingData = payload || data;
+          if (weddingData) {
+            console.log('📊 WEDDING_DATA_READY - Complete Data:', weddingData);
+          }
+          break;
         case 'UPDATE_WEDDING_DATA':
           if (payload.mainWedding?.date) {
             payload.mainWedding.date = new Date(payload.mainWedding.date);
@@ -248,6 +278,7 @@ const Invitation = () => {
           if (payload.guestId) setGuestId(payload.guestId);
           break;
         default:
+          console.log('🎯 Unknown message type received:', type);
           break;
       }
     };
@@ -393,6 +424,9 @@ const Invitation = () => {
         </div>
       ) : (
         <main id="main-content" className="min-h-screen w-full flex flex-col relative overflow-hidden">
+          {/* Data Verification Logger (dev tool) */}
+          <DataVerificationLogger />
+          
           {/* Enhanced Transitioning Ganesha Image with faster animation */}
           {showGaneshaTransition && !hideGaneshaTransition && (
             <div 
