@@ -51,7 +51,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({
   
   // Initialize photos with default like data
   useEffect(() => {
-    console.log('🔍 PHOTO GRID - Wedding Data Photos:', weddingData.photoGallery);
+    
     const initialPhotos: PhotoWithLikes[] = weddingData.photoGallery.map(photo => ({
       ...photo,
       likes_count: 0,
@@ -73,7 +73,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({
     const handleMessage = (event: MessageEvent) => {
       // Security check
       if (!isTrustedOrigin(event.origin)) {
-        console.warn('Untrusted origin se message mila:', event.origin);
+        
         return;
       }
 
@@ -81,13 +81,13 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({
 
       switch (type) {
         case 'INITIAL_PHOTO_LIKES_DATA':
-          console.log('Received initial photo likes data:', payload);
+          
           if (payload.photosWithLikes && Array.isArray(payload.photosWithLikes)) {
             setPhotosWithLikes(payload.photosWithLikes);
           }
           break;
         case 'PHOTO_LIKE_UPDATED':
-          console.log('Photo like updated:', payload);
+          
           // Update local state with new like data
           setPhotosWithLikes(prevPhotos => 
             prevPhotos.map(photo => 
@@ -160,7 +160,7 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({
       return;
     }
 
-    console.log('Toggling like for photo:', photoId, 'by guest:', guestName);
+    
     
     // Find current photo to determine current like status
     const currentPhoto = photosWithLikes.find(photo => photo.id === photoId);

@@ -8,7 +8,7 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { motion } from "framer-motion";
 import { useWedding } from '@/context/WeddingContext';
-import FamilyDataDebugger from './FamilyDataDebugger';
+
 
 interface FamilyMember {
   name: string;
@@ -40,10 +40,6 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
 
   // Enhanced logging for family data debugging
   React.useEffect(() => {
-    console.debug('🔍 FAMILY DETAILS - Props:', { propGroomFamily, propBrideFamily });
-    console.debug('🔍 FAMILY DETAILS - WeddingData Family:', weddingData?.family);
-    console.debug('🔍 FAMILY DETAILS - Groom Family Members:', weddingData?.family?.groomFamily?.members);
-    console.debug('🔍 FAMILY DETAILS - Bride Family Members:', weddingData?.family?.brideFamily?.members);
   }, [propGroomFamily, propBrideFamily, weddingData?.family]);
 
   // Use props if provided, otherwise use from context with fallback to sample data
@@ -61,21 +57,9 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
   };
 
   // Debug logging for family data in component
-  console.log('=== FAMILY DETAILS COMPONENT DEBUG ===');
-  console.log('weddingData.family:', weddingData.family);
-  console.log('groomFamily:', groomFamily);
-  console.log('brideFamily:', brideFamily);
-  console.log('groomFamily.familyPhotoUrl:', groomFamily?.familyPhotoUrl);
-  console.log('groomFamily.parentsNameCombined:', groomFamily?.parentsNameCombined);
-  console.log('brideFamily.familyPhotoUrl:', brideFamily?.familyPhotoUrl);
-  console.log('brideFamily.parentsNameCombined:', brideFamily?.parentsNameCombined);
-  console.log('Expected Image URLs:');
-  console.log('- Groom Family Photo:', groomFamily?.familyPhotoUrl && groomFamily.familyPhotoUrl.trim() !== '' ? groomFamily.familyPhotoUrl : 'PLACEHOLDER');
-  console.log('- Bride Family Photo:', brideFamily?.familyPhotoUrl && brideFamily.familyPhotoUrl.trim() !== '' ? brideFamily.familyPhotoUrl : 'PLACEHOLDER');
-  console.log('=== END FAMILY DETAILS DEBUG ===');
 
   const handleShowFamily = (family: FamilyData) => {
-    console.log('👨‍👩‍👧‍👦 User manually clicked on family:', family.title);
+    
     setSelectedFamily(family);
     setIsDialogOpen(true);
   };
@@ -124,11 +108,11 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
                   const target = e.target as HTMLImageElement;
                   target.style.opacity = '1';
                   if (family.familyPhotoUrl && family.familyPhotoUrl.trim() !== '') {
-                    console.log(`✅ Successfully loaded family photo for ${family.title}:`, family.familyPhotoUrl);
+                    
                   }
                 }}
                 onError={(e) => {
-                  console.warn(`❌ Failed to load family photo for ${family.title}:`, family.familyPhotoUrl);
+                  
                   const target = e.target as HTMLImageElement;
                   target.src = family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg";
                   target.style.opacity = '1';
@@ -168,7 +152,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              console.log('👨‍👩‍👧‍👦 Family button clicked:', family.title);
+              
               handleShowFamily(family);
             }}
             className="bg-wedding-gold/10 text-wedding-maroon border border-wedding-gold/30 hover:bg-wedding-gold/20 hover:border-wedding-gold/50 transition-all duration-300 px-4 py-2 rounded-full flex items-center gap-2 cursor-pointer"
@@ -219,7 +203,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
         <Dialog 
           open={isDialogOpen} 
           onOpenChange={(open) => {
-            console.log('🔒 Family dialog state change:', open);
+            
             setIsDialogOpen(open);
           }}
         >
@@ -309,8 +293,6 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
         }
       `}</style>
       
-      {/* Debug helper - remove in production */}
-      <FamilyDataDebugger />
     </section>
   );
 };

@@ -37,16 +37,16 @@ const WelcomeForm: React.FC = () => {
   const handleOpenInvitation = (event: React.MouseEvent) => {
     // Prevent multiple clicks during processing
     if (isLoading) {
-      console.log('⚠️ handleOpenInvitation: Already processing, ignoring duplicate click');
+      
       return;
     }
     
-    console.log('🎯 handleOpenInvitation: User clicked Open Invitation button');
+    
     setIsLoading(true);
     
     // Send INVITATION_VIEWED message to parent platform
     if (guestId) {
-      console.log('📤 Sending INVITATION_VIEWED message to platform');
+      
       try {
         window.parent.postMessage({
           type: 'INVITATION_VIEWED',
@@ -55,13 +55,13 @@ const WelcomeForm: React.FC = () => {
             eventId: weddingData.events[0]?.id || 'default-event-id'
           }
         }, '*');
-        console.log('✅ INVITATION_VIEWED message sent successfully');
+        
       } catch (error) {
-        console.warn('⚠️ Failed to send INVITATION_VIEWED message:', error);
+        
         // Don't block navigation if message fails
       }
     } else {
-      console.warn('⚠️ No guestId available for INVITATION_VIEWED message');
+      
     }
     
     // Navigate immediately after a short delay for better UX
@@ -70,7 +70,7 @@ const WelcomeForm: React.FC = () => {
       const pathParts = window.location.pathname.split('/').filter(Boolean);
       const currentGuestId = pathParts.length === 1 && pathParts[0] !== 'invitation' ? pathParts[0] : '';
       
-      console.log('🚀 Navigating to invitation page after user click');
+      
       // Navigate to invitation page with guestId if available
       if (currentGuestId) {
         navigate(`/invitation/${currentGuestId}${window.location.search}`);

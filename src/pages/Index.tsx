@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import WelcomeForm from '@/components/WelcomeForm';
 import { FloatingPetals } from '@/components/AnimatedElements';
-import DataContractValidator from '@/components/DataContractValidator';
-import ProductionReadinessTest from '@/components/ProductionReadinessTest';
 import { Sparkles, Heart, Star } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useGuest } from '@/context/GuestContext';
@@ -138,8 +136,6 @@ const Index = () => {
   return (
     <div className="min-h-screen pattern-background relative overflow-hidden">
       {/* Data Contract Validator - for development/testing */}
-      <DataContractValidator />
-      <ProductionReadinessTest />
       {isLoading ? (
         <div className="loading-overlay">
           <div className="loading-spinner mb-4"></div>

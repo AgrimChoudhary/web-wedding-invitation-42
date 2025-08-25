@@ -22,7 +22,7 @@ import { ArrowLeftCircle, Heart, MapPin, User, Music, Volume2, VolumeX, Sparkles
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import AnimatedGuestName from '../components/AnimatedGuestName';
-import DataVerificationLogger from '@/components/DataVerificationLogger';
+
 
 // Security: Define trusted origins
 const TRUSTED_ORIGINS = [
@@ -83,10 +83,10 @@ const Invitation = () => {
             type: 'INITIAL_WISHES_DATA',
             payload: { wishes: decoded }
           }, window.location.origin);
-          console.log('✅ URL wishes parsed and dispatched to wishes hook:', decoded.length);
+          
         }
       } catch (e) {
-        console.warn('Failed to parse wishes from URL:', e);
+        
       }
     }
 
@@ -104,7 +104,7 @@ const Invitation = () => {
           ...parsedWeddingData
         };
       } catch (e) {
-        console.error("Error parsing weddingData from URL:", e);
+        
       }
     }
 
@@ -155,7 +155,7 @@ const Invitation = () => {
           time: individualParams.weddingTime || updatedWeddingData.mainWedding.time
         };
       } catch (e) {
-        console.error("Error parsing wedding date:", e);
+        
       }
     }
 
@@ -199,7 +199,7 @@ const Invitation = () => {
       try {
         updatedWeddingData.mainWedding.date = new Date(updatedWeddingData.mainWedding.date);
       } catch (e) {
-        console.error("Error converting date string to Date object:", e);
+        
         // Fallback to a default date if conversion fails
         updatedWeddingData.mainWedding.date = new Date('2024-12-15');
       }
@@ -214,11 +214,11 @@ const Invitation = () => {
     
     // Block automatic acceptance from URL parameters
     if (hasRespondedParam === 'true' && acceptedParam === 'true') {
-      console.log('🚫 Blocked automatic acceptance from URL parameters');
+      
       // Don't set showThankYouMessage automatically
     }
 
-    console.log('Final wedding data:', updatedWeddingData);
+    
 
     // Track invitation viewed immediately when invitation loads
     setTimeout(() => {
@@ -231,41 +231,17 @@ const Invitation = () => {
     const handleMessage = (event: MessageEvent) => {
       // Security check
       if (!isTrustedOrigin(event.origin)) {
-        console.warn('Untrusted origin se message mila:', event.origin);
+        
         return;
       }
 
       const { type, payload, data } = event.data;
       
-      // Log all received messages for debugging
-      console.log('🎯 INVITATION TEMPLATE - Received message:', {
-        type,
-        timestamp: new Date().toISOString(),
-        hasPayload: !!payload,
-        hasData: !!data,
-        origin: event.origin
-      });
 
       switch (type) {
         case 'INVITATION_LOADED':
-          console.log('🎯 INVITATION_LOADED received in Invitation.tsx:', { payload, data });
-          // Handle the comprehensive invitation data from UTSAVY
-          const invitationData = payload || data;
-          if (invitationData?.eventDetails) {
-            console.log('📊 INVITATION_LOADED - Event Details:', invitationData.eventDetails);
-            console.log('📊 INVITATION_LOADED - Bride Family:', invitationData.eventDetails.bride_family);
-            console.log('📊 INVITATION_LOADED - Groom Family:', invitationData.eventDetails.groom_family);
-            console.log('📊 INVITATION_LOADED - Photos:', invitationData.eventDetails.photos);
-            console.log('📊 INVITATION_LOADED - Events:', invitationData.eventDetails.events);
-            console.log('📊 INVITATION_LOADED - Contacts:', invitationData.eventDetails.contacts);
-          }
           break;
         case 'WEDDING_DATA_READY':
-          console.log('🎯 WEDDING_DATA_READY received in Invitation.tsx:', { payload, data });
-          const weddingData = payload || data;
-          if (weddingData) {
-            console.log('📊 WEDDING_DATA_READY - Complete Data:', weddingData);
-          }
           break;
         case 'UPDATE_WEDDING_DATA':
           if (payload.mainWedding?.date) {
@@ -278,7 +254,7 @@ const Invitation = () => {
           if (payload.guestId) setGuestId(payload.guestId);
           break;
         default:
-          console.log('🎯 Unknown message type received:', type);
+          
           break;
       }
     };
@@ -334,30 +310,24 @@ const Invitation = () => {
   };
 
   const handleAcceptInvitation = () => {
-    console.log('🎯 handleAcceptInvitation: User manually clicked Accept Invitation');
-    console.log('📊 Current state:', { guestId, showThankYouMessage });
     
     // Prevent multiple rapid clicks
     if (showThankYouMessage) {
-      console.log('⚠️ handleAcceptInvitation: Already accepted, ignoring duplicate action');
+      
       return;
     }
     
     setConfetti(true);
     
-    // This function is deprecated - RSVP handling should go through PlatformContext
-    console.log('⚠️ handleAcceptInvitation called - consider using PlatformContext sendRSVP instead');
-    
-    console.log('✅ Processing invitation acceptance');
     try {
       updateGuestStatus('accepted');
       setTimeout(() => {
-        console.log('🎉 Showing thank you message after user acceptance');
+        
         setShowThankYouMessage(true);
         setConfetti(false);
       }, 800);
     } catch (error) {
-      console.warn('⚠️ Failed to update guest status:', error);
+      
       // Still show thank you message even if status update fails
       setTimeout(() => {
         setShowThankYouMessage(true);
@@ -424,8 +394,6 @@ const Invitation = () => {
         </div>
       ) : (
         <main id="main-content" className="min-h-screen w-full flex flex-col relative overflow-hidden">
-          {/* Data Verification Logger (dev tool) */}
-          <DataVerificationLogger />
           
           {/* Enhanced Transitioning Ganesha Image with faster animation */}
           {showGaneshaTransition && !hideGaneshaTransition && (

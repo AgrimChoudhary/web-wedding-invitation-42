@@ -183,7 +183,7 @@ export const FireworksDisplay: React.FC<FireworksDisplayProps> = ({ isActive }) 
         
         if (playPromise !== undefined) {
           playPromise.catch(error => {
-            console.log("Audio play prevented by browser", error);
+            
           });
         }
       }
