@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { motion } from "framer-motion";
 import { useWedding } from '@/context/WeddingContext';
+import FamilyDataDebugger from './FamilyDataDebugger';
 
 interface FamilyMember {
   name: string;
@@ -36,6 +37,14 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
   const [selectedFamily, setSelectedFamily] = useState<FamilyData | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { weddingData } = useWedding();
+
+  // Enhanced logging for family data debugging
+  React.useEffect(() => {
+    console.debug('🔍 FAMILY DETAILS - Props:', { propGroomFamily, propBrideFamily });
+    console.debug('🔍 FAMILY DETAILS - WeddingData Family:', weddingData?.family);
+    console.debug('🔍 FAMILY DETAILS - Groom Family Members:', weddingData?.family?.groomFamily?.members);
+    console.debug('🔍 FAMILY DETAILS - Bride Family Members:', weddingData?.family?.brideFamily?.members);
+  }, [propGroomFamily, propBrideFamily, weddingData?.family]);
 
   // Use props if provided, otherwise use from context with fallback to sample data
   const groomFamily = propGroomFamily || weddingData.family.groomFamily || {
@@ -293,6 +302,9 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
           50% { background-position: 100% 50%; }
         }
       `}</style>
+      
+      {/* Debug helper - remove in production */}
+      <FamilyDataDebugger />
     </section>
   );
 };

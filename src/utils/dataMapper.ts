@@ -25,25 +25,31 @@ export const mapPlatformDataToWeddingData = (platformData: StructuredEventData):
     family: {
       groomFamily: {
         title: "Groom's Family",
-        members: (weddingData.family?.groom_family?.members || []).map((member, index) => ({
-          id: `groom-${index}`,
-          name: member.name || '',
-          relation: member.relation || '',
-          description: member.description || '',
-          image: member.photo || ''
-        })),
+        members: (weddingData.family?.groom_family?.members || []).map((member, index) => {
+          console.debug(`🔍 DATA MAPPER - Groom Family Member ${index}:`, member);
+          return {
+            id: `groom-${index}`,
+            name: member.name || '',
+            relation: member.relation || '',
+            description: member.description || '',
+            image: member.photo || ''
+          };
+        }),
         familyPhotoUrl: weddingData.family?.groom_family?.family_photo || '',
         parentsNameCombined: weddingData.family?.groom_family?.parents_name || ''
       },
       brideFamily: {
         title: "Bride's Family",
-        members: (weddingData.family?.bride_family?.members || []).map((member, index) => ({
-          id: `bride-${index}`,
-          name: member.name || '',
-          relation: member.relation || '',
-          description: member.description || '',
-          image: member.photo || ''
-        })),
+        members: (weddingData.family?.bride_family?.members || []).map((member, index) => {
+          console.debug(`🔍 DATA MAPPER - Bride Family Member ${index}:`, member);
+          return {
+            id: `bride-${index}`,
+            name: member.name || '',
+            relation: member.relation || '',
+            description: member.description || '',
+            image: member.photo || ''
+          };
+        }),
         familyPhotoUrl: weddingData.family?.bride_family?.family_photo || '',
         parentsNameCombined: weddingData.family?.bride_family?.parents_name || ''
       }

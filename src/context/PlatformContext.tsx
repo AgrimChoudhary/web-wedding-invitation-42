@@ -171,6 +171,10 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           const existingStructuredFamily = (platformData as any)?.structuredData?.weddingData?.family;
           const preservedBrideFamily = existingStructuredFamily?.bride_family;
           const preservedGroomFamily = existingStructuredFamily?.groom_family;
+          
+          console.debug('🔍 POSTMESSAGE FAMILY DEBUG - Existing Structured Family:', existingStructuredFamily);
+          console.debug('🔍 POSTMESSAGE FAMILY DEBUG - Preserved Bride Family:', preservedBrideFamily);
+          console.debug('🔍 POSTMESSAGE FAMILY DEBUG - Preserved Groom Family:', preservedGroomFamily);
 
           // Create a mock structured data to reuse existing mapper
           const mockStructuredData = {
@@ -218,7 +222,9 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             }
           };
           
+          console.debug('🔍 PLATFORM CONTEXT - MockStructuredData Family:', mockStructuredData.weddingData.family);
           const mappedData = mapPlatformDataToWeddingData(mockStructuredData);
+          console.debug('🔍 PLATFORM CONTEXT - Mapped Wedding Data Family:', mappedData.family);
           setWeddingData(mappedData);
         }
         
