@@ -179,46 +179,42 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           // Create a mock structured data to reuse existing mapper
           const mockStructuredData = {
             eventId: payload.eventId,
-            eventName: 'Wedding',
+            eventName: payload.name || 'Wedding',
             guestId: payload.guestId,
-            guestName: payload.platformData.guestName,
-            // Only mark as responded if it's 'submitted', not 'accepted' from platform
-            hasResponded: payload.status === 'submitted',
-            // Don't auto-accept from platform data - only if user explicitly accepts
+            guestName: newPlatformData.guestName,
+            hasResponded: newPlatformData.hasResponded,
             accepted: false,
             weddingData: {
               couple: {
-                groomName: payload.eventDetails.groom_name,
-                brideName: payload.eventDetails.bride_name,
-                groomCity: '',
-                brideCity: '',
-                weddingDate: payload.eventDetails.wedding_date,
-                weddingTime: payload.eventDetails.wedding_time,
-                groomFirst: true,
-                coupleImage: ''
+                groomName: payload.eventDetails.groom_name || '',
+                brideName: payload.eventDetails.bride_name || '',
+                groomCity: payload.eventDetails.groom_city || '',
+                brideCity: payload.eventDetails.bride_city || '',
+                weddingDate: payload.eventDetails.wedding_date || '',
+                weddingTime: payload.eventDetails.wedding_time || '',
+                groomFirst: payload.eventDetails.groom_first ?? true,
+                coupleImage: payload.eventDetails.couple_image || ''
               },
               venue: {
-                name: payload.eventDetails.venue_name,
-                address: payload.eventDetails.venue_address,
-                mapLink: ''
+                name: payload.eventDetails.venue_name || '',
+                address: payload.eventDetails.venue_address || '',
+                mapLink: payload.eventDetails.venue_map_link || ''
               },
+              events: payload.eventDetails.events || [],
+              gallery: payload.eventDetails.photos || [],
+              contacts: payload.eventDetails.contacts || [],
               family: {
-                bride_family: payload.eventDetails.bride_family || preservedBrideFamily || { title: "Bride's Family", familyPhoto: '', parentsNames: '', members: [] },
-                groom_family: payload.eventDetails.groom_family || preservedGroomFamily || { title: "Groom's Family", familyPhoto: '', parentsNames: '', members: [] }
-              },
-              contacts: [],
-              gallery: payload.eventDetails.photos?.map((photo, index) => ({
-                photo: photo.url,
-                title: photo.caption || `Photo ${index + 1}`
-              })) || [],
-              events: payload.eventDetails.events?.map(event => ({
-                name: event.event_name,
-                date: event.event_date,
-                time: event.event_time,
-                venue: event.venue_name,
-                description: '',
-                map_link: ''
-              })) || []
+                bride_family: {
+                  family_photo: payload.eventDetails.bride_family_photo || '',
+                  parents_name: payload.eventDetails.bride_parents_names || '',
+                  members: payload.eventDetails.bride_family?.members || []
+                },
+                groom_family: {
+                  family_photo: payload.eventDetails.groom_family_photo || '',
+                  parents_name: payload.eventDetails.groom_parents_names || '',
+                  members: payload.eventDetails.groom_family?.members || []
+                }
+              }
             }
           };
           
