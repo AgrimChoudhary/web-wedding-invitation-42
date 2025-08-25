@@ -59,12 +59,16 @@ export const useUrlParams = () => {
       console.log('groomFamily:', urlParams.get('groomFamily'));
       console.log('brideFamilyPhoto:', urlParams.get('brideFamilyPhoto'));
       console.log('bride_family_photo:', urlParams.get('bride_family_photo'));
+      console.log('bridePhoto:', urlParams.get('bridePhoto'));
       console.log('brideParentsNames:', urlParams.get('brideParentsNames'));
       console.log('bride_parents_name:', urlParams.get('bride_parents_name'));
       console.log('groomFamilyPhoto:', urlParams.get('groomFamilyPhoto'));
       console.log('groom_family_photo:', urlParams.get('groom_family_photo'));
+      console.log('groomPhoto:', urlParams.get('groomPhoto'));
       console.log('groomParentsNames:', urlParams.get('groomParentsNames'));
       console.log('groom_parents_name:', urlParams.get('groom_parents_name'));
+      console.log('couplePhoto:', urlParams.get('couplePhoto'));
+      console.log('coupleImage:', urlParams.get('coupleImage'));
       console.log('=== END FAMILY PARAMETERS DEBUG ===');
       
       // Try to parse the main data parameter first (recommended method)
@@ -187,8 +191,8 @@ export const useUrlParams = () => {
                 // Fallback to individual parameters
                 const fallbackBrideFamily = {
                   title: "Bride's Family",
-                  familyPhoto: urlParams.get('brideFamilyPhoto') || '',
-                  parentsNames: urlParams.get('brideParentsNames') || '',
+                  familyPhoto: urlParams.get('brideFamilyPhoto') || urlParams.get('bride_family_photo') || urlParams.get('bridePhoto') || '',
+                  parentsNames: urlParams.get('brideParentsNames') || urlParams.get('bride_parents_name') || '',
                   members: []
                 };
                 console.debug('⚠️ Using fallback bride family parameters:', fallbackBrideFamily);
@@ -223,8 +227,8 @@ export const useUrlParams = () => {
                 // Fallback to individual parameters
                 const fallbackGroomFamily = {
                   title: "Groom's Family",
-                  familyPhoto: urlParams.get('groomFamilyPhoto') || '',
-                  parentsNames: urlParams.get('groomParentsNames') || '',
+                  familyPhoto: urlParams.get('groomFamilyPhoto') || urlParams.get('groom_family_photo') || urlParams.get('groomPhoto') || '',
+                  parentsNames: urlParams.get('groomParentsNames') || urlParams.get('groom_parents_name') || '',
                   members: []
                 };
                 console.debug('⚠️ Using fallback groom family parameters:', fallbackGroomFamily);

@@ -69,6 +69,9 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
   console.log('groomFamily.parentsNameCombined:', groomFamily?.parentsNameCombined);
   console.log('brideFamily.familyPhotoUrl:', brideFamily?.familyPhotoUrl);
   console.log('brideFamily.parentsNameCombined:', brideFamily?.parentsNameCombined);
+  console.log('Expected Image URLs:');
+  console.log('- Groom Family Photo:', groomFamily?.familyPhotoUrl && groomFamily.familyPhotoUrl.trim() !== '' ? groomFamily.familyPhotoUrl : 'PLACEHOLDER');
+  console.log('- Bride Family Photo:', brideFamily?.familyPhotoUrl && brideFamily.familyPhotoUrl.trim() !== '' ? brideFamily.familyPhotoUrl : 'PLACEHOLDER');
   console.log('=== END FAMILY DETAILS DEBUG ===');
 
   const handleShowFamily = (family: FamilyData) => {

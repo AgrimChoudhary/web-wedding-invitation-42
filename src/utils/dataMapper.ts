@@ -40,7 +40,7 @@ export const mapPlatformDataToWeddingData = (platformData: StructuredEventData):
         image: member.photo || member.image || '',
         showInDialogOnly: false
       })),
-      familyPhotoUrl: groomFamilySource.familyPhoto || groomFamilySource.family_photo || '',
+      familyPhotoUrl: groomFamilySource.familyPhoto || groomFamilySource.family_photo || groomFamilySource.photo || '',
       parentsNameCombined: groomFamilySource.parentsNames || groomFamilySource.parents_names || groomFamilySource.parentsNameCombined || ''
     };
     console.debug('✅ Mapped groom family:', groomFamily);
@@ -61,7 +61,7 @@ export const mapPlatformDataToWeddingData = (platformData: StructuredEventData):
         image: member.photo || member.image || '',
         showInDialogOnly: false
       })),
-      familyPhotoUrl: brideFamilySource.familyPhoto || brideFamilySource.family_photo || '',
+      familyPhotoUrl: brideFamilySource.familyPhoto || brideFamilySource.family_photo || brideFamilySource.photo || '',
       parentsNameCombined: brideFamilySource.parentsNames || brideFamilySource.parents_names || brideFamilySource.parentsNameCombined || ''
     };
     console.debug('✅ Mapped bride family:', brideFamily);
