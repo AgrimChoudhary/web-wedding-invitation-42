@@ -37,9 +37,19 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { weddingData } = useWedding();
 
-  // Use props if provided, otherwise use from context
-  const groomFamily = propGroomFamily || weddingData.family.groomFamily;
-  const brideFamily = propBrideFamily || weddingData.family.brideFamily;
+  // Use props if provided, otherwise use from context with fallback to sample data
+  const groomFamily = propGroomFamily || weddingData.family.groomFamily || {
+    title: "Groom's Family",
+    members: [],
+    familyPhotoUrl: "/images/groom-family-placeholder.jpg",
+    parentsNameCombined: "Parents of the Groom"
+  };
+  const brideFamily = propBrideFamily || weddingData.family.brideFamily || {
+    title: "Bride's Family", 
+    members: [],
+    familyPhotoUrl: "/images/bride-family-placeholder.jpg",
+    parentsNameCombined: "Parents of the Bride"
+  };
 
   // Debug logging for family data in component
   console.log('=== FAMILY DETAILS COMPONENT DEBUG ===');
@@ -127,10 +137,13 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
             </p>
           </div>
         ) : (
-          /* No Parents Names - Show Member Count */
+          /* No Parents Names - Show Default Message */
           <div className="text-center mb-6">
-            <p className="text-sm text-gray-600">
-              {family.members.length > 0 ? `${family.members.length} family members` : 'Family details'}
+            <h4 className="font-playfair text-lg text-wedding-maroon mb-1 leading-relaxed">
+              Blessed to join our families
+            </h4>
+            <p className="text-sm text-gray-600 italic font-medium">
+              United in love and tradition
             </p>
           </div>
         )}
@@ -208,7 +221,8 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
             </DialogHeader>
             
             <div className="grid grid-cols-1 gap-6 mt-4 max-h-[60vh] overflow-y-auto pr-1">
-              {selectedFamily && getDialogMembers(selectedFamily.members).map((member, index) => (
+              {selectedFamily && getDialogMembers(selectedFamily.members).length > 0 ? (
+                getDialogMembers(selectedFamily.members).map((member, index) => (
                 <div key={index} className="bg-gradient-to-br from-white/90 to-wedding-cream/60 rounded-lg shadow-sm p-4 border border-wedding-gold/20 hover:border-wedding-gold/40 transition-all duration-300">
                   <div className="flex flex-col sm:flex-row gap-4 items-center">
                     <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-wedding-gold/30 shadow-lg">
@@ -231,7 +245,18 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
                     </div>
                   </div>
                 </div>
-              ))}
+                ))
+              ) : (
+                <div className="text-center py-8">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-wedding-gold/10 rounded-full mb-4">
+                    <Heart size={24} className="text-wedding-gold" />
+                  </div>
+                  <h3 className="font-playfair text-xl text-wedding-maroon mb-2">Family Details Coming Soon</h3>
+                  <p className="text-gray-600 max-w-sm mx-auto leading-relaxed">
+                    We're excited to share more details about our wonderful families who have supported our journey.
+                  </p>
+                </div>
+              )}
             </div>
           </DialogContent>
         </Dialog>
