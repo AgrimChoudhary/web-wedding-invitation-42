@@ -5,6 +5,9 @@ import { FallingHearts, FireworksDisplay } from './AnimatedElements';
 import { Star, Music, Heart, Crown } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import AnimatedGuestName from './AnimatedGuestName';
+import OptimizedImage from './OptimizedImage';
+import { GaneshaImageSkeleton, CoupleImageSkeleton } from './ImageSkeleton';
+import { useCriticalWeddingImages } from '@/hooks/useAdvancedImagePreloader';
 
 interface InvitationHeaderProps {
   brideName?: string;
@@ -28,6 +31,21 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
   const [clickCount, setClickCount] = useState(0);
   const [showGaneshaImage, setShowGaneshaImage] = useState(false);
   const isMobile = useIsMobile();
+
+  // Critical image URLs
+  const ganeshaImageUrl = "https://xieiyoyiuhzrhwqhfmuq.supabase.co/storage/v1/object/public/images/for%20links%20only/b0b6e6c1-770d-4a6e-8f9c-7f3bdcd7c3a4.png";
+  const couplePhotoUrl = "https://xieiyoyiuhzrhwqhfmuq.supabase.co/storage/v1/object/public/images/for%20links%20only/f002c96a-d091-4373-9cc7-72487af38606.png";
+  
+  // Initialize critical image preloading
+  const { getImageState, isLoading: imagesLoading } = useCriticalWeddingImages(
+    ganeshaImageUrl,
+    couplePhotoUrl,
+    [],
+    []
+  );
+
+  const ganeshaImageState = getImageState(ganeshaImageUrl);
+  const coupleImageState = getImageState(couplePhotoUrl);
   
   // Use names from props if provided, otherwise use from weddingData
   const displayGroomName = groomName || weddingData.couple.groomFirstName;
@@ -147,13 +165,19 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
               <div className="relative w-32 h-32 sm:w-36 sm:h-36">
                 <div className="absolute inset-0 bg-gradient-to-r from-orange-200/20 via-yellow-200/30 to-orange-200/20 rounded-full animate-pulse-soft blur-sm"></div>
                 
+                {/* Show skeleton while loading */}
+                {(!showGaneshaImage || !ganeshaImageState?.isLoaded) && (
+                  <GaneshaImageSkeleton className="absolute inset-0" />
+                )}
+                
                 {/* Only show the image after transition completes */}
                 {showGaneshaImage && (
-                  <img 
-                    src="https://xieiyoyiuhzrhwqhfmuq.supabase.co/storage/v1/object/public/images/for%20links%20only/b0b6e6c1-770d-4a6e-8f9c-7f3bdcd7c3a4.png" 
-                    alt="Lord Ganesha" 
+                  <OptimizedImage
+                    src={ganeshaImageUrl}
+                    alt="Lord Ganesha"
                     className="w-full h-full object-contain animate-floating relative z-10 opacity-0 animate-fade-in"
-                    loading="lazy"
+                    priority="critical"
+                    enableBlurTransition={true}
                     style={{ animationDelay: '0.2s' }}
                   />
                 )}
@@ -270,16 +294,22 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
                 isClicked ? 'animate-pulse scale-110' : ''
               }`}></div>
               
+              {/* Show skeleton while loading */}
+              {!coupleImageState?.isLoaded && (
+                <CoupleImageSkeleton className="relative bg-white/30 backdrop-blur-sm rounded-full p-3 border border-wedding-gold/30" />
+              )}
+              
               <div className={`relative bg-white/30 backdrop-blur-sm rounded-full p-3 border border-wedding-gold/30 transition-all duration-500 ${
                 isClicked ? 'shadow-2xl border-wedding-gold/60' : ''
-              }`}>
-                <img 
-                  src="https://xieiyoyiuhzrhwqhfmuq.supabase.co/storage/v1/object/public/images/for%20links%20only/f002c96a-d091-4373-9cc7-72487af38606.png"
+              } ${!coupleImageState?.isLoaded ? 'opacity-0' : 'opacity-100'}`}>
+                <OptimizedImage
+                  src={couplePhotoUrl}
                   alt={`${firstPersonName} and ${secondPersonName}`}
                   className={`w-44 h-auto sm:w-52 md:w-60 lg:w-72 object-contain relative z-10 transition-all duration-500 ${
                     isClicked ? 'brightness-110 contrast-110' : ''
                   }`}
-                  loading="lazy"
+                  priority="critical"
+                  enableBlurTransition={true}
                 />
               </div>
             </div>
