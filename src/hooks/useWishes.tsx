@@ -382,21 +382,59 @@ export const useWishes = () => {
     };
   }, [toast, isLoading]);
 
-  // Submit a new wish with optional image
-  const submitWish = async (content: string, guestId: string, guestName: string, imageFile?: File) => {
-    if (!content.trim() || content.length > 280) {
+  // Submit a new wish with optional image - enhanced with retry logic and better error handling
+  const submitWish = async (content: string, guestId: string, guestName: string, imageFile?: File, retryCount = 0) => {
+    const MAX_RETRIES = 2;
+    const RETRY_DELAY = 1000; // 1 second
+    
+    console.debug('🎁 WISH SUBMISSION - Starting attempt', retryCount + 1, 'of', MAX_RETRIES + 1);
+    console.debug('📊 WISH PAYLOAD DEBUG:', {
+      guestId,
+      guestName,
+      contentLength: content.length,
+      hasImage: !!imageFile,
+      imageSize: imageFile?.size || null,
+      imageType: imageFile?.type || null,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Enhanced validation
+    if (!content || typeof content !== 'string') {
       toast({
         title: "Invalid wish",
-        description: "Please enter a wish between 1 and 280 characters.",
+        description: "Wish text is required.",
         variant: "destructive",
       });
       return false;
     }
     
+    const sanitizedContent = content.trim();
+    if (sanitizedContent.length === 0) {
+      toast({
+        title: "Invalid wish",
+        description: "Wish text cannot be empty.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    if (sanitizedContent.length > 280) {
+      toast({
+        title: "Invalid wish",
+        description: "Wish text must be 280 characters or less.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    
+    // Sanitize special characters
+    const cleanContent = sanitizedContent
+      .replace(/[<>]/g, '') // Remove potential HTML tags
+      .replace(/[\u0000-\u001F\u007F]/g, '') // Remove control characters
+      .trim();
+      
     if (!guestId || !guestName) {
-      console.error('🚨 TEMPLATE: Missing guest information!');
-      console.error('🚨 TEMPLATE: guestId:', guestId);
-      console.error('🚨 TEMPLATE: guestName:', guestName);
+      console.error('🚨 WISH SUBMISSION ERROR - Missing guest information:', { guestId, guestName });
       toast({
         title: "Error",
         description: "Guest information is missing. Please refresh the page.",
@@ -405,27 +443,24 @@ export const useWishes = () => {
       return false;
     }
     
-    setIsSubmitting(true);
-    console.log('🎁 TEMPLATE: Starting wish submission process...');
-    console.log('🎁 TEMPLATE: Guest ID:', guestId);
-    console.log('🎁 TEMPLATE: Guest Name:', guestName);
-    console.log('🎁 TEMPLATE: Content length:', content.length);
-    console.log('🎁 TEMPLATE: Has image:', !!imageFile);
+    if (retryCount === 0) {
+      setIsSubmitting(true);
+    }
     
     try {
       let imageData = null;
       if (imageFile) {
-        console.log('🖼️ TEMPLATE: Converting image to base64...');
-        console.log('🖼️ TEMPLATE: Image name:', imageFile.name);
-        console.log('🖼️ TEMPLATE: Image size:', imageFile.size);
-        console.log('🖼️ TEMPLATE: Image type:', imageFile.type);
+        console.debug('🖼️ WISH IMAGE PROCESSING - Converting to base64:', {
+          name: imageFile.name,
+          size: imageFile.size,
+          type: imageFile.type
+        });
         
         try {
           imageData = await fileToBase64(imageFile);
-          console.log('✅ TEMPLATE: Image converted to base64 successfully');
-          console.log('📏 TEMPLATE: Base64 length:', imageData?.length || 0);
+          console.debug('✅ WISH IMAGE SUCCESS - Base64 conversion completed, length:', imageData?.length || 0);
         } catch (error) {
-          console.error('❌ TEMPLATE: Error converting image to base64:', error);
+          console.error('❌ WISH IMAGE ERROR - Base64 conversion failed:', error);
           toast({
             title: "Image processing failed",
             description: "Could not process image, but wish will be submitted without it.",
@@ -437,42 +472,44 @@ export const useWishes = () => {
       const wishData = {
         guest_id: guestId,
         guest_name: guestName,
-        content: content.trim(),
-        image_data: imageData, // Send as base64 string
+        content: cleanContent,
+        image_data: imageData,
         image_filename: imageFile?.name || null,
         image_type: imageFile?.type || null
       };
 
-      console.log('📤 TEMPLATE: Sending wish data to platform...');
-      console.log('📦 TEMPLATE: Wish data structure:', {
-        guest_id: wishData.guest_id,
-        guest_name: wishData.guest_name,
-        content: wishData.content?.substring(0, 50) + '...',
-        has_image: !!wishData.image_data,
-        image_filename: wishData.image_filename,
-        image_type: wishData.image_type
+      console.debug('📤 WISH API CALL - Sending to platform:', {
+        endpoint: 'SUBMIT_NEW_WISH',
+        payload: {
+          guest_id: wishData.guest_id,
+          guest_name: wishData.guest_name,
+          content_preview: wishData.content.substring(0, 50) + (wishData.content.length > 50 ? '...' : ''),
+          has_image: !!wishData.image_data,
+          image_filename: wishData.image_filename,
+          timestamp: Date.now()
+        }
       });
 
-      // Create a promise to wait for platform response
+      // Create a promise to wait for platform response with enhanced error handling
       const responsePromise = new Promise((resolve, reject) => {
         const timeoutId = setTimeout(() => {
-          reject(new Error('Platform response timeout'));
-        }, 10000); // 10 second timeout
+          reject(new Error('timeout'));
+        }, 15000); // 15 second timeout for better network handling
         
         const handleResponse = (event: MessageEvent) => {
-          console.log('📥 TEMPLATE: Received response from platform:', event.data);
+          console.debug('📥 WISH API RESPONSE - Received from platform:', event.data);
           
           if (event.data.type === 'WISH_SUBMITTED_SUCCESS') {
             clearTimeout(timeoutId);
             window.removeEventListener('message', handleResponse);
-            console.log('✅ TEMPLATE: Wish submitted successfully!');
-            console.log('🎁 TEMPLATE: Wish data:', event.data.payload);
+            console.debug('✅ WISH API SUCCESS - Submission completed:', event.data.payload);
             resolve(event.data.payload);
           } else if (event.data.type === 'WISH_SUBMITTED_ERROR') {
             clearTimeout(timeoutId);
             window.removeEventListener('message', handleResponse);
-            console.error('❌ TEMPLATE: Platform returned error:', event.data.payload);
-            reject(new Error(event.data.payload.error || 'Platform error'));
+            const errorMsg = event.data.payload?.error || 'Platform error';
+            console.error('❌ WISH API ERROR - Platform returned error:', errorMsg);
+            reject(new Error(errorMsg));
           }
         };
         
@@ -480,54 +517,74 @@ export const useWishes = () => {
       });
 
       // Send message to parent platform
-      console.log('📡 TEMPLATE: Sending postMessage to platform...');
       window.parent.postMessage({
         type: 'SUBMIT_NEW_WISH',
         payload: wishData,
         timestamp: Date.now(),
         source: 'WEB_WEDDING_INVITATION_42'
       }, '*');
-      
-      console.log('📡 TEMPLATE: Message sent, waiting for response...');
 
       // Wait for platform response
       await responsePromise;
       
-      console.log('🎉 TEMPLATE: Wish submission completed successfully!');
-      
       toast({
-        title: "Wish submitted!",
+        title: "✨ Wish submitted!",
         description: "Your wish has been submitted and will appear after approval.",
       });
 
       return true;
       
     } catch (error) {
-      console.error('❌ TEMPLATE: Error submitting wish:', error);
-      console.error('❌ TEMPLATE: Error type:', typeof error);
-      console.error('❌ TEMPLATE: Error message:', error.message);
-      console.error('❌ TEMPLATE: Full error object:', error);
+      console.error('❌ WISH SUBMISSION ERROR - Attempt', retryCount + 1, 'failed:', error);
       
-      let errorMessage = "Failed to submit wish. Please try again.";
+      let errorMessage = "Failed to submit wish.";
+      let shouldRetry = false;
+      
       if (error.message?.includes('timeout')) {
-        errorMessage = "Request timed out. Please check your connection and try again.";
-      } else if (error.message?.includes('not found')) {
-        errorMessage = "Event or guest information not found. Please refresh the page.";
-      } else if (error.message?.includes('disabled')) {
-        errorMessage = "Wishes feature is currently disabled for this event.";
-      } else if (error.message?.includes('permission')) {
-        errorMessage = "You don't have permission to submit wishes for this event.";
+        errorMessage = "Network issue, please check your connection";
+        shouldRetry = true;
+      } else if (error.message?.includes('validation') || error.message?.includes('invalid')) {
+        errorMessage = "Wish text is invalid";
+        shouldRetry = false;
+      } else if (error.message?.includes('network') || error.message?.includes('connection')) {
+        errorMessage = "Network issue, please check your connection";
+        shouldRetry = true;
+      } else if (error.message?.includes('server') || error.message?.includes('database')) {
+        errorMessage = "Server issue, please try again later";
+        shouldRetry = true;
+      } else {
+        // Generic network or temporary errors
+        shouldRetry = true;
+        errorMessage = "Server issue, please try again later";
       }
+      
+      // Retry logic for recoverable errors
+      if (shouldRetry && retryCount < MAX_RETRIES) {
+        console.debug(`🔄 WISH RETRY - Attempting retry ${retryCount + 1} of ${MAX_RETRIES} in ${RETRY_DELAY}ms`);
+        
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (retryCount + 1))); // Exponential backoff
+        return submitWish(content, guestId, guestName, imageFile, retryCount + 1);
+      }
+      
+      // Final error after all retries or non-retryable error
+      console.error('❌ WISH FINAL ERROR - All attempts failed:', {
+        error: error.message,
+        retryCount,
+        shouldRetry,
+        finalErrorMessage: errorMessage
+      });
       
       toast({
         title: "Error",
         description: errorMessage,
         variant: "destructive",
       });
+      
       return false;
     } finally {
-      setIsSubmitting(false);
-      console.log('🏁 TEMPLATE: Wish submission process finished');
+      if (retryCount === 0) {
+        setIsSubmitting(false);
+      }
     }
   };
 

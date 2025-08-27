@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useGuest } from '@/context/GuestContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface WishComposerModalProps {
   isOpen: boolean;
@@ -24,19 +25,28 @@ const WishComposerModal: React.FC<WishComposerModalProps> = ({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { guestName } = useGuest();
+  const { toast } = useToast();
 
   const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       // Check file size (limit to 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert("Image size should be less than 5MB");
+        toast({
+          title: "Image Too Large",
+          description: "Please select an image smaller than 5MB.",
+          variant: "destructive",
+        });
         return;
       }
       
       // Check file type
       if (!file.type.startsWith('image/')) {
-        alert("Only image files are allowed");
+        toast({
+          title: "Invalid File Type",
+          description: "Please select an image file (JPG, PNG, etc.).",
+          variant: "destructive",
+        });
         return;
       }
       
@@ -44,6 +54,13 @@ const WishComposerModal: React.FC<WishComposerModalProps> = ({
       const reader = new FileReader();
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string);
+      };
+      reader.onerror = () => {
+        toast({
+          title: "Image Processing Error",
+          description: "Could not read the selected image. Please try another file.",
+          variant: "destructive",
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -58,14 +75,34 @@ const WishComposerModal: React.FC<WishComposerModalProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (!wishText.trim()) return;
+    if (!wishText.trim()) {
+      toast({
+        title: "Wish Required",
+        description: "Please enter your wish before submitting.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    const success = await onSubmit(wishText, selectedImage || undefined);
-    if (success) {
-      setWishText('');
-      setSelectedImage(null);
-      setImagePreview(null);
-      onClose();
+    if (wishText.length > 280) {
+      toast({
+        title: "Wish Too Long",
+        description: "Please keep your wish under 280 characters.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const success = await onSubmit(wishText, selectedImage || undefined);
+      if (success) {
+        setWishText('');
+        setSelectedImage(null);
+        setImagePreview(null);
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error in wish submission:', error);
     }
   };
 
