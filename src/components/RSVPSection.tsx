@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { useToast } from '../hooks/use-toast';
 import { Confetti } from './AnimatedElements';
-import { DynamicFormField } from './DynamicFormField';
+import { RSVPFieldRenderer } from './RSVPFieldRenderer';
 import { CustomField } from '../types/platform';
 
 export const RSVPSection: React.FC = () => {
@@ -29,25 +29,89 @@ export const RSVPSection: React.FC = () => {
   // Get guest name from platform data or fallback
   const guestName = platformData?.guestName || platformData?.structuredData?.guestName || "Guest";
   
+  // Field type normalizer to handle various formats
+  const normalizeFieldType = (fieldType: string): string => {
+    const normalized = String(fieldType || "").trim().toLowerCase();
+    if (["date & time", "datetime", "datetime-local"].includes(normalized)) return "datetime-local";
+    if (["date"].includes(normalized)) return "date";
+    if (["time"].includes(normalized)) return "time";
+    if (["number", "numeric"].includes(normalized)) return "number";
+    if (["select", "dropdown", "choice"].includes(normalized)) return "select";
+    if (["boolean", "checkbox", "toggle"].includes(normalized)) return "checkbox";
+    if (["email"].includes(normalized)) return "email";
+    if (["phone", "tel"].includes(normalized)) return "tel";
+    if (["textarea", "multiline"].includes(normalized)) return "textarea";
+    return "text";
+  };
+
   // Get custom fields with fallback and proper sorting
   const getCustomFields = (): CustomField[] => {
     if (!platformData?.customFields || !Array.isArray(platformData.customFields)) {
+      console.warn("[RSVP] No customFields found in platformData");
       return [];
     }
     
+    // Debug logging for field types
+    console.debug("[RSVP] Raw custom fields:", platformData.customFields);
+    
+    const normalizedFields = platformData.customFields.map(field => {
+      const originalType = field.field_type;
+      const normalizedType = normalizeFieldType(originalType);
+      
+      if (!originalType) {
+        console.warn(`[RSVP] Missing fieldType for ${field.field_name}, falling back to text`);
+      }
+      
+      console.debug(`[RSVP] Field ${field.field_name}: ${originalType} → ${normalizedType}`);
+      
+      return {
+        ...field,
+        field_type: normalizedType as any
+      };
+    });
+    
     // Sort by display_order, placing fields without order at the end
-    return [...platformData.customFields].sort((a, b) => {
+    const sortedFields = [...normalizedFields].sort((a, b) => {
       const orderA = a.display_order ?? 999;
       const orderB = b.display_order ?? 999;
       return orderA - orderB;
     });
+
+    // Log field summary
+    const fieldTypeCounts = sortedFields.reduce((acc, field) => {
+      acc[field.field_type] = (acc[field.field_type] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    
+    console.debug("[RSVP] Field type summary:", fieldTypeCounts);
+    
+    return sortedFields;
   };
 
   const customFields = useMemo(() => getCustomFields(), [platformData?.customFields]);
 
-  // Debug logging for modal state
+  // Debug logging for incoming data
   useEffect(() => {
-    console.log('🔍 RSVP Modal State Debug:', {
+    console.debug("[RSVP] Incoming platform data:", {
+      platformData,
+      customFields: platformData?.customFields,
+      rsvpFields: platformData?.customFields,
+      customFieldsCount: customFields.length
+    });
+    
+    // Sample field debugging
+    if (customFields.length > 0) {
+      const sampleField = customFields.find(f => f.field_name.toLowerCase().includes('arrival') || f.field_name.toLowerCase().includes('time')) || customFields[0];
+      console.debug("[RSVP] Sample field properties:", {
+        fieldLabel: sampleField.field_label,
+        fieldName: sampleField.field_name,
+        fieldType: sampleField.field_type,
+        placeholder: sampleField.placeholder_text,
+        required: sampleField.is_required
+      });
+    }
+    
+    console.debug('🔍 RSVP Modal State Debug:', {
       showDetailedForm,
       guestStatus,
       rsvpConfig,
@@ -161,6 +225,16 @@ export const RSVPSection: React.FC = () => {
           return;
         }
       }
+
+      // Phone/tel validation
+      if (field.field_type === 'tel' && value.trim()) {
+        // Basic phone validation - at least 10 digits
+        const phoneRegex = /[\d\-\+\(\)\s]{10,}/;
+        if (!phoneRegex.test(value.trim())) {
+          errors[field.field_name] = 'Please enter a valid phone number.';
+          return;
+        }
+      }
     });
     
     setValidationErrors(errors);
@@ -186,6 +260,8 @@ export const RSVPSection: React.FC = () => {
           // Convert to appropriate type based on field type
           if (field.field_type === 'number') {
             rsvpData[field.field_name] = parseFloat(value) || 0;
+          } else if (field.field_type === 'checkbox') {
+            rsvpData[field.field_name] = value === 'true';
           } else {
             rsvpData[field.field_name] = value.trim();
           }
@@ -383,7 +459,7 @@ export const RSVPSection: React.FC = () => {
             <form onSubmit={handleFormSubmit} className="space-y-5">
               {customFields.length > 0 ? (
                 customFields.map((field) => (
-                  <DynamicFormField
+                  <RSVPFieldRenderer
                     key={field.field_name}
                     field={field}
                     value={formData[field.field_name] || ''}
@@ -394,8 +470,9 @@ export const RSVPSection: React.FC = () => {
                   />
                 ))
               ) : (
-                <div className="text-center py-4">
-                  <p className="text-gray-500">No additional fields configured for this event.</p>
+                <div className="text-center py-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <p className="text-yellow-800 font-medium">RSVP field types missing from payload; using text fallback.</p>
+                  <p className="text-gray-600 text-sm mt-1">Please contact support if this message persists.</p>
                 </div>
               )}
 

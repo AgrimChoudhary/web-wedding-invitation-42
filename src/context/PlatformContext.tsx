@@ -112,14 +112,24 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     if (lastMessage.type === 'INVITATION_LOADED') {
       try {
-        console.log('=== PROCESSING INVITATION_LOADED ===');
+        console.debug('[RSVP] raw payload', lastMessage);
         const payload: any = (lastMessage as any).payload ?? (lastMessage as any).data;
+        console.debug('[RSVP] rsvp candidates', payload?.rsvp, payload?.rsvpConfig);
+        
+        // Detect fields array in a resilient way
+        const rsvpConfig = payload?.rsvpConfig ?? payload?.rsvp ?? {};
+        const fields = rsvpConfig?.fields ?? rsvpConfig?.customFields ?? payload?.rsvpFields ?? [];
+        console.debug('[RSVP] fields', fields);
+        
+        if (fields.length === 0) {
+          console.warn('[RSVP] RSVP field types missing from payload; using fallback');
+        }
         
         // Update RSVP state from platform
         setRsvpStatus(payload.status === 'pending' ? null : payload.status);
         setShowSubmitButton(payload.showSubmitButton);
         setShowEditButton(payload.showEditButton);
-        setRsvpFields(payload.rsvpFields || []);
+        setRsvpFields(fields || []);
         setExistingRsvpData(payload.existingRsvpData);
         if (typeof payload.wishesEnabled === 'boolean') {
           setWishesEnabled(payload.wishesEnabled);
@@ -150,7 +160,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           // Use RSVP config from platform, fallback to URL params
           rsvpConfig: (payload as any).rsvpConfig || (platformData?.rsvpConfig as 'simple' | 'detailed') || 'simple',
           existingRsvpData: payload.existingRsvpData,
-          customFields: payload.rsvpFields,
+          customFields: fields,
           wishesEnabled: typeof payload.wishesEnabled === 'boolean' ? payload.wishesEnabled : platformData?.wishesEnabled
         };
         
