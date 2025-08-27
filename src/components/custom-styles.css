@@ -1,0 +1,745 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%; 
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    --primary: 222.1 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+ 
+    --ring: 222.1 83.2% 53.3%;
+
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 222.2 47.4% 11.2%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 47.4% 11.2%;
+    --card-foreground: 210 40% 98%;
+ 
+    --popover: 222.2 47.4% 11.2%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.4% 60.6%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.9%;
+ 
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+ 
+    --ring: 217.2 91.4% 60.6%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+}
+
+/* Custom Styles */
+.pattern-background {
+  background-image: url('/floral-pattern.svg');
+  background-size: 300px auto;
+  background-repeat: repeat;
+}
+
+.gold-highlight {
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.7);
+}
+
+.underline-grow {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.underline-grow:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #D4AF37;
+  transition: width 0.3s ease;
+}
+
+.underline-grow:hover:after {
+  width: 100%;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.shadow-gold-soft {
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.shadow-gold-glow {
+  box-shadow: 0 0 15px 5px rgba(212, 175, 55, 0.4);
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.animate-glow-soft {
+  animation: glow-soft 3s ease-in-out infinite;
+}
+
+@keyframes glow-soft {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.7);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 1s forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1s forwards;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-bounce-light {
+  animation: bounce-light 2s infinite;
+}
+
+@keyframes bounce-light {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-8px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  border-color: #D4AF37 transparent #D4AF37 transparent;
+}
+
+@keyframes scale-up-fade {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-scale-up-fade {
+  animation: scale-up-fade 1s forwards;
+}
+
+/* Enhanced couple section animations */
+.animate-floating {
+  animation: floating 6s ease-in-out infinite;
+}
+
+@keyframes floating {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) scale(1.02);
+  }
+}
+
+/* Shimmer effect for ampersand */
+.shimmer-text {
+  background: linear-gradient(45deg, #D4AF37, #FFD700, #D4AF37);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Enhanced guest name animations */
+.animate-sparkle {
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+  }
+}
+
+/* Luxury card effects */
+.luxury-frame {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 215, 0, 0.1));
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+
+.luxury-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  background: linear-gradient(135deg, #D4AF37, #FFD700, #D4AF37);
+  border-radius: inherit;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+/* Ganesha section enhancements */
+.divine-glow {
+  box-shadow: 
+    0 0 20px rgba(251, 146, 60, 0.3),
+    0 0 40px rgba(251, 191, 36, 0.2),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.sacred-border {
+  background: linear-gradient(45deg, rgba(251, 146, 60, 0.3), rgba(251, 191, 36, 0.4), rgba(248, 113, 113, 0.3));
+}
+
+/* Typography improvements */
+.font-hindi {
+  font-family: 'Noto Sans Devanagari', 'Arial Unicode MS', sans-serif;
+}
+
+/* Blink animation for cursor */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s infinite;
+}
+
+/* Clean, refined animations */
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 1.2s ease-out forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 1.2s ease-out forwards;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced floating animation for couple image */
+.animate-floating {
+  animation: floating 8s ease-in-out infinite;
+}
+
+@keyframes floating {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+/* Refined luxury frame */
+.luxury-frame {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.08), rgba(255, 215, 0, 0.08));
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  position: relative;
+}
+
+.luxury-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(255, 215, 0, 0.3));
+  border-radius: inherit;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+/* Clean divine glow effect */
+.divine-glow {
+  box-shadow: 
+    0 0 15px rgba(251, 146, 60, 0.2),
+    0 0 30px rgba(251, 191, 36, 0.15),
+    inset 0 0 15px rgba(255, 255, 255, 0.08);
+}
+
+/* Typography improvements */
+.font-hindi {
+  font-family: 'Noto Sans Devanagari', 'Arial Unicode MS', sans-serif;
+}
+
+/* Refined blink animation */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1.2s infinite;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  border-color: #D4AF37 transparent #D4AF37 transparent;
+}
+
+@keyframes scale-up-fade {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-scale-up-fade {
+  animation: scale-up-fade 1s forwards;
+}
+
+/* Enhanced Ganesha Transition Animation with smoother movement */
+.ganesha-transition-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: ganesha-move-to-final 3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes ganesha-move-to-final {
+  0% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.02);
+  }
+  25% {
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(0.98);
+  }
+  45% {
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.92);
+    opacity: 0.9;
+  }
+  65% {
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.88);
+    opacity: 0.8;
+  }
+  80% {
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.82);
+    opacity: 0.6;
+  }
+  95% {
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.2;
+  }
+  100% {
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* Responsive adjustments for Ganesha transition */
+@media (max-width: 768px) {
+  @keyframes ganesha-move-to-final {
+    0% {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    15% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.02);
+    }
+    25% {
+      opacity: 0.95;
+      transform: translate(-50%, -50%) scale(0.98);
+    }
+    45% {
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.88);
+      opacity: 0.9;
+    }
+    65% {
+      top: 35%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.82);
+      opacity: 0.8;
+    }
+    80% {
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.75);
+      opacity: 0.6;
+    }
+    95% {
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.7);
+      opacity: 0.2;
+    }
+    100% {
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.7);
+      opacity: 0;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  @keyframes ganesha-move-to-final {
+    0% {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    15% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.02);
+    }
+    25% {
+      opacity: 0.95;
+      transform: translate(-50%, -50%) scale(0.98);
+    }
+    45% {
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.85);
+      opacity: 0.9;
+    }
+    65% {
+      top: 32%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.78);
+      opacity: 0.8;
+    }
+    80% {
+      top: 18%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.7);
+      opacity: 0.6;
+    }
+    95% {
+      top: 18%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.65);
+      opacity: 0.2;
+    }
+    100% {
+      top: 18%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.65);
+      opacity: 0;
+    }
+  }
+}
+
+/* New magical effects animations */
+@keyframes fall-confetti {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.animate-fall-confetti {
+  animation: fall-confetti linear forwards;
+}
+
+@keyframes sparkle-float {
+  0%, 100% {
+    transform: translateY(0px) scale(0.8);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateY(-20px) scale(1.2);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-10px) scale(1);
+    opacity: 0.8;
+  }
+  75% {
+    transform: translateY(-30px) scale(1.1);
+    opacity: 0.9;
+  }
+}
+
+.animate-sparkle-float {
+  animation: sparkle-float ease-in-out infinite;
+}
+
+/* Enhanced hover effects */
+.hover\:scale-102:hover {
+  transform: scale(1.02);
+}
+
+/* Text shadow utility */
+.text-shadow-lg {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced ping animation with different timing */
+@keyframes ping-delayed {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping-delayed {
+  animation: ping-delayed 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Faster Ganesha transition container */
+.ganesha-transition-container-fast {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: ganesha-move-to-header-fast 2s ease-in-out forwards;
+  z-index: 100;
+}
+
+@keyframes ganesha-move-to-header-fast {
+  0% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+  60% {
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0;
+  }
+}
