@@ -248,25 +248,6 @@ export const RSVPSection: React.FC = () => {
                   </h3>
                 </div>
                 
-                <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto text-left mb-6">
-                  <div className="bg-wedding-gold/5 p-4 md:p-6 rounded-2xl border border-wedding-gold/20">
-                    <p className="text-base md:text-lg text-gray-700 font-medium mb-2">
-                      🎉 We are absolutely thrilled!
-                    </p>
-                    <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                      {getThankYouMessage()}
-                    </p>
-                  </div>
-                  
-                  <div className="bg-wedding-maroon/5 p-4 md:p-6 rounded-2xl border border-wedding-maroon/20">
-                    <p className="text-base md:text-lg text-wedding-maroon font-medium mb-2">
-                      💝 Save the Date!
-                    </p>
-                    <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                      Get ready for an unforgettable celebration of love, tradition, and togetherness.
-                    </p>
-                  </div>
-                </div>
 
                 {/* Show Submit/Edit RSVP button for detailed RSVP config */}
                 {/* Show button for initial submit (accepted) OR for edit if showEditButton is true */}
