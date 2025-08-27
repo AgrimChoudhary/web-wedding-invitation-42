@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import FamilyMemberCard from './FamilyMemberCard';
 import { Heart, Users, Crown, Sparkles } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
@@ -38,18 +38,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { weddingData } = useWedding();
 
-  // Enhanced logging for family data debugging
-  React.useEffect(() => {
-    console.debug("=== FAMILY DETAILS DEBUG ===");
-    console.debug("Incoming Bride Parents:", weddingData?.family?.brideFamily?.parentsNameCombined);
-    console.debug("Incoming Groom Parents:", weddingData?.family?.groomFamily?.parentsNameCombined);
-    console.debug("Full wedding data family:", weddingData?.family);
-    console.debug("PropGroomFamily:", propGroomFamily);
-    console.debug("PropBrideFamily:", propBrideFamily);
-    console.debug("Final groomFamily object:", propGroomFamily || weddingData.family.groomFamily);
-    console.debug("Final brideFamily object:", propBrideFamily || weddingData.family.brideFamily);
-    console.debug("=== END FAMILY DETAILS DEBUG ===");
-  }, [propGroomFamily, propBrideFamily, weddingData?.family]);
+  // Production mode - no debug logging
 
   // Use props if provided, otherwise use from context with fallback to sample data
   const groomFamily = propGroomFamily || weddingData.family.groomFamily || {
@@ -67,11 +56,10 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
 
   // Debug logging for family data in component
 
-  const handleShowFamily = (family: FamilyData) => {
-    
+  const handleShowFamily = useCallback((family: FamilyData) => {
     setSelectedFamily(family);
     setIsDialogOpen(true);
-  };
+  }, []);
 
   // Filter out members that should only show in dialog
   const getVisibleMembers = (members: FamilyMember[]) => {
@@ -88,7 +76,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
   const firstFamily = weddingData.groomFirst ? groomFamily : brideFamily;
   const secondFamily = weddingData.groomFirst ? brideFamily : groomFamily;
 
-  const FamilyCard = ({ family }: { family: FamilyData }) => (
+  const FamilyCard = React.memo(({ family }: { family: FamilyData }) => (
     <motion.div 
       className="relative rounded-xl overflow-hidden luxury-card group"
       whileHover={{ scale: 1.01, transition: { duration: 0.2 } }}
@@ -113,19 +101,15 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-0 animate-fade-in"
                 loading="lazy"
                 decoding="async"
-                onLoad={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.opacity = '1';
-                  if (family.familyPhotoUrl && family.familyPhotoUrl.trim() !== '') {
-                    
-                  }
-                }}
-                onError={(e) => {
-                  
-                  const target = e.target as HTMLImageElement;
-                  target.src = family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg";
-                  target.style.opacity = '1';
-                }}
+                 onLoad={(e) => {
+                   const target = e.target as HTMLImageElement;
+                   target.style.opacity = '1';
+                 }}
+                 onError={(e) => {
+                   const target = e.target as HTMLImageElement;
+                   target.src = family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg";
+                   target.style.opacity = '1';
+                 }}
               />
             </div>
             <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-wedding-gold rounded-full flex items-center justify-center shadow-lg">
@@ -162,11 +146,10 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
         {/* View Details Button */}
         <div className="flex items-center justify-center">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              
-              handleShowFamily(family);
-            }}
+             onClick={(e) => {
+               e.stopPropagation();
+               handleShowFamily(family);
+             }}
             className="bg-wedding-gold/10 text-wedding-maroon border border-wedding-gold/30 hover:bg-wedding-gold/20 hover:border-wedding-gold/50 transition-all duration-300 px-4 py-2 rounded-full flex items-center gap-2 cursor-pointer"
           >
             <Users size={14} /> 
@@ -176,7 +159,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
         </div>
       </div>
     </motion.div>
-  );
+  ));
 
   return (
     <section className="w-full py-16 bg-gradient-to-br from-wedding-cream via-wedding-blush/5 to-wedding-cream relative overflow-hidden">
@@ -214,10 +197,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
         {/* Family Details Dialog */}
         <Dialog 
           open={isDialogOpen} 
-          onOpenChange={(open) => {
-            
-            setIsDialogOpen(open);
-          }}
+           onOpenChange={setIsDialogOpen}
         >
           <DialogContent className="max-w-2xl bg-gradient-to-br from-white/98 to-wedding-cream/95 backdrop-blur-md border-2 border-wedding-gold/30 shadow-2xl">
             <DialogHeader>

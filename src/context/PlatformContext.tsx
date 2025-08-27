@@ -66,10 +66,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         accepted: urlPlatformData.accepted || false
       };
       
-      console.log('✅ Allowing status from URL parameters:', {
-        original: { hasResponded: urlPlatformData.hasResponded, accepted: urlPlatformData.accepted, guestStatus: urlPlatformData.guestStatus },
-        final: { hasResponded: platformData.hasResponded, accepted: platformData.accepted, guestStatus: platformData.guestStatus }
-      });
+      // Production mode - no debug logging
       
       setPlatformData(platformData);
       // Send TEMPLATE_READY with eventId and guestId if available
@@ -96,7 +93,7 @@ export const PlatformProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         if (validatePlatformData(platformData.structuredData)) {
           const mappedData = mapPlatformDataToWeddingData(platformData.structuredData);
           setWeddingData(mappedData);
-          console.log('Platform data successfully mapped to wedding data');
+          // Platform data successfully mapped
         } else {
           console.warn('Invalid platform data structure, falling back to static data');
         }

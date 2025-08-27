@@ -24,43 +24,21 @@ const WishesCarousel: React.FC<WishesCarouselProps> = ({ onViewAll }) => {
   const { wishes, isLoading, isSubmitting, submitWish, toggleLike } = useWishes();
   const { guestId, guestName } = useGuest();
 
-  // Debug logs for wishes data (development only)
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🎠 WishesCarousel: Component rendered');
-    console.log('🎠 WishesCarousel: Wishes from hook:', wishes);
-    console.log('🎠 WishesCarousel: Wishes length:', wishes?.length || 0);
-    console.log('🎠 WishesCarousel: Is loading:', isLoading);
-    
-    // Log each wish for debugging
-    if (wishes && wishes.length > 0) {
-      wishes.forEach((wish, index) => {
-        console.log(`🎠 WishesCarousel: Wish ${index + 1}:`, {
-          id: wish.id,
-          guest_name: wish.guest_name,
-          content: wish.content,
-          is_approved: wish.is_approved
-        });
-      });
-    }
-  }
+  // Production mode - no debug logging
 
   const handleSubmitWish = async (content: string, imageFile?: File) => {
     if (!guestId || !guestName) {
-      console.error('Missing guest info:', { guestId, guestName });
       return false;
     }
 
-    console.log('Submitting wish with image:', { content, hasImage: !!imageFile, guestId, guestName });
     const success = await submitWish(content, guestId, guestName, imageFile);
     return success;
   };
 
   const handleLike = (wishId: string) => {
     if (!guestId || !guestName) {
-      console.error('Cannot like - missing guest info:', { guestId, guestName });
       return;
     }
-    console.log('Liking wish:', wishId, 'by:', guestName);
     toggleLike(wishId, guestId, guestName);
   };
 
@@ -130,10 +108,7 @@ const WishesCarousel: React.FC<WishesCarouselProps> = ({ onViewAll }) => {
           </div>
         ) : (() => {
             const approvedWishes = wishes.filter(wish => wish.is_approved);
-            console.log('🎠 WishesCarousel: Filtering wishes');
-            console.log('🎠 WishesCarousel: Total wishes:', wishes?.length || 0);
-            console.log('🎠 WishesCarousel: Approved wishes:', approvedWishes?.length || 0);
-            console.log('🎠 WishesCarousel: Approved wishes data:', approvedWishes);
+            // Production mode - no debug logging
             
             return approvedWishes.length > 0;
           })() ? (
@@ -146,14 +121,7 @@ const WishesCarousel: React.FC<WishesCarouselProps> = ({ onViewAll }) => {
               className="w-full max-w-4xl md:max-w-5xl mx-auto"
             >
               <CarouselContent className="-ml-4 md:-ml-6">
-                {wishes.filter(wish => wish.is_approved).map((wish, index) => {
-                  console.log('🎠 WishesCarousel: Rendering wish', index + 1, ':', {
-                    id: wish.id,
-                    guest_name: wish.guest_name,
-                    content: wish.content,
-                    is_approved: wish.is_approved
-                  });
-                  return (
+                {wishes.filter(wish => wish.is_approved).map((wish, index) => (
                   <CarouselItem key={wish.id} className="pl-4 md:pl-6 basis-4/5 sm:basis-3/5 md:basis-1/2 lg:basis-1/3">
                     <div 
                       className="animate-fade-in h-full"
@@ -165,8 +133,7 @@ const WishesCarousel: React.FC<WishesCarouselProps> = ({ onViewAll }) => {
                       />
                     </div>
                   </CarouselItem>
-                  );
-                })}
+                ))}
               </CarouselContent>
               
               {/* Enhanced Mobile-Friendly Navigation Buttons */}
@@ -180,10 +147,6 @@ const WishesCarousel: React.FC<WishesCarouselProps> = ({ onViewAll }) => {
 
             {(() => {
               const approvedCount = wishes.filter(wish => wish.is_approved).length;
-              console.log('🎠 WishesCarousel: Show "View All" button?', {
-                approvedCount,
-                shouldShow: approvedCount > 5 && !!onViewAll
-              });
               return approvedCount > 5 && onViewAll;
             })() && (
               <div className="text-center mt-4 md:mt-6">
@@ -199,16 +162,7 @@ const WishesCarousel: React.FC<WishesCarouselProps> = ({ onViewAll }) => {
           </div>
         ) : (
           <div className="mb-8 md:mb-12 flex justify-center px-4">
-            {(() => {
-              console.log('🎠 WishesCarousel: Showing "No Approved Wishes" state');
-              console.log('🎠 WishesCarousel: Debug - wishes data:', {
-                totalWishes: wishes?.length || 0,
-                approvedWishes: wishes?.filter(w => w.is_approved)?.length || 0,
-                isLoading,
-                allWishes: wishes
-              });
-              return null;
-            })()}
+            {/* Production mode - no debug logging */}
             <Card className="max-w-sm md:max-w-lg h-48 md:h-56 flex flex-col items-center justify-center text-center p-4 md:p-6 bg-gradient-to-br from-wedding-cream/90 via-white/95 to-wedding-blush/20 border-2 border-wedding-gold/30 shadow-2xl">
               <div className="p-3 md:p-4 rounded-full bg-wedding-gold/20 mb-3 md:mb-4 border-2 border-wedding-gold/30 shadow-lg">
                 <Sparkles size={20} className="md:w-6 md:h-6 text-wedding-gold animate-pulse" />

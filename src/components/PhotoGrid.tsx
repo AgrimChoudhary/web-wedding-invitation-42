@@ -51,21 +51,12 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({
   
   // Initialize photos with default like data
   useEffect(() => {
-    
     const initialPhotos: PhotoWithLikes[] = weddingData.photoGallery.map(photo => ({
       ...photo,
       likes_count: 0,
       hasLiked: false
     }));
     setPhotosWithLikes(initialPhotos);
-    
-    // Show toast when photos are loaded
-    if (initialPhotos.length > 0) {
-      toast(`${initialPhotos.length} photos loaded from gallery`, {
-        description: 'Your photo gallery is now ready to view',
-        duration: 2000
-      });
-    }
   }, [weddingData.photoGallery]);
 
   // Set up message listener for platform communication
@@ -73,7 +64,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({
     const handleMessage = (event: MessageEvent) => {
       // Security check
       if (!isTrustedOrigin(event.origin)) {
-        
         return;
       }
 
@@ -81,13 +71,11 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({
 
       switch (type) {
         case 'INITIAL_PHOTO_LIKES_DATA':
-          
           if (payload.photosWithLikes && Array.isArray(payload.photosWithLikes)) {
             setPhotosWithLikes(payload.photosWithLikes);
           }
           break;
         case 'PHOTO_LIKE_UPDATED':
-          
           // Update local state with new like data
           setPhotosWithLikes(prevPhotos => 
             prevPhotos.map(photo => 
@@ -156,11 +144,8 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({
   
   const toggleLike = (photoId: string) => {
     if (!guestId || !guestName) {
-      console.error('Cannot like photo - missing guest info:', { guestId, guestName });
       return;
     }
-
-    
     
     // Find current photo to determine current like status
     const currentPhoto = photosWithLikes.find(photo => photo.id === photoId);

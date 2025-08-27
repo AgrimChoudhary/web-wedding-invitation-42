@@ -4,16 +4,7 @@ import { WeddingData } from '../types/wedding';
 export const mapPlatformDataToWeddingData = (platformData: StructuredEventData): WeddingData => {
   const { weddingData } = platformData;
   
-  // Debug logging for family data
-  console.log('=== DATA MAPPER DEBUG ===');
-  console.log('Full platformData:', platformData);
-  console.log('Full weddingData:', weddingData);
-  console.log('weddingData.family:', weddingData.family);
-  console.log('bride_family:', weddingData.family?.bride_family);
-  console.log('groom_family:', weddingData.family?.groom_family);
-  console.log('Bride Parents Name:', weddingData.family?.bride_family?.parents_name);
-  console.log('Groom Parents Name:', weddingData.family?.groom_family?.parents_name);
-  console.log('=== END DATA MAPPER DEBUG ===');
+  // Production mode - minimal logging
   
   // Process family data from multiple possible sources as per GitHub spec
   let groomFamily = null;
@@ -31,7 +22,6 @@ export const mapPlatformDataToWeddingData = (platformData: StructuredEventData):
     weddingData.family?.bride_family;
 
   if (groomFamilySource) {
-    console.debug('🤵 Processing groom family data from source:', groomFamilySource);
     groomFamily = {
       title: groomFamilySource.title || "Groom's Family",
       members: (groomFamilySource.members || []).map((member: any, index: number) => ({
@@ -45,14 +35,9 @@ export const mapPlatformDataToWeddingData = (platformData: StructuredEventData):
       familyPhotoUrl: groomFamilySource.familyPhoto || groomFamilySource.family_photo || groomFamilySource.photo || '',
       parentsNameCombined: groomFamilySource.parentsNames || groomFamilySource.parents_name || groomFamilySource.parents_names || groomFamilySource.parentsNameCombined || ''
     };
-    console.debug('✅ Mapped groom family:', groomFamily);
-    console.debug(`🤵 Groom family member count: ${groomFamily.members.length}`);
-  } else {
-    console.debug('❌ No groom family data found in any source');
   }
 
   if (brideFamilySource) {
-    console.debug('👰 Processing bride family data from source:', brideFamilySource);
     brideFamily = {
       title: brideFamilySource.title || "Bride's Family",
       members: (brideFamilySource.members || []).map((member: any, index: number) => ({
@@ -66,10 +51,6 @@ export const mapPlatformDataToWeddingData = (platformData: StructuredEventData):
       familyPhotoUrl: brideFamilySource.familyPhoto || brideFamilySource.family_photo || brideFamilySource.photo || '',
       parentsNameCombined: brideFamilySource.parentsNames || brideFamilySource.parents_name || brideFamilySource.parents_names || brideFamilySource.parentsNameCombined || ''
     };
-    console.debug('✅ Mapped bride family:', brideFamily);
-    console.debug(`👰 Bride family member count: ${brideFamily.members.length}`);
-  } else {
-    console.debug('❌ No bride family data found in any source');
   }
 
   return {
