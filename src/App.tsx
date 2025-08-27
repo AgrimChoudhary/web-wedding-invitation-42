@@ -15,7 +15,7 @@ import Index from "./pages/Index";
 import Invitation from "./pages/Invitation";
 import GuestManagement from "./pages/GuestManagement";
 import NotFound from "./pages/NotFound";
-import "./components/custom-styles.css";
+
 
 // Create a client
 const queryClient = new QueryClient({
