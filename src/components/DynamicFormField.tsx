@@ -18,8 +18,11 @@ export const DynamicFormField: React.FC<DynamicFormFieldProps> = ({
   onChange,
   error
 }) => {
-  const getFieldType = (fieldType: string): 'text' | 'textarea' | 'select' | 'email' | 'number' => {
-    const validTypes = ['text', 'textarea', 'select', 'email', 'number'];
+  const getFieldType = (fieldType: string): 'text' | 'textarea' | 'select' | 'email' | 'number' | 'date' | 'time' | 'datetime-local' => {
+    const validTypes = ['text', 'textarea', 'select', 'email', 'number', 'date', 'time', 'datetime-local'];
+    // Handle legacy "Date & Time" format
+    if (fieldType === 'Date & Time') return 'datetime-local';
+    if (fieldType === 'Date') return 'date';
     return validTypes.includes(fieldType) ? fieldType as any : 'text';
   };
 
@@ -82,6 +85,48 @@ export const DynamicFormField: React.FC<DynamicFormFieldProps> = ({
             id={field.field_name}
             name={field.field_name}
             type="number"
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            required={isRequired}
+            className="border-wedding-gold/30 focus:border-wedding-gold focus:ring-wedding-gold/20 rounded-lg"
+          />
+        );
+
+      case 'date':
+        return (
+          <Input
+            id={field.field_name}
+            name={field.field_name}
+            type="date"
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            required={isRequired}
+            className="border-wedding-gold/30 focus:border-wedding-gold focus:ring-wedding-gold/20 rounded-lg"
+          />
+        );
+
+      case 'time':
+        return (
+          <Input
+            id={field.field_name}
+            name={field.field_name}
+            type="time"
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            required={isRequired}
+            className="border-wedding-gold/30 focus:border-wedding-gold focus:ring-wedding-gold/20 rounded-lg"
+          />
+        );
+
+      case 'datetime-local':
+        return (
+          <Input
+            id={field.field_name}
+            name={field.field_name}
+            type="datetime-local"
             placeholder={placeholder}
             value={value}
             onChange={(e) => onChange(e.target.value)}

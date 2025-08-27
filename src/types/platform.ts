@@ -67,7 +67,7 @@ export interface CustomField {
   id?: string;
   field_name: string;
   field_label: string;
-  field_type: 'text' | 'textarea' | 'select' | 'email' | 'number' | 'phone' | 'radio' | 'checkbox';
+  field_type: 'text' | 'textarea' | 'select' | 'email' | 'number' | 'phone' | 'radio' | 'checkbox' | 'date' | 'time' | 'datetime-local';
   is_required?: boolean;
   field_options?: string[] | { options: string[] };
   placeholder_text?: string;

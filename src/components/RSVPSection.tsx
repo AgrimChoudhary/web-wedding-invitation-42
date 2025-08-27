@@ -134,6 +134,33 @@ export const RSVPSection: React.FC = () => {
           return;
         }
       }
+
+      // Date validation
+      if (field.field_type === 'date' && value.trim()) {
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(value.trim())) {
+          errors[field.field_name] = 'Please enter a valid date.';
+          return;
+        }
+      }
+
+      // Time validation
+      if (field.field_type === 'time' && value.trim()) {
+        const timeRegex = /^\d{2}:\d{2}$/;
+        if (!timeRegex.test(value.trim())) {
+          errors[field.field_name] = 'Please enter a valid time.';
+          return;
+        }
+      }
+
+      // DateTime validation
+      if (field.field_type === 'datetime-local' && value.trim()) {
+        const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+        if (!dateTimeRegex.test(value.trim())) {
+          errors[field.field_name] = 'Please enter a valid date and time.';
+          return;
+        }
+      }
     });
     
     setValidationErrors(errors);
