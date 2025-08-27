@@ -9,9 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import OptimizedImage from './OptimizedImage';
-import { GalleryImageSkeleton } from './ImageSkeleton';
-import { useAdvancedImagePreloader } from '@/hooks/useAdvancedImagePreloader';
 
 interface PhotoGridProps {
   title?: string;
@@ -51,20 +48,6 @@ const PhotoGrid: React.FC<PhotoGridProps> = ({
   const isMobile = useIsMobile();
   const { weddingData } = useWedding();
   const { guestId, guestName } = useGuest();
-
-  // Extract photo URLs for preloading
-  const photoUrls = photosWithLikes.map(photo => photo.url);
-  
-  // Advanced image preloader
-  const { 
-    getImageState, 
-    getTotalProgress, 
-    isLoading: preloaderLoading 
-  } = useAdvancedImagePreloader(photoUrls, {
-    priority: 'medium',
-    quality: 'high',
-    enableCache: true
-  });
   
   // Initialize photos with default like data
   useEffect(() => {
