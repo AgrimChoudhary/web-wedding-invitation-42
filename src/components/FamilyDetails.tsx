@@ -40,6 +40,15 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
 
   // Enhanced logging for family data debugging
   React.useEffect(() => {
+    console.debug("=== FAMILY DETAILS DEBUG ===");
+    console.debug("Incoming Bride Parents:", weddingData?.family?.brideFamily?.parentsNameCombined);
+    console.debug("Incoming Groom Parents:", weddingData?.family?.groomFamily?.parentsNameCombined);
+    console.debug("Full wedding data family:", weddingData?.family);
+    console.debug("PropGroomFamily:", propGroomFamily);
+    console.debug("PropBrideFamily:", propBrideFamily);
+    console.debug("Final groomFamily object:", propGroomFamily || weddingData.family.groomFamily);
+    console.debug("Final brideFamily object:", propBrideFamily || weddingData.family.brideFamily);
+    console.debug("=== END FAMILY DETAILS DEBUG ===");
   }, [propGroomFamily, propBrideFamily, weddingData?.family]);
 
   // Use props if provided, otherwise use from context with fallback to sample data
