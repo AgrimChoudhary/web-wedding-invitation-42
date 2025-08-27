@@ -69,7 +69,7 @@ export const FloatingPetals: React.FC = () => {
   );
 };
 
-// Create confetti component - optimized for performance with top-to-bottom fall
+// Create confetti component - optimized for performance
 export const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
   const [confetti, setConfetti] = useState<{ id: number; style: React.CSSProperties }[]>([]);
   
@@ -77,19 +77,18 @@ export const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
     if (isActive) {
       // Reduce number of particles on mobile for better performance
       const isMobile = window.innerWidth < 768;
-      const particleCount = isMobile ? 40 : 80;
+      const particleCount = isMobile ? 30 : 50;
       
       const newConfetti = Array.from({ length: particleCount }, (_, i) => ({
         id: i,
         style: {
           left: `${Math.random() * 100}vw`,
-          top: '-20px',
+          top: '0',
           backgroundColor: `hsl(${Math.random() * 360}, 80%, 60%)`,
-          width: `${Math.random() * 8 + 4}px`,
-          height: `${Math.random() * 8 + 4}px`,
-          animationDuration: `${Math.random() * 4 + 3}s`,
-          animationDelay: `${Math.random() * 2}s`,
-          transform: `rotate(${Math.random() * 360}deg)`,
+          width: `${Math.random() * 8 + 5}px`,
+          height: `${Math.random() * 8 + 5}px`,
+          animationDuration: `${Math.random() * 3 + 2}s`,
+          animationDelay: `${Math.random() * 0.5}s`,
         },
       }));
       
@@ -97,7 +96,7 @@ export const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
       
       const timer = setTimeout(() => {
         setConfetti([]);
-      }, 8000);
+      }, 6000);
       
       return () => clearTimeout(timer);
     }
@@ -106,11 +105,11 @@ export const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
   }, [isActive]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
       {confetti.map((item) => (
         <div
           key={item.id}
-          className="confetti animate-fall-confetti"
+          className="confetti animate-confetti"
           style={item.style}
         />
       ))}

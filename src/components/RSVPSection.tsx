@@ -223,32 +223,29 @@ export const RSVPSection: React.FC = () => {
                }}>
           </div>
           
-          <div className="w-full max-w-5xl mx-auto px-3 sm:px-4 md:px-8 relative z-10">
-            <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10 shadow-2xl border-2 border-wedding-gold/20 text-center relative overflow-hidden">
-              {/* Mobile-optimized corner decorations */}
-              <div className="absolute top-0 left-0 w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 border-l-2 sm:border-l-3 md:border-l-4 border-t-2 sm:border-t-3 md:border-t-4 border-wedding-gold/40 rounded-tl-2xl sm:rounded-tl-3xl"></div>
-              <div className="absolute top-0 right-0 w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 border-r-2 sm:border-r-3 md:border-r-4 border-t-2 sm:border-t-3 md:border-t-4 border-wedding-gold/40 rounded-tr-2xl sm:rounded-tr-3xl"></div>
-              <div className="absolute bottom-0 left-0 w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 border-l-2 sm:border-l-3 md:border-l-4 border-b-2 sm:border-b-3 md:border-b-4 border-wedding-gold/40 rounded-bl-2xl sm:rounded-bl-3xl"></div>
-              <div className="absolute bottom-0 right-0 w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 border-r-2 sm:border-r-3 md:border-r-4 border-b-2 sm:border-b-3 md:border-b-4 border-wedding-gold/40 rounded-br-2xl sm:rounded-br-3xl"></div>
+          <div className="w-full max-w-6xl mx-auto px-4 md:px-8 relative z-10">
+            <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-2xl border-2 border-wedding-gold/20 text-center relative overflow-hidden">
+              {/* Luxury gold accent borders */}
+              <div className="absolute top-0 left-0 w-20 h-20 border-l-4 border-t-4 border-wedding-gold/40 rounded-tl-3xl"></div>
+              <div className="absolute top-0 right-0 w-20 h-20 border-r-4 border-t-4 border-wedding-gold/40 rounded-tr-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-20 h-20 border-l-4 border-b-4 border-wedding-gold/40 rounded-bl-3xl"></div>
+              <div className="absolute bottom-0 right-0 w-20 h-20 border-r-4 border-b-4 border-wedding-gold/40 rounded-br-3xl"></div>
               
               <div className="relative z-10">
-                <div className="flex justify-center items-center mb-3 sm:mb-4 md:mb-6">
-                  <Sparkles className="w-4 h-4 sm:w-6 md:w-8 sm:h-6 md:h-8 text-wedding-gold animate-pulse mr-2 sm:mr-3" />
-                  <Heart className="w-8 h-8 sm:w-10 md:w-14 sm:h-10 md:h-14 text-wedding-gold animate-pulse" />
-                  <Sparkles className="w-4 h-4 sm:w-6 md:w-8 sm:h-6 md:h-8 text-wedding-gold animate-pulse ml-2 sm:ml-3" />
+                <div className="flex justify-center items-center mb-4 md:mb-6">
+                  <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-wedding-gold animate-pulse mr-3" />
+                  <Heart className="w-10 h-10 md:w-14 md:h-14 text-wedding-gold animate-pulse" />
+                  <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-wedding-gold animate-pulse ml-3" />
                 </div>
                 
-                {/* Mobile-optimized Thank You Message */}
-                <div className="mb-4 sm:mb-5 md:mb-6 px-2">
-                  <h2 className="font-great-vibes text-xl sm:text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-2 sm:mb-2 md:mb-3 leading-tight">
-                    Dear <span className="text-wedding-gold bg-gradient-to-r from-wedding-gold to-wedding-gold/80 bg-clip-text text-transparent break-words">{guestName}</span>,
+                {/* Personalized Thank You Message */}
+                <div className="mb-5 md:mb-6">
+                  <h2 className="font-great-vibes text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-2 md:mb-3">
+                    Dear <span className="text-wedding-gold bg-gradient-to-r from-wedding-gold to-wedding-gold/80 bg-clip-text text-transparent">{guestName}</span>,
                   </h2>
-                  <h3 className="font-great-vibes text-lg sm:text-xl md:text-3xl lg:text-4xl text-wedding-maroon mb-2 sm:mb-3 leading-tight">
+                  <h3 className="font-great-vibes text-xl md:text-3xl lg:text-4xl text-wedding-maroon mb-3">
                     Thank You for Accepting!
                   </h3>
-                  <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                    {getThankYouMessage()}
-                  </p>
                 </div>
                 
 
@@ -297,19 +294,18 @@ export const RSVPSection: React.FC = () => {
                   });
                   return shouldShowButton;
                 })() && (
-                  <div className="flex justify-center mb-4 sm:mb-6 px-4">
+                  <div className="flex justify-center mb-6">
                     <Button
                       onClick={() => {
                         console.log('🔘 Submit RSVP Details button clicked - opening modal');
-                        setShowConfetti(true);
                         setShowDetailedForm(true);
                       }}
                       disabled={isSubmitting}
-                      className="w-full sm:w-auto bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-4 sm:px-6 md:px-10 py-3 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[48px] sm:min-h-[56px] group"
+                      className="bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-6 md:px-10 py-3 md:py-4 text-base md:text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[56px] group"
                     >
                       {isSubmitting ? (
                         <>
-                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
@@ -317,17 +313,17 @@ export const RSVPSection: React.FC = () => {
                         </>
                       ) : (
                         <>
-                          <Heart className="w-4 h-4 sm:w-5 md:w-6 sm:h-5 md:h-6 mr-2 group-hover:animate-pulse" />
+                          <Heart className="w-5 h-5 md:w-6 md:h-6 mr-2 group-hover:animate-pulse" />
                           {getButtonText()}
-                          <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 ml-2 opacity-70" />
+                          <Sparkles className="w-4 h-4 ml-2 opacity-70" />
                         </>
                       )}
                     </Button>
                   </div>
                 )}
                 
-                <div className="pt-4 sm:pt-5 border-t border-wedding-gold/20 mx-4">
-                  <p className="font-great-vibes text-base sm:text-lg md:text-2xl text-wedding-gold italic leading-relaxed">
+                <div className="pt-5 border-t border-wedding-gold/20">
+                  <p className="font-great-vibes text-lg md:text-2xl text-wedding-gold italic">
                     "Your presence will make our celebration complete"
                   </p>
                 </div>
@@ -472,43 +468,40 @@ export const RSVPSection: React.FC = () => {
            }}>
       </div>
       
-      <div className="w-full max-w-5xl mx-auto px-3 sm:px-4 md:px-8 relative z-10">
-        <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10 shadow-2xl border-2 border-wedding-gold/20 text-center relative overflow-hidden">
-          {/* Mobile-optimized corner decorations */}
-          <div className="absolute top-0 left-0 w-12 h-12 sm:w-16 md:w-16 sm:h-16 md:h-16 border-l-2 sm:border-l-3 border-t-2 sm:border-t-3 border-wedding-gold/30 rounded-tl-2xl sm:rounded-tl-3xl"></div>
-          <div className="absolute top-0 right-0 w-12 h-12 sm:w-16 md:w-16 sm:h-16 md:h-16 border-r-2 sm:border-r-3 border-t-2 sm:border-t-3 border-wedding-gold/30 rounded-tr-2xl sm:rounded-tr-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-12 h-12 sm:w-16 md:w-16 sm:h-16 md:h-16 border-l-2 sm:border-l-3 border-b-2 sm:border-b-3 border-wedding-gold/30 rounded-bl-2xl sm:rounded-bl-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-12 h-12 sm:w-16 md:w-16 sm:h-16 md:h-16 border-r-2 sm:border-r-3 border-b-2 sm:border-b-3 border-wedding-gold/30 rounded-br-2xl sm:rounded-br-3xl"></div>
+      <div className="w-full max-w-6xl mx-auto px-4 md:px-8 relative z-10">
+        <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-3xl p-6 md:p-10 shadow-2xl border-2 border-wedding-gold/20 text-center relative overflow-hidden">
+          {/* Elegant corner decorations */}
+          <div className="absolute top-0 left-0 w-16 h-16 border-l-3 border-t-3 border-wedding-gold/30 rounded-tl-3xl"></div>
+          <div className="absolute top-0 right-0 w-16 h-16 border-r-3 border-t-3 border-wedding-gold/30 rounded-tr-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-16 h-16 border-l-3 border-b-3 border-wedding-gold/30 rounded-bl-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-16 h-16 border-r-3 border-b-3 border-wedding-gold/30 rounded-br-3xl"></div>
           
           <div className="relative z-10">
-            <div className="mb-4 sm:mb-5 md:mb-6 px-2">
-              <div className="flex justify-center items-center mb-3 sm:mb-3 md:mb-4">
-                <Sparkles className="w-4 h-4 sm:w-5 md:w-7 sm:h-5 md:h-7 text-wedding-gold animate-pulse mr-2 sm:mr-3" />
-                <Heart className="w-6 h-6 sm:w-8 md:w-12 sm:h-8 md:h-12 text-wedding-gold animate-pulse" />
-                <Sparkles className="w-4 h-4 sm:w-5 md:w-7 sm:h-5 md:h-7 text-wedding-gold animate-pulse ml-2 sm:ml-3" />
+            <div className="mb-5 md:mb-6">
+              <div className="flex justify-center items-center mb-3 md:mb-4">
+                <Sparkles className="w-5 h-5 md:w-7 md:h-7 text-wedding-gold animate-pulse mr-3" />
+                <Heart className="w-8 h-8 md:w-12 md:h-12 text-wedding-gold animate-pulse" />
+                <Sparkles className="w-5 h-5 md:w-7 md:h-7 text-wedding-gold animate-pulse ml-3" />
               </div>
               
-              <h2 className="font-great-vibes text-xl sm:text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-2 sm:mb-3 md:mb-4 leading-tight">
+              <h2 className="font-great-vibes text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-3 md:mb-4">
                 Your Presence is Our Present
               </h2>
-              <p className="text-sm sm:text-base md:text-lg text-wedding-gold font-medium mb-4 sm:mb-5 md:mb-6 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-base md:text-lg text-wedding-gold font-medium mb-5 md:mb-6 max-w-3xl mx-auto">
                 Please confirm your attendance to make our day complete
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-2xl mx-auto mb-4 sm:mb-6 px-4">
+            <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto mb-6">
               {rsvpConfig === 'simple' ? (
                 <Button
-                  onClick={() => {
-                    setShowConfetti(true);
-                    handleSimpleAccept();
-                  }}
+                  onClick={handleSimpleAccept}
                   disabled={isSubmitting}
-                  className="flex-1 bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-4 sm:px-6 md:px-10 py-3 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[48px] sm:min-h-[56px] group disabled:opacity-50"
+                  className="flex-1 bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-6 md:px-10 py-3 md:py-4 text-base md:text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[56px] group disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
@@ -516,24 +509,21 @@ export const RSVPSection: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <Heart className="w-4 h-4 sm:w-5 md:w-6 sm:h-5 md:h-6 mr-2 group-hover:animate-pulse" />
+                      <Heart className="w-5 h-5 md:w-6 md:h-6 mr-2 group-hover:animate-pulse" />
                       Accept Invitation
-                      <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 ml-2 opacity-70" />
+                      <Sparkles className="w-4 h-4 ml-2 opacity-70" />
                     </>
                   )}
                 </Button>
               ) : (
                 <Button
-                  onClick={() => {
-                    setShowConfetti(true);
-                    handleDetailedAccept();
-                  }}
+                  onClick={handleDetailedAccept}
                   disabled={isSubmitting}
-                  className="flex-1 bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-4 sm:px-6 md:px-10 py-3 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[48px] sm:min-h-[56px] group disabled:opacity-50"
+                  className="flex-1 bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-6 md:px-10 py-3 md:py-4 text-base md:text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[56px] group disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
@@ -541,9 +531,9 @@ export const RSVPSection: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <Heart className="w-4 h-4 sm:w-5 md:w-6 sm:h-5 md:h-6 mr-2 group-hover:animate-pulse" />
+                      <Heart className="w-5 h-5 md:w-6 md:h-6 mr-2 group-hover:animate-pulse" />
                       Accept Invitation
-                      <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 ml-2 opacity-70" />
+                      <Sparkles className="w-4 h-4 ml-2 opacity-70" />
                     </>
                   )}
                 </Button>

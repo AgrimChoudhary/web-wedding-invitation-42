@@ -125,13 +125,10 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
           </div>
         </div>
         
-        {/* Parents Names Display - Enhanced Logic */}
-        {family.parentsNameCombined && family.parentsNameCombined.trim() !== '' && 
-         family.parentsNameCombined !== 'Parents of the Groom' && 
-         family.parentsNameCombined !== 'Parents of the Bride' ? (
+        {/* Parents Names */}
+        {family.parentsNameCombined && family.parentsNameCombined.trim() !== '' ? (
           <div className="text-center mb-6">
             <h4 className="font-playfair text-lg text-wedding-maroon mb-1 leading-relaxed">
-              {family.title.includes("Groom") ? "Son of " : "Daughter of "}
               {family.parentsNameCombined}
             </h4>
             <p className="text-sm text-gray-600 italic font-medium">
@@ -139,7 +136,7 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
             </p>
           </div>
         ) : (
-          /* No Real Parent Names - Show Default Message */
+          /* No Parents Names - Show Default Message */
           <div className="text-center mb-6">
             <h4 className="font-playfair text-lg text-wedding-maroon mb-1 leading-relaxed">
               Blessed to join our families
