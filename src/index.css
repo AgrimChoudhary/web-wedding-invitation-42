@@ -170,6 +170,17 @@
     50% { filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6)); }
   }
 
+  @keyframes fall-confetti {
+    0% { 
+      transform: translateY(-10px) rotate(0deg);
+      opacity: 1;
+    }
+    100% { 
+      transform: translateY(100vh) rotate(720deg);
+      opacity: 0;
+    }
+  }
+
   .animate-float {
     animation: float 5s ease-in-out infinite;
   }
@@ -180,6 +191,10 @@
 
   .animate-glow-soft {
     animation: glow-soft 3s ease-in-out infinite;
+  }
+
+  .animate-fall-confetti {
+    animation: fall-confetti 3s ease-out forwards;
   }
 
   /* Mobile optimizations */
