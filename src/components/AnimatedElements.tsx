@@ -109,7 +109,7 @@ export const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
       {confetti.map((item) => (
         <div
           key={item.id}
-          className="confetti animate-confetti"
+          className="confetti animate-fall-confetti"
           style={item.style}
         />
       ))}
