@@ -465,7 +465,7 @@ const Invitation = () => {
           <InvitationHeader 
             startGuestNameAnimation={startGuestNameAnimation}
             eventDetails={{
-              invitedBy: new URLSearchParams(location.search).get('invitedBy') || undefined
+              invitedBy: new URLSearchParams(location.search).get('invitedBy') || "Testing"
             }}
           />
           
