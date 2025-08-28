@@ -508,7 +508,7 @@ const Invitation = () => {
               <div className="absolute -inset-8 md:-inset-12 rounded-3xl border-2 border-wedding-gold/20 opacity-60 animate-pulse"></div>
               <div className="absolute -inset-4 md:-inset-6 rounded-2xl border border-wedding-gold/30 opacity-40"></div>
               
-              <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-8 md:p-12 shadow-2xl border border-wedding-gold/20">
+              <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-4 sm:p-6 md:p-8 shadow-2xl border border-wedding-gold/20">
                 {/* Always use the real RSVPSection so Thank You/Submit/Edit render from one source */}
                   <RSVPSection />
               </div>
