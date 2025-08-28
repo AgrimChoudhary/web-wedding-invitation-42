@@ -6,6 +6,7 @@ export interface StructuredEventData {
   hasResponded: boolean;
   accepted: boolean;
   weddingData: {
+    invitedBy?: string;
     couple: {
       groomName: string;
       brideName: string;
@@ -88,4 +89,5 @@ export interface PlatformData {
   structuredData?: StructuredEventData;
   customFields?: CustomField[];
   wishesEnabled?: boolean;
+  invitedBy?: string;
 }

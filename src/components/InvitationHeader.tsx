@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useGuest } from '../context/GuestContext';
 import { useWedding } from '../context/WeddingContext';
+import { usePlatform } from '../context/PlatformContext';
 import { FallingHearts, FireworksDisplay } from './AnimatedElements';
 import { Star, Music, Heart, Crown } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -21,6 +22,7 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
 }) => {
   const { guestName, guestId } = useGuest();
   const { weddingData } = useWedding();
+  const { platformData } = usePlatform();
   const [showHearts, setShowHearts] = useState(false);
   const [showFireworks, setShowFireworks] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -112,9 +114,38 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
     };
   }, [guestId, weddingData.events]);
 
+  // Get invited by text from platform data
+  const invitedBy = platformData?.invitedBy || platformData?.structuredData?.weddingData?.invitedBy;
+
   return (
     <header className="relative w-full flex flex-col items-center pt-6 pb-4 sm:pt-8 sm:pb-6 overflow-hidden">
       <div className="w-full max-w-4xl px-4">
+        
+        {/* Invited By Section */}
+        {invitedBy && (
+          <div className="text-center mb-8 sm:mb-10 opacity-0 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+            <div className="relative">
+              {/* Subtle background glow */}
+              <div className="absolute -inset-2 bg-gradient-to-r from-wedding-gold/5 via-wedding-blush/5 to-wedding-gold/5 rounded-xl blur-lg"></div>
+              
+              <div className="relative bg-white/20 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-wedding-gold/15">
+                <h3 className="font-great-vibes text-2xl sm:text-3xl md:text-4xl text-wedding-maroon/80 mb-1">
+                  Invited By
+                </h3>
+                <p className="font-dancing-script text-xl sm:text-2xl md:text-3xl text-wedding-gold font-semibold">
+                  {invitedBy}
+                </p>
+                
+                {/* Simple decorative line */}
+                <div className="flex items-center justify-center gap-2 mt-3">
+                  <div className="h-[1px] w-12 bg-wedding-gold/40"></div>
+                  <Heart size={10} className="text-wedding-gold/50" fill="currentColor" />
+                  <div className="h-[1px] w-12 bg-wedding-gold/40"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Enhanced Ganesha Section - Frame always visible, image appears after transition */}
         <div className="flex flex-col items-center mb-10 sm:mb-12 opacity-0 animate-fade-in" style={{ animationDelay: '0.3s' }}>
           {/* Religious Card with Ganesha */}
