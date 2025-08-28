@@ -408,7 +408,7 @@ export const RSVPSection: React.FC = () => {
                         setShowDetailedForm(true);
                       }}
                       disabled={isSubmitting}
-                      className="w-full sm:w-auto bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-4 sm:px-6 md:px-10 py-3 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[48px] sm:min-h-[56px] group"
+                      className="w-full sm:w-auto bg-gradient-to-r from-wedding-gold via-amber-300 to-wedding-gold hover:from-amber-300 hover:via-yellow-200 hover:to-amber-300 text-white font-bold px-4 sm:px-6 md:px-10 py-3 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg rounded-xl sm:rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:shadow-[0_12px_35px_rgba(234,179,8,0.6)] transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 border-2 border-amber-300/50 hover:border-yellow-200/70 min-h-[48px] sm:min-h-[56px] group relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700"
                     >
                       {isSubmitting ? (
                         <>
@@ -488,7 +488,7 @@ export const RSVPSection: React.FC = () => {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 bg-gradient-to-r from-wedding-gold to-wedding-gold/90 hover:from-wedding-gold/90 hover:to-wedding-gold text-white rounded-lg py-2.5 font-semibold disabled:opacity-50"
+                  className="flex-1 bg-gradient-to-r from-wedding-gold via-amber-300 to-wedding-gold hover:from-amber-300 hover:via-yellow-200 hover:to-amber-300 text-white rounded-lg py-2.5 font-bold shadow-[0_6px_20px_rgba(0,0,0,0.25)] hover:shadow-[0_8px_25px_rgba(234,179,8,0.5)] transition-all duration-500 transform hover:scale-105 hover:-translate-y-0.5 border border-amber-300/50 hover:border-yellow-200/70 disabled:opacity-50 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700"
                 >
                   {isSubmitting ? (
                     <>
@@ -608,7 +608,7 @@ export const RSVPSection: React.FC = () => {
                     handleSimpleAccept();
                   }}
                   disabled={isSubmitting}
-                  className="flex-1 bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-4 sm:px-6 md:px-10 py-3 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[48px] sm:min-h-[56px] group disabled:opacity-50"
+                  className="flex-1 bg-gradient-to-r from-wedding-gold via-amber-300 to-wedding-gold hover:from-amber-300 hover:via-yellow-200 hover:to-amber-300 text-white font-bold px-4 sm:px-6 md:px-10 py-3 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg rounded-xl sm:rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:shadow-[0_12px_35px_rgba(234,179,8,0.6)] transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 border-2 border-amber-300/50 hover:border-yellow-200/70 min-h-[48px] sm:min-h-[56px] group disabled:opacity-50 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700"
                 >
                   {isSubmitting ? (
                     <>
@@ -633,7 +633,7 @@ export const RSVPSection: React.FC = () => {
                     handleDetailedAccept();
                   }}
                   disabled={isSubmitting}
-                  className="flex-1 bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-4 sm:px-6 md:px-10 py-3 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[48px] sm:min-h-[56px] group disabled:opacity-50"
+                  className="flex-1 bg-gradient-to-r from-wedding-gold via-amber-300 to-wedding-gold hover:from-amber-300 hover:via-yellow-200 hover:to-amber-300 text-white font-bold px-4 sm:px-6 md:px-10 py-3 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg rounded-xl sm:rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.3)] hover:shadow-[0_12px_35px_rgba(234,179,8,0.6)] transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 border-2 border-amber-300/50 hover:border-yellow-200/70 min-h-[48px] sm:min-h-[56px] group disabled:opacity-50 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700"
                 >
                   {isSubmitting ? (
                     <>
