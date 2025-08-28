@@ -199,6 +199,12 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
     console.debug("[InvitedBy][Runtime] eventDetails", eventDetails);
     console.debug("[InvitedBy][Runtime] platformData", platformData);
     console.debug("[InvitedBy][Runtime] Final invitedBy:", invitedBy);
+    
+    // STEP 8: One-time console summary
+    console.log(`[InvitedBy][Summary] path=eventDetails.invitedBy value="${invitedBy || 'empty'}"`);
+    if (!invitedBy) {
+      console.log("[InvitedBy][Suggestion] Likely issues: parent not sending field, different key name, or data structure mismatch");
+    }
   }
 
   return (
@@ -305,10 +311,10 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
           </div>
         </div>
         
-        {/* Invited By Section */}
+        {/* STEP 4: Conditional "Invited By" banner */}
         {invitedBy && (
           <div className="text-center my-6">
-            <h2 className="text-2xl md:text-3xl font-serif italic text-pink-700 tracking-wide">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-serif italic text-primary tracking-wide">
               Invited By {invitedBy}
             </h2>
           </div>

@@ -61,6 +61,34 @@ const InvitedByDebugger: React.FC<InvitedByDebuggerProps> = ({
         </span>
       </div>
 
+      {/* STEP 6: Acceptance checks */}
+      <div className="mb-2">
+        <strong>Acceptance Checks:</strong><br />
+        <div className="text-xs space-y-1">
+          <div>
+            <span className={sampleData ? "text-green-400" : "text-red-400"}>
+              {sampleData ? "✓" : "✗"} Dataset parsed
+            </span>
+          </div>
+          <div>
+            <span className={(eventDetails || platformData) ? "text-green-400" : "text-red-400"}>
+              {(eventDetails || platformData) ? "✓" : "✗"} Runtime payload received
+            </span>
+          </div>
+          <div>
+            <span className={finalValue ? "text-green-400" : "text-red-400"}>
+              {finalValue ? "✓" : "✗"} Resolved path for invitedBy
+            </span>
+            {finalValue && <span className="text-yellow-200 ml-2">(value: "{finalValue}")</span>}
+          </div>
+          <div>
+            <span className={finalValue ? "text-green-400" : "text-red-400"}>
+              {finalValue ? "✓" : "✗"} UI block rendered
+            </span>
+          </div>
+        </div>
+      </div>
+
       {debugPanelOpen && sampleData && (
         <details className="mt-2">
           <summary className="cursor-pointer hover:text-gray-300">Sample Dataset (Expected Structure)</summary>
