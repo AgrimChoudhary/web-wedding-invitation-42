@@ -60,6 +60,10 @@ const Invitation = () => {
     
     const params = new URLSearchParams(location.search);
 
+    // Debug: Track incoming payload on mount
+    console.debug("[Template][Incoming Payload] On Mount - weddingData:", weddingData);
+    console.debug("[Template][Incoming Payload] On Mount - URL params:", Object.fromEntries(params.entries()));
+
     // Guest Data
     const guestNameParam = params.get('guestName');
     const guestIdParam = params.get('guestId');
@@ -237,6 +241,10 @@ const Invitation = () => {
 
       const { type, payload, data } = event.data;
       
+      // Debug: Track incoming payload after postMessage reception
+      console.debug("[Template][Incoming Payload] PostMessage - type:", type);
+      console.debug("[Template][Incoming Payload] PostMessage - payload:", payload);
+      console.debug("[Template][Incoming Payload] PostMessage - eventDetails:", payload?.eventDetails);
 
       switch (type) {
         case 'INVITATION_LOADED':
