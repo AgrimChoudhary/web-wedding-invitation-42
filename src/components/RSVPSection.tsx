@@ -326,30 +326,30 @@ export const RSVPSection: React.FC = () => {
                }}>
           </div>
           
-          <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 relative z-10">
-            <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl border-2 border-wedding-gold/20 text-center relative overflow-hidden">
-              {/* Elegant corner decorations */}
-              <div className="absolute top-0 left-0 w-16 h-16 sm:w-20 md:w-24 sm:h-20 md:h-24 border-l-3 sm:border-l-4 md:border-l-[5px] border-t-3 sm:border-t-4 md:border-t-[5px] border-wedding-gold/40 rounded-tl-3xl"></div>
-              <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 md:w-24 sm:h-20 md:h-24 border-r-3 sm:border-r-4 md:border-r-[5px] border-t-3 sm:border-t-4 md:border-t-[5px] border-wedding-gold/40 rounded-tr-3xl"></div>
-              <div className="absolute bottom-0 left-0 w-16 h-16 sm:w-20 md:w-24 sm:h-20 md:h-24 border-l-3 sm:border-l-4 md:border-l-[5px] border-b-3 sm:border-b-4 md:border-b-[5px] border-wedding-gold/40 rounded-bl-3xl"></div>
-              <div className="absolute bottom-0 right-0 w-16 h-16 sm:w-20 md:w-24 sm:h-20 md:h-24 border-r-3 sm:border-r-4 md:border-r-[5px] border-b-3 sm:border-b-4 md:border-b-[5px] border-wedding-gold/40 rounded-br-3xl"></div>
+          <div className="w-full max-w-5xl mx-auto px-3 sm:px-4 md:px-8 relative z-10">
+            <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10 shadow-2xl border-2 border-wedding-gold/20 text-center relative overflow-hidden">
+              {/* Mobile-optimized corner decorations */}
+              <div className="absolute top-0 left-0 w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 border-l-2 sm:border-l-3 md:border-l-4 border-t-2 sm:border-t-3 md:border-t-4 border-wedding-gold/40 rounded-tl-2xl sm:rounded-tl-3xl"></div>
+              <div className="absolute top-0 right-0 w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 border-r-2 sm:border-r-3 md:border-r-4 border-t-2 sm:border-t-3 md:border-t-4 border-wedding-gold/40 rounded-tr-2xl sm:rounded-tr-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 border-l-2 sm:border-l-3 md:border-l-4 border-b-2 sm:border-b-3 md:border-b-4 border-wedding-gold/40 rounded-bl-2xl sm:rounded-bl-3xl"></div>
+              <div className="absolute bottom-0 right-0 w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 border-r-2 sm:border-r-3 md:border-r-4 border-b-2 sm:border-b-3 md:border-b-4 border-wedding-gold/40 rounded-br-2xl sm:rounded-br-3xl"></div>
               
               <div className="relative z-10">
-                <div className="flex justify-center items-center mb-4 sm:mb-6 md:mb-8">
-                  <Sparkles className="w-6 h-6 sm:w-8 md:w-10 sm:h-8 md:h-10 text-wedding-gold animate-pulse mr-3 sm:mr-4" />
-                  <Heart className="w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 text-wedding-gold animate-pulse" />
-                  <Sparkles className="w-6 h-6 sm:w-8 md:w-10 sm:h-8 md:h-10 text-wedding-gold animate-pulse ml-3 sm:ml-4" />
+                <div className="flex justify-center items-center mb-3 sm:mb-4 md:mb-6">
+                  <Sparkles className="w-4 h-4 sm:w-6 md:w-8 sm:h-6 md:h-8 text-wedding-gold animate-pulse mr-2 sm:mr-3" />
+                  <Heart className="w-8 h-8 sm:w-10 md:w-14 sm:h-10 md:h-14 text-wedding-gold animate-pulse" />
+                  <Sparkles className="w-4 h-4 sm:w-6 md:w-8 sm:h-6 md:h-8 text-wedding-gold animate-pulse ml-2 sm:ml-3" />
                 </div>
                 
-                {/* Enhanced Thank You Message */}
-                <div className="mb-6 sm:mb-8 md:mb-10">
-                  <h2 className="font-great-vibes text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-wedding-maroon mb-3 sm:mb-4 leading-tight">
+                {/* Mobile-optimized Thank You Message */}
+                <div className="mb-4 sm:mb-5 md:mb-6 px-2">
+                  <h2 className="font-great-vibes text-xl sm:text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-2 sm:mb-2 md:mb-3 leading-tight">
                     Dear <span className="text-wedding-gold bg-gradient-to-r from-wedding-gold to-wedding-gold/80 bg-clip-text text-transparent break-words">{guestName}</span>,
                   </h2>
-                  <h3 className="font-great-vibes text-xl sm:text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-3 sm:mb-4 md:mb-5 leading-tight">
+                  <h3 className="font-great-vibes text-lg sm:text-xl md:text-3xl lg:text-4xl text-wedding-maroon mb-2 sm:mb-3 leading-tight">
                     Thank You for Accepting!
                   </h3>
-                  <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto px-2">
+                  <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
                     {getThankYouMessage()}
                   </p>
                 </div>
@@ -400,7 +400,7 @@ export const RSVPSection: React.FC = () => {
                   });
                   return shouldShowButton;
                 })() && (
-                  <div className="flex justify-center mb-6 sm:mb-8">
+                  <div className="flex justify-center mb-4 sm:mb-6 px-4">
                     <Button
                       onClick={() => {
                         console.log('🔘 Submit RSVP Details button clicked - opening modal');
@@ -565,7 +565,7 @@ export const RSVPSection: React.FC = () => {
 
 
   return (
-    <section className="w-full py-10 md:py-16 bg-gradient-to-br from-wedding-cream/60 via-wedding-blush/10 to-wedding-cream/60 relative overflow-hidden">
+    <section className="w-full py-8 md:py-12 bg-gradient-to-br from-wedding-cream/60 via-wedding-blush/10 to-wedding-cream/60 relative overflow-hidden">
       {/* Luxury royal pattern background */}
       <div className="absolute inset-0 bg-gradient-to-br from-wedding-gold/5 via-transparent to-wedding-maroon/5"></div>
       <div className="absolute inset-0 opacity-5" 
@@ -576,31 +576,31 @@ export const RSVPSection: React.FC = () => {
            }}>
       </div>
       
-      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 relative z-10">
-        <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl border-2 border-wedding-gold/20 text-center relative overflow-hidden">
-          {/* Enhanced corner decorations */}
-          <div className="absolute top-0 left-0 w-16 h-16 sm:w-20 md:w-24 sm:h-20 md:h-24 border-l-3 sm:border-l-4 md:border-l-[5px] border-t-3 sm:border-t-4 md:border-t-[5px] border-wedding-gold/40 rounded-tl-3xl"></div>
-          <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 md:w-24 sm:h-20 md:h-24 border-r-3 sm:border-r-4 md:border-r-[5px] border-t-3 sm:border-t-4 md:border-t-[5px] border-wedding-gold/40 rounded-tr-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-16 h-16 sm:w-20 md:w-24 sm:h-20 md:h-24 border-l-3 sm:border-l-4 md:border-l-[5px] border-b-3 sm:border-b-4 md:border-b-[5px] border-wedding-gold/40 rounded-bl-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-16 h-16 sm:w-20 md:w-24 sm:h-20 md:h-24 border-r-3 sm:border-r-4 md:border-r-[5px] border-b-3 sm:border-b-4 md:border-b-[5px] border-wedding-gold/40 rounded-br-3xl"></div>
+      <div className="w-full max-w-5xl mx-auto px-3 sm:px-4 md:px-8 relative z-10">
+        <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10 shadow-2xl border-2 border-wedding-gold/20 text-center relative overflow-hidden">
+          {/* Mobile-optimized corner decorations */}
+          <div className="absolute top-0 left-0 w-12 h-12 sm:w-16 md:w-16 sm:h-16 md:h-16 border-l-2 sm:border-l-3 border-t-2 sm:border-t-3 border-wedding-gold/30 rounded-tl-2xl sm:rounded-tl-3xl"></div>
+          <div className="absolute top-0 right-0 w-12 h-12 sm:w-16 md:w-16 sm:h-16 md:h-16 border-r-2 sm:border-r-3 border-t-2 sm:border-t-3 border-wedding-gold/30 rounded-tr-2xl sm:rounded-tr-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-12 h-12 sm:w-16 md:w-16 sm:h-16 md:h-16 border-l-2 sm:border-l-3 border-b-2 sm:border-b-3 border-wedding-gold/30 rounded-bl-2xl sm:rounded-bl-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-12 h-12 sm:w-16 md:w-16 sm:h-16 md:h-16 border-r-2 sm:border-r-3 border-b-2 sm:border-b-3 border-wedding-gold/30 rounded-br-2xl sm:rounded-br-3xl"></div>
           
           <div className="relative z-10">
-            <div className="mb-6 sm:mb-8 md:mb-10">
-              <div className="flex justify-center items-center mb-4 sm:mb-6 md:mb-8">
-                <Sparkles className="w-6 h-6 sm:w-8 md:w-10 sm:h-8 md:h-10 text-wedding-gold animate-pulse mr-3 sm:mr-4" />
-                <Heart className="w-12 h-12 sm:w-16 md:w-20 sm:h-16 md:h-20 text-wedding-gold animate-pulse" />
-                <Sparkles className="w-6 h-6 sm:w-8 md:w-10 sm:h-8 md:h-10 text-wedding-gold animate-pulse ml-3 sm:ml-4" />
+            <div className="mb-4 sm:mb-5 md:mb-6 px-2">
+              <div className="flex justify-center items-center mb-3 sm:mb-3 md:mb-4">
+                <Sparkles className="w-4 h-4 sm:w-5 md:w-7 sm:h-5 md:h-7 text-wedding-gold animate-pulse mr-2 sm:mr-3" />
+                <Heart className="w-6 h-6 sm:w-8 md:w-12 sm:h-8 md:h-12 text-wedding-gold animate-pulse" />
+                <Sparkles className="w-4 h-4 sm:w-5 md:w-7 sm:h-5 md:h-7 text-wedding-gold animate-pulse ml-2 sm:ml-3" />
               </div>
               
-              <h2 className="font-great-vibes text-2xl sm:text-3xl md:text-5xl lg:text-6xl text-wedding-maroon mb-3 sm:mb-4 md:mb-5 leading-tight">
+              <h2 className="font-great-vibes text-xl sm:text-2xl md:text-4xl lg:text-5xl text-wedding-maroon mb-2 sm:mb-3 md:mb-4 leading-tight">
                 Your Presence is Our Present
               </h2>
-              <p className="text-base sm:text-lg md:text-xl text-wedding-gold font-medium mb-6 sm:mb-8 md:mb-10 max-w-3xl mx-auto leading-relaxed px-2">
+              <p className="text-sm sm:text-base md:text-lg text-wedding-gold font-medium mb-4 sm:mb-5 md:mb-6 max-w-3xl mx-auto leading-relaxed">
                 Please confirm your attendance to make our day complete
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 max-w-3xl mx-auto mb-6 sm:mb-8">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-2xl mx-auto mb-4 sm:mb-6 px-4">
               {rsvpConfig === 'simple' ? (
                 <Button
                   onClick={() => {
@@ -608,11 +608,14 @@ export const RSVPSection: React.FC = () => {
                     handleSimpleAccept();
                   }}
                   disabled={isSubmitting}
-                  className="w-full sm:w-auto bg-gradient-to-r from-wedding-gold to-wedding-gold/90 hover:from-wedding-gold/90 hover:to-wedding-gold text-white font-semibold py-4 px-10 sm:px-12 md:px-16 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-base sm:text-lg md:text-xl border-2 border-wedding-gold hover:border-wedding-gold/80 min-h-[56px] group disabled:opacity-50"
+                  className="flex-1 bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-4 sm:px-6 md:px-10 py-3 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[48px] sm:min-h-[56px] group disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
                       Submitting...
                     </>
                   ) : (
@@ -630,11 +633,14 @@ export const RSVPSection: React.FC = () => {
                     handleDetailedAccept();
                   }}
                   disabled={isSubmitting}
-                  className="w-full sm:w-auto bg-gradient-to-r from-wedding-gold to-wedding-gold/90 hover:from-wedding-gold/90 hover:to-wedding-gold text-white font-semibold py-4 px-10 sm:px-12 md:px-16 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-base sm:text-lg md:text-xl border-2 border-wedding-gold hover:border-wedding-gold/80 min-h-[56px] group disabled:opacity-50"
+                  className="flex-1 bg-gradient-to-r from-wedding-gold via-wedding-gold/90 to-wedding-gold hover:from-wedding-gold/90 hover:to-wedding-gold hover:via-wedding-gold text-white font-semibold px-4 sm:px-6 md:px-10 py-3 sm:py-3 md:py-4 text-sm sm:text-base md:text-lg rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 border-2 border-wedding-gold/30 min-h-[48px] sm:min-h-[56px] group disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
                       Accepting...
                     </>
                   ) : (
@@ -648,8 +654,8 @@ export const RSVPSection: React.FC = () => {
               )}
             </div>
 
-            <div className="pt-6 sm:pt-8 border-t border-wedding-gold/20">
-              <p className="font-great-vibes text-lg sm:text-xl md:text-2xl text-wedding-maroon italic leading-relaxed">
+            <div className="pt-4 border-t border-wedding-gold/20">
+              <p className="font-great-vibes text-base md:text-xl text-wedding-maroon italic">
                 "A wedding is a celebration of love, and we want to celebrate with you"
               </p>
             </div>
