@@ -464,6 +464,9 @@ const Invitation = () => {
           
           <InvitationHeader 
             startGuestNameAnimation={startGuestNameAnimation}
+            eventDetails={{
+              invitedBy: new URLSearchParams(location.search).get('invitedBy') || undefined
+            }}
           />
           
           {/* Section ordering: countdown, family details, romantic journey, wedding journey, events, photos, wishes */}

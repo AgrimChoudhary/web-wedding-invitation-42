@@ -12,13 +12,17 @@ interface InvitationHeaderProps {
   groomName?: string;
   coupleImageUrl?: string;
   startGuestNameAnimation?: boolean;
+  eventDetails?: {
+    invitedBy?: string;
+  };
 }
 
 const InvitationHeader: React.FC<InvitationHeaderProps> = ({ 
   brideName, 
   groomName,
   coupleImageUrl,
-  startGuestNameAnimation = false
+  startGuestNameAnimation = false,
+  eventDetails
 }) => {
   const { guestName, guestId } = useGuest();
   const { weddingData } = useWedding();
@@ -114,8 +118,13 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
     };
   }, [guestId, weddingData.events]);
 
-  // Get invited by text from platform data
-  const invitedBy = platformData?.invitedBy || platformData?.structuredData?.weddingData?.invitedBy;
+  // Get invited by text from eventDetails prop first, then platform data
+  const invitedBy = eventDetails?.invitedBy || platformData?.invitedBy || platformData?.structuredData?.weddingData?.invitedBy;
+  
+  // Debug logging
+  console.debug("[Template] InvitedBy:", eventDetails?.invitedBy);
+  console.debug("[Template] Platform InvitedBy:", platformData?.invitedBy);
+  console.debug("[Template] Final InvitedBy:", invitedBy);
 
   return (
     <header className="relative w-full flex flex-col items-center pt-6 pb-4 sm:pt-8 sm:pb-6 overflow-hidden">
@@ -123,27 +132,10 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
         
         {/* Invited By Section */}
         {invitedBy && (
-          <div className="text-center mb-8 sm:mb-10 opacity-0 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <div className="relative">
-              {/* Subtle background glow */}
-              <div className="absolute -inset-2 bg-gradient-to-r from-wedding-gold/5 via-wedding-blush/5 to-wedding-gold/5 rounded-xl blur-lg"></div>
-              
-              <div className="relative bg-white/20 backdrop-blur-sm rounded-xl p-4 sm:p-6 border border-wedding-gold/15">
-                <h3 className="font-great-vibes text-2xl sm:text-3xl md:text-4xl text-wedding-maroon/80 mb-1">
-                  Invited By
-                </h3>
-                <p className="font-dancing-script text-xl sm:text-2xl md:text-3xl text-wedding-gold font-semibold">
-                  {invitedBy}
-                </p>
-                
-                {/* Simple decorative line */}
-                <div className="flex items-center justify-center gap-2 mt-3">
-                  <div className="h-[1px] w-12 bg-wedding-gold/40"></div>
-                  <Heart size={10} className="text-wedding-gold/50" fill="currentColor" />
-                  <div className="h-[1px] w-12 bg-wedding-gold/40"></div>
-                </div>
-              </div>
-            </div>
+          <div className="text-center mt-6 mb-4">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-serif italic text-wedding-maroon tracking-wide">
+              Invited By {invitedBy}
+            </h2>
           </div>
         )}
         {/* Enhanced Ganesha Section - Frame always visible, image appears after transition */}
