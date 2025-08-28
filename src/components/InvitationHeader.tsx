@@ -130,14 +130,6 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
     <header className="relative w-full flex flex-col items-center pt-6 pb-4 sm:pt-8 sm:pb-6 overflow-hidden">
       <div className="w-full max-w-4xl px-4">
         
-        {/* Invited By Section */}
-        {invitedBy && (
-          <div className="text-center mt-6 mb-4">
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-serif italic text-wedding-maroon tracking-wide">
-              Invited By {invitedBy}
-            </h2>
-          </div>
-        )}
         {/* Enhanced Ganesha Section - Frame always visible, image appears after transition */}
         <div className="flex flex-col items-center mb-10 sm:mb-12 opacity-0 animate-fade-in" style={{ animationDelay: '0.3s' }}>
           {/* Religious Card with Ganesha */}
@@ -237,6 +229,15 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
             </p>
           </div>
         </div>
+        
+        {/* Invited By Section */}
+        {eventDetails?.invitedBy && (
+          <div className="text-center my-6">
+            <h2 className="text-2xl md:text-3xl font-serif italic text-pink-700 tracking-wide">
+              Invited By {eventDetails.invitedBy}
+            </h2>
+          </div>
+        )}
         
         {/* Refined Guest Welcome Section */}
         <div className="text-center mb-8 sm:mb-10 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
