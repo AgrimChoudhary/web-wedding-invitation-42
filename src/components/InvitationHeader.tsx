@@ -3,10 +3,9 @@ import { useGuest } from '../context/GuestContext';
 import { useWedding } from '../context/WeddingContext';
 import { usePlatform } from '../context/PlatformContext';
 import { FallingHearts, FireworksDisplay } from './AnimatedElements';
-import { Star, Music, Heart, Crown } from 'lucide-react';
+import { Star, Music, Heart, Crown, Sparkles } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import AnimatedGuestName from './AnimatedGuestName';
-import InvitedByDebugger from './InvitedByDebugger';
 
 interface InvitationHeaderProps {
   brideName?: string;
@@ -34,11 +33,7 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
   const [isClicked, setIsClicked] = useState(false);
   const [clickCount, setClickCount] = useState(0);
   const [showGaneshaImage, setShowGaneshaImage] = useState(false);
-  const [sampleData, setSampleData] = useState<any>(null);
   const isMobile = useIsMobile();
-
-  // STEP 0: Debug guard
-  const DEBUG_INVITED_BY = new URLSearchParams(window.location.search).has("debug");
   
   // Use names from props if provided, otherwise use from weddingData
   const displayGroomName = groomName || weddingData.couple.groomFirstName;
@@ -123,62 +118,6 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
     };
   }, [guestId, weddingData.events]);
 
-  // STEP 1: Load sample dataset
-  useEffect(() => {
-    if (!DEBUG_INVITED_BY) return;
-
-    const SAMPLE = {
-      "events": [],
-      "photos": [],
-      "contacts": [
-        {
-          "name": "Suriya",
-          "phone": "9999999999",
-          "relation": "Friend"
-        }
-      ],
-      "invitedBy": "Aman dangi",
-      "bride_city": "Mumbai",
-      "bride_name": "janvi",
-      "groom_city": "Gaya , Bihar",
-      "groom_name": "agrim",
-      "venue_name": "Taj Mahal",
-      "groom_first": true,
-      "bride_family": {
-        "members": [
-          {
-            "name": "Shubham",
-            "photo": "https://xieiyoyiuhzrhwqhfmuq.supabase.co/storage/v1/object/public/bride-family/uploads/d5pdgtwupbn-1756120008663.jpg",
-            "relation": "Bro",
-            "description": "Bad guy"
-          }
-        ]
-      },
-      "couple_image": "https://xieiyoyiuhzrhwqhfmuq.supabase.co/storage/v1/object/public/gallery-photos/uploads/scqn303syeg-1756135443882.png",
-      "groom_family": {
-        "members": [
-          {
-            "name": "pintu",
-            "photo": "https://xieiyoyiuhzrhwqhfmuq.supabase.co/storage/v1/object/public/groom-family/uploads/hcz6i53pe0t-1756134571688.png",
-            "relation": "brother",
-            "description": "very bad gye"
-          }
-        ]
-      },
-      "wedding_date": "2025-08-24",
-      "wedding_time": "14:05",
-      "venue_address": "Aagra",
-      "venue_map_link": "",
-      "bride_family_photo": "https://xieiyoyiuhzrhwqhfmuq.supabase.co/storage/v1/object/public/bride-family/uploads/h1l9bq1rraq-1756024681566.jpeg",
-      "groom_family_photo": "https://xieiyoyiuhzrhwqhfmuq.supabase.co/storage/v1/object/public/groom-family/uploads/goc6nm1fuls-1756024747607.jpeg",
-      "bride_parents_names": "Zerox",
-      "groom_parents_names": "suriya"
-    };
-
-    setSampleData(SAMPLE);
-    console.debug("[InvitedBy][Dataset]", SAMPLE);
-  }, [DEBUG_INVITED_BY]);
-
   // STEP 3: Normalize data access
   const getInvitedBy = () => {
     const paths = [
@@ -193,19 +132,6 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
   };
 
   const invitedBy = getInvitedBy();
-  
-  // STEP 2: Debug logging (gated by DEBUG_INVITED_BY)
-  if (DEBUG_INVITED_BY) {
-    console.debug("[InvitedBy][Runtime] eventDetails", eventDetails);
-    console.debug("[InvitedBy][Runtime] platformData", platformData);
-    console.debug("[InvitedBy][Runtime] Final invitedBy:", invitedBy);
-    
-    // STEP 8: One-time console summary
-    console.log(`[InvitedBy][Summary] path=eventDetails.invitedBy value="${invitedBy || 'empty'}"`);
-    if (!invitedBy) {
-      console.log("[InvitedBy][Suggestion] Likely issues: parent not sending field, different key name, or data structure mismatch");
-    }
-  }
 
   return (
     <header className="relative w-full flex flex-col items-center pt-6 pb-4 sm:pt-8 sm:pb-6 overflow-hidden">
@@ -311,12 +237,29 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
           </div>
         </div>
         
-        {/* STEP 4: Conditional "Invited By" banner */}
+        {/* Invited By Section - Styled for wedding theme */}
         {invitedBy && (
-          <div className="text-center my-6">
-            <h2 className="text-xl md:text-2xl lg:text-3xl font-serif italic text-primary tracking-wide">
-              Invited By {invitedBy}
-            </h2>
+          <div className="text-center my-8 opacity-0 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+            <div className="relative">
+              {/* Decorative elements */}
+              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                <Sparkles size={16} className="text-wedding-gold animate-pulse" />
+              </div>
+              
+              <h2 className="font-great-vibes text-2xl md:text-3xl lg:text-4xl text-wedding-maroon mb-2 relative">
+                <span className="relative inline-block">
+                  Invited By
+                  <div className="absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-wedding-gold/60 to-transparent"></div>
+                </span>
+              </h2>
+              
+              <p className="font-dancing-script text-xl md:text-2xl lg:text-3xl text-wedding-gold font-medium tracking-wide animate-shimmer">
+                {invitedBy}
+              </p>
+              
+              {/* Decorative line below */}
+              <div className="mt-3 mx-auto w-24 h-[1px] bg-gradient-to-r from-transparent via-wedding-gold/40 to-transparent"></div>
+            </div>
           </div>
         )}
         
@@ -458,13 +401,6 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
         </div>
       )}
 
-      {/* Debug Component - Only shows when ?debug=1 is present */}
-      <InvitedByDebugger 
-        eventDetails={eventDetails}
-        platformData={platformData}
-        finalValue={invitedBy}
-        sampleData={sampleData}
-      />
     </header>
   );
 };
