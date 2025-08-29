@@ -167,16 +167,9 @@ const WelcomeForm: React.FC = () => {
         <div className="text-center opacity-0 animate-fade-in-up relative z-10" style={{ animationDelay: '0.6s' }}>
           <div className="absolute -left-8 -top-8 text-7xl text-wedding-gold/8 font-great-vibes">"</div>
           <div className="relative px-6 py-4 rounded-xl bg-gradient-to-r from-wedding-cream/60 to-wedding-blush/40 backdrop-blur-sm border border-wedding-gold/20">
-            {/* Invited By Section */}
-            {invitedBy && (
-              <div className="text-center mb-4">
-                <h2 className="text-2xl md:text-3xl font-serif italic text-pink-700 tracking-wide">
-                  Invited By {invitedBy}
-                </h2>
-              </div>
-            )}
+          
             <p className="text-wedding-maroon font-kruti text-xl md:text-2xl relative z-10 leading-relaxed">
-              {firstPersonName} & {secondPersonName} cordially invite you to celebrate their wedding
+              {invitedBy} cordially invite you to celebrate their wedding
             </p>
           </div>
           <div className="absolute -right-8 -bottom-8 text-7xl text-wedding-gold/8 font-great-vibes">"</div>
