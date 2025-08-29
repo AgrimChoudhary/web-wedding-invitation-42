@@ -237,31 +237,7 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
           </div>
         </div>
         
-        {/* Invited By Section - Styled for wedding theme */}
-        {invitedBy && (
-          <div className="text-center my-8 opacity-0 animate-fade-in" style={{ animationDelay: '0.6s' }}>
-            <div className="relative">
-              {/* Decorative elements */}
-              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                <Sparkles size={16} className="text-wedding-gold animate-pulse" />
-              </div>
-              
-              <h2 className="font-great-vibes text-2xl md:text-3xl lg:text-4xl text-wedding-maroon mb-2 relative">
-                <span className="relative inline-block">
-                  Invited By
-                  <div className="absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-wedding-gold/60 to-transparent"></div>
-                </span>
-              </h2>
-              
-              <p className="font-dancing-script text-xl md:text-2xl lg:text-3xl text-wedding-gold font-medium tracking-wide animate-shimmer">
-                {invitedBy}
-              </p>
-              
-              {/* Decorative line below */}
-              <div className="mt-3 mx-auto w-24 h-[1px] bg-gradient-to-r from-transparent via-wedding-gold/40 to-transparent"></div>
-            </div>
-          </div>
-        )}
+       
         
         {/* Refined Guest Welcome Section */}
         <div className="text-center mb-8 sm:mb-10 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
