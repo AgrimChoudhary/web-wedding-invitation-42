@@ -169,7 +169,7 @@ const WelcomeForm: React.FC = () => {
           <div className="relative px-6 py-4 rounded-xl bg-gradient-to-r from-wedding-cream/60 to-wedding-blush/40 backdrop-blur-sm border border-wedding-gold/20">
           
             <p className="text-wedding-maroon font-kruti text-xl md:text-2xl relative z-10 leading-relaxed">
-              {invitedBy ? invitedBy : "Malhotra Family"} cordially invite you to celebrate their wedding
+              {invitedBy ? invitedBy : "Malhotra Family"} cordially invite you to celebrate The wedding
 
             </p>
           </div>
