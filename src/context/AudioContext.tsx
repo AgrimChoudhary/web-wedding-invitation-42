@@ -17,8 +17,14 @@ const AudioContext = createContext<AudioContextType>({
 });
 
 export const AudioProvider: React.FC<AudioProviderProps> = ({ children, isDisabledOnRoutes = [] }) => {
-  const [audio] = useState(new Audio());
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [audio] = useState(() => {
+    const audioElement = new Audio("/audio/Kudmayi.mp3");
+    audioElement.loop = true;
+    audioElement.volume = 0.5;
+    audioElement.preload = "auto";
+    return audioElement;
+  });
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const location = useLocation();
   
@@ -26,82 +32,72 @@ export const AudioProvider: React.FC<AudioProviderProps> = ({ children, isDisabl
     location.pathname === route || location.pathname.startsWith(`${route}/`)
   );
 
-  // Set up audio on mount
+  // Sync state with actual audio playback
   useEffect(() => {
-    audio.src = "/audio/Kudmayi.mp3";
-    audio.loop = true;
-    audio.volume = 0.5;
-    audio.preload = "auto";
-    
-    const playAudio = async () => {
-      if (!isInitialized && !isMusicDisabled) {
-        try {
-          // Set audio properties for autoplay
-          audio.muted = false;
-          audio.autoplay = true;
-          
-          // Try to play
-          await audio.play();
-          setIsPlaying(true);
-          setIsInitialized(true);
-        } catch (error) {
-          console.log("Initial autoplay failed:", error);
-        }
-      }
-    };
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    const handleEnded = () => setIsPlaying(false);
 
-    // Try to play immediately
-    playAudio();
-
-    // Add event listeners for user interaction
-    const handleUserInteraction = async () => {
-      if (!isInitialized && !isMusicDisabled) {
-        try {
-          await audio.play();
-          setIsPlaying(true);
-          setIsInitialized(true);
-        } catch (error) {
-          console.log("Playback failed on user interaction:", error);
-        }
-      }
-    };
-
-    // Listen for any user interaction
-    document.addEventListener('click', handleUserInteraction, { once: true });
-    document.addEventListener('touchstart', handleUserInteraction, { once: true });
-    document.addEventListener('keydown', handleUserInteraction, { once: true });
-
-    // Try again after a short delay
-    const timeoutId = setTimeout(() => {
-      if (!isInitialized && !isMusicDisabled) {
-        playAudio();
-      }
-    }, 1000);
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('ended', handleEnded);
 
     return () => {
-      audio.pause();
-      clearTimeout(timeoutId);
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [audio]);
+
+  // Initialize audio with user interaction
+  useEffect(() => {
+    if (isInitialized || isMusicDisabled) return;
+
+    const handleUserInteraction = async () => {
+      try {
+        await audio.play();
+        setIsInitialized(true);
+      } catch (error) {
+        console.log("Audio playback failed:", error);
+        setIsInitialized(true); // Mark as initialized even if failed
+      }
+    };
+
+    // Try autoplay first (might fail due to browser policies)
+    const tryAutoplay = async () => {
+      try {
+        await audio.play();
+        setIsInitialized(true);
+      } catch (error) {
+        // Autoplay failed, wait for user interaction
+        document.addEventListener('click', handleUserInteraction, { once: true });
+        document.addEventListener('touchstart', handleUserInteraction, { once: true });
+        document.addEventListener('keydown', handleUserInteraction, { once: true });
+      }
+    };
+
+    tryAutoplay();
+
+    return () => {
       document.removeEventListener('click', handleUserInteraction);
       document.removeEventListener('touchstart', handleUserInteraction);
       document.removeEventListener('keydown', handleUserInteraction);
     };
-  }, [isInitialized, isMusicDisabled]);
+  }, [audio, isInitialized, isMusicDisabled]);
 
-  // Watch for route changes and pause music on disabled routes
+  // Handle route-based music control
   useEffect(() => {
-    if (isMusicDisabled) {
+    if (isMusicDisabled && !audio.paused) {
       audio.pause();
-      setIsPlaying(false);
-    } else if (isInitialized && !audio.paused) {
+    } else if (!isMusicDisabled && isInitialized && audio.paused) {
       audio.play().catch(console.error);
-      setIsPlaying(true);
     }
-  }, [location.pathname, isMusicDisabled]);
+  }, [location.pathname, isMusicDisabled, isInitialized, audio]);
 
-  // Try to resume playback when the document becomes visible
+  // Handle visibility change
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (!document.hidden && isInitialized && !audio.paused && !isMusicDisabled) {
+      if (!document.hidden && isInitialized && !isMusicDisabled && audio.paused) {
         audio.play().catch(console.error);
       }
     };
@@ -111,18 +107,16 @@ export const AudioProvider: React.FC<AudioProviderProps> = ({ children, isDisabl
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [isInitialized, audio, isMusicDisabled]);
+  }, [audio, isInitialized, isMusicDisabled]);
 
   const toggleMusic = async () => {
-    if (isMusicDisabled) return;
+    if (isMusicDisabled || !isInitialized) return;
     
     try {
-      if (isPlaying) {
-        audio.muted = true;
-        setIsPlaying(false);
+      if (audio.paused) {
+        await audio.play();
       } else {
-        audio.muted = false;
-        setIsPlaying(true);
+        audio.pause();
       }
     } catch (error) {
       console.error("Error toggling music:", error);
