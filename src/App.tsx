@@ -11,8 +11,11 @@ import { WeddingProvider } from "./context/WeddingContext";
 import { PlatformProvider } from "./context/PlatformContext";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AccessibilityHelper } from "./components/AccessibilityHelper";
-import Index from "./pages/Index";
-import Invitation from "./pages/Invitation";
+import WelcomePage from "./pages/WelcomePage";
+import FamiliesPage from "./pages/FamiliesPage";
+import JourneyPage from "./pages/JourneyPage";
+import CeremoniesPage from "./pages/CeremoniesPage";
+import CelebrationPage from "./pages/CelebrationPage";
 import GuestManagement from "./pages/GuestManagement";
 import NotFound from "./pages/NotFound";
 import "./components/custom-styles.css";
@@ -61,12 +64,27 @@ const App: React.FC = () => {
                   <GuestProvider>
                     <AudioProvider isDisabledOnRoutes={["/guest-management"]}>
                       <Routes>
-                        <Route path="/" element={<Index />} />
-                        <Route path="/invitation" element={<Invitation />} />
+                        {/* New 5-page structure */}
+                        <Route path="/" element={<WelcomePage />} />
+                        <Route path="/families" element={<FamiliesPage />} />
+                        <Route path="/journey" element={<JourneyPage />} />
+                        <Route path="/ceremonies" element={<CeremoniesPage />} />
+                        <Route path="/celebration" element={<CelebrationPage />} />
+                        
+                        {/* Guest Management */}
                         <Route path="/guest-management" element={<GuestManagement />} />
+                        
                         {/* Support for guest-specific routes */}
-                        <Route path="/:guestId" element={<Index />} />
-                        <Route path="/invitation/:guestId" element={<Invitation />} />
+                        <Route path="/:guestId" element={<WelcomePage />} />
+                        <Route path="/families/:guestId" element={<FamiliesPage />} />
+                        <Route path="/journey/:guestId" element={<JourneyPage />} />
+                        <Route path="/ceremonies/:guestId" element={<CeremoniesPage />} />
+                        <Route path="/celebration/:guestId" element={<CelebrationPage />} />
+                        
+                        {/* Legacy routes for backwards compatibility */}
+                        <Route path="/invitation" element={<CelebrationPage />} />
+                        <Route path="/invitation/:guestId" element={<CelebrationPage />} />
+                        
                         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                         <Route path="*" element={<NotFound />} />
                       </Routes>
