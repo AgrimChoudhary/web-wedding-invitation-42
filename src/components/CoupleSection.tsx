@@ -5,6 +5,7 @@ import { Calendar, Heart } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useWedding } from '@/context/WeddingContext';
 import { formatWeddingDate } from '@/placeholders';
+import { ResponsiveImage } from './ResponsiveImage';
 
 const CoupleSection: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
@@ -41,12 +42,11 @@ const CoupleSection: React.FC = () => {
           >
             <AspectRatio ratio={isMobile ? 4/3 : 20/9} className="bg-wedding-cream">
               <div className="absolute inset-0 overflow-hidden">
-                <img 
+                <ResponsiveImage
                   src={coupleImage} 
                   alt={`${firstPersonName} and ${secondPersonName} Wedding`} 
                   className={`w-full h-full object-cover transition-transform duration-10000 ${isHovered ? 'scale-105' : 'scale-100'}`}
-                  loading="eager"
-                  decoding="async"
+                  priority="critical"
                 />
                 <div className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-700 ${isHovered ? 'opacity-30' : 'opacity-60'}`}></div>
                 

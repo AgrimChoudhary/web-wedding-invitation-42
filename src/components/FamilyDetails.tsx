@@ -1,6 +1,7 @@
 
 import React, { useState, useCallback } from 'react';
 import FamilyMemberCard from './FamilyMemberCard';
+import { ResponsiveImage } from './ResponsiveImage';
 import { Heart, Users, Crown, Sparkles } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 import { AspectRatio } from "./ui/aspect-ratio";
@@ -95,21 +96,14 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
         <div className="flex justify-center mb-6">
           <div className="relative">
             <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-wedding-gold/30 shadow-lg group-hover:border-wedding-gold/50 transition-all duration-300 bg-wedding-cream/50">
-              <img 
+              <ResponsiveImage
                 src={family.familyPhotoUrl && family.familyPhotoUrl.trim() !== '' ? family.familyPhotoUrl : (family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg")} 
                 alt={`${family.title} Photo`}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-0 animate-fade-in"
-                loading="lazy"
-                decoding="async"
-                 onLoad={(e) => {
-                   const target = e.target as HTMLImageElement;
-                   target.style.opacity = '1';
-                 }}
-                 onError={(e) => {
-                   const target = e.target as HTMLImageElement;
-                   target.src = family.title.includes("Groom") ? "/images/groom-family-placeholder.jpg" : "/images/bride-family-placeholder.jpg";
-                   target.style.opacity = '1';
-                 }}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                priority="high"
+                onError={() => {
+                  console.log(`Failed to load family photo for ${family.title}`);
+                }}
               />
             </div>
             <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-wedding-gold rounded-full flex items-center justify-center shadow-lg">

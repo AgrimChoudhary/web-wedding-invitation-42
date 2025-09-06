@@ -7,6 +7,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useGuest } from '@/context/GuestContext';
 import { useWedding } from '@/context/WeddingContext';
 import { formatWeddingDate } from '@/placeholders';
+import { useProductionOptimization } from '@/hooks/useProductionOptimization';
+import { AdvancedLoadingIndicator } from '@/components/AdvancedLoadingIndicator';
 
 // Security: Define trusted origins
 const TRUSTED_ORIGINS = [
@@ -29,6 +31,15 @@ const Index = () => {
   const location = useLocation();
   const { guestName, setGuestName, setGuestId } = useGuest();
   const { weddingData, setAllWeddingData } = useWedding();
+  
+  // Advanced image loading optimization
+  const { 
+    isImagesLoading, 
+    loadingProgress, 
+    connectionSpeed, 
+    criticalImagesLoaded, 
+    totalImagesCount 
+  } = useProductionOptimization(weddingData);
   
   const floatingIcons = [
     <Heart key="heart" className="text-wedding-blush" />,
@@ -136,9 +147,15 @@ const Index = () => {
   return (
     <div className="min-h-screen pattern-background relative overflow-hidden">
       {/* Data Contract Validator - for development/testing */}
-      {isLoading ? (
+      {isLoading || isImagesLoading ? (
         <div className="loading-overlay">
-          <div className="loading-spinner mb-4"></div>
+          <AdvancedLoadingIndicator
+            progress={loadingProgress}
+            connectionSpeed={connectionSpeed}
+            criticalImagesLoaded={criticalImagesLoaded}
+            totalImages={totalImagesCount}
+            className="mb-4"
+          />
           <p className="text-wedding-maroon font-dancing-script text-xl">Loading our love story...</p>
         </div>
       ) : (
