@@ -171,7 +171,10 @@ const Index = () => {
               </div>
               
               <h1 className="font-great-vibes text-4xl sm:text-5xl md:text-6xl text-wedding-maroon mb-4 opacity-0 animate-fade-in-up relative inline-block">
-                {weddingData.couple.groomFirstName} & {weddingData.couple.brideFirstName}
+                {weddingData.groomFirst 
+                  ? `${weddingData.couple.groomFirstName} & ${weddingData.couple.brideFirstName}`
+                  : `${weddingData.couple.brideFirstName} & ${weddingData.couple.groomFirstName}`
+                }
                 {showSparkle && (
                   <Sparkles 
                     size={isMobile ? 18 : 28} 
