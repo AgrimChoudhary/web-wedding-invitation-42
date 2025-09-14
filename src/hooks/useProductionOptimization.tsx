@@ -1,91 +1,35 @@
 import { useEffect, useMemo } from 'react';
-import { useAdvancedImagePreloader, ImagePriority } from './useAdvancedImagePreloader';
-import { useServiceWorker } from './useServiceWorker';
+import { useImagePreloader } from './useImagePreloader';
 
-// Production optimization hook with advanced image loading
+// Production optimization hook
 export const useProductionOptimization = (weddingData: any) => {
-  const { preloadImages } = useServiceWorker();
-
-  // Organize images by priority levels
-  const prioritizedImages = useMemo((): ImagePriority[] => {
-    const images: ImagePriority[] = [];
+  // Preload critical images only
+  const criticalImages = useMemo(() => {
+    const images = [];
     
-    // Critical: Couple photo (above the fold)
+    // Couple photo
     if (weddingData.couple?.coupleImageUrl) {
-      images.push({
-        url: weddingData.couple.coupleImageUrl,
-        priority: 'critical',
-        sizes: '(max-width: 640px) 100vw, (max-width: 768px) 80vw, 60vw'
-      });
+      images.push(weddingData.couple.coupleImageUrl);
     }
     
-    // High: Family photos (visible on scroll)
+    // First 2 gallery photos for immediate display
+    if (weddingData.photoGallery?.length > 0) {
+      images.push(...weddingData.photoGallery.slice(0, 2).map((p: any) => p.url));
+    }
+    
+    // Family photos
     if (weddingData.family?.brideFamily?.familyPhotoUrl) {
-      images.push({
-        url: weddingData.family.brideFamily.familyPhotoUrl,
-        priority: 'high',
-        sizes: '(max-width: 640px) 100vw, 50vw'
-      });
+      images.push(weddingData.family.brideFamily.familyPhotoUrl);
     }
     if (weddingData.family?.groomFamily?.familyPhotoUrl) {
-      images.push({
-        url: weddingData.family.groomFamily.familyPhotoUrl,
-        priority: 'high',
-        sizes: '(max-width: 640px) 100vw, 50vw'
-      });
+      images.push(weddingData.family.groomFamily.familyPhotoUrl);
     }
     
-    // Medium: First 3 gallery photos
-    if (weddingData.photoGallery?.length > 0) {
-      weddingData.photoGallery.slice(0, 3).forEach((photo: any) => {
-        if (photo.url) {
-          images.push({
-            url: photo.url,
-            priority: 'medium',
-            sizes: '(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw'
-          });
-        }
-      });
-    }
-    
-    // Low: Remaining gallery photos
-    if (weddingData.photoGallery?.length > 3) {
-      weddingData.photoGallery.slice(3).forEach((photo: any) => {
-        if (photo.url) {
-          images.push({
-            url: photo.url,
-            priority: 'low',
-            sizes: '(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw'
-          });
-        }
-      });
-    }
-    
-    return images.filter(img => img.url);
+    return images.filter(Boolean);
   }, [weddingData]);
 
-  // Use advanced preloader with connection-aware loading
-  const { 
-    isLoading: imagesLoading, 
-    progress, 
-    connectionSpeed,
-    criticalImagesLoaded 
-  } = useAdvancedImagePreloader(prioritizedImages, {
-    enableProgressiveLoading: true,
-    enableConnectionAware: true,
-    maxConcurrent: 4 // Will be adjusted based on connection speed internally
-  });
-
-  // Preload critical images via Service Worker
-  useEffect(() => {
-    const criticalUrls = prioritizedImages
-      .filter(img => img.priority === 'critical')
-      .map(img => img.url);
-    
-    if (criticalUrls.length > 0) {
-      preloadImages(criticalUrls);
-    }
-  }, [prioritizedImages, preloadImages]);
+  // Preload critical images
+  const { isLoading: imagesLoading } = useImagePreloader(criticalImages);
 
   // Remove unused event listeners and cleanup in production
   useEffect(() => {
@@ -99,10 +43,6 @@ export const useProductionOptimization = (weddingData: any) => {
 
   return {
     isImagesLoading: imagesLoading,
-    loadingProgress: progress,
-    connectionSpeed,
-    criticalImagesLoaded,
-    totalImagesCount: prioritizedImages.length,
-    criticalImagesCount: prioritizedImages.filter(img => img.priority === 'critical').length
+    criticalImagesCount: criticalImages.length
   };
 };
