@@ -162,14 +162,11 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
               transition: { duration: 0.1 }
             }}
           >
-            {/* Golden gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-r from-wedding-gold/90 via-wedding-gold to-wedding-gold/90 rounded-full"></div>
+            {/* Gradient background with hover shift */}
+            <div className="absolute inset-0 bg-gradient-to-r from-wedding-maroon/80 via-wedding-gold/90 to-wedding-maroon/80 rounded-full transition-all duration-500 group-hover/btn:from-wedding-gold/90 group-hover/btn:via-wedding-maroon/70 group-hover/btn:to-wedding-gold/90"></div>
             
-            {/* Embossed border effect */}
-            <div className="absolute inset-0 rounded-full border-2 border-wedding-gold/40 shadow-[inset_0_2px_4px_rgba(255,255,255,0.3),inset_0_-2px_4px_rgba(0,0,0,0.1)]"></div>
-            
-            {/* Hover glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-wedding-gold/60 via-wedding-gold/80 to-wedding-gold/60 rounded-full opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300 blur-[1px]"></div>
+            {/* Subtle border */}
+            <div className="absolute inset-0 rounded-full border border-wedding-gold/50 group-hover/btn:border-wedding-gold/70 transition-colors duration-300"></div>
             
             {/* Sparkle particles on hover */}
             <div className="absolute top-1 right-2 w-1 h-1 bg-white rounded-full opacity-0 group-hover/btn:opacity-100 group-hover/btn:animate-ping transition-all duration-300"></div>
@@ -318,34 +315,23 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
           position: relative;
           border-radius: 9999px;
           cursor: pointer;
-          box-shadow: 
-            0 4px 14px 0 rgba(212,175,55,0.4),
-            0 2px 6px 0 rgba(139,69,19,0.2),
-            inset 0 1px 0 rgba(255,255,255,0.4);
-          transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+          box-shadow: 0 4px 12px rgba(139,69,19,0.2);
+          transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         .royal-family-button:hover {
-          box-shadow: 
-            0 8px 25px 0 rgba(212,175,55,0.6),
-            0 4px 12px 0 rgba(139,69,19,0.3),
-            inset 0 1px 0 rgba(255,255,255,0.5),
-            0 0 20px rgba(212,175,55,0.3);
+          box-shadow: 0 6px 20px rgba(139,69,19,0.3);
+          transform: translateY(-1px);
         }
 
         .royal-family-button:active {
-          box-shadow: 
-            0 2px 8px 0 rgba(212,175,55,0.5),
-            0 1px 4px 0 rgba(139,69,19,0.25),
-            inset 0 2px 4px rgba(0,0,0,0.1);
+          transform: translateY(0px);
+          box-shadow: 0 2px 8px rgba(139,69,19,0.25);
         }
 
         .royal-family-button:focus {
           outline: none;
-          box-shadow: 
-            0 4px 14px 0 rgba(212,175,55,0.4),
-            0 2px 6px 0 rgba(139,69,19,0.2),
-            0 0 0 3px rgba(212,175,55,0.4);
+          box-shadow: 0 4px 12px rgba(139,69,19,0.2), 0 0 0 2px rgba(212,175,55,0.4);
         }
 
         @keyframes luxury-glow {
