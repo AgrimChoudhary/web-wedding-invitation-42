@@ -162,22 +162,22 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
               transition: { duration: 0.1 }
             }}
           >
-            {/* Gradient background with hover shift */}
-            <div className="absolute inset-0 bg-gradient-to-r from-wedding-maroon/80 via-wedding-gold/90 to-wedding-maroon/80 rounded-full transition-all duration-500 group-hover/btn:from-wedding-gold/90 group-hover/btn:via-wedding-maroon/70 group-hover/btn:to-wedding-gold/90"></div>
+            {/* Elegant light gradient with hover shift */}
+            <div className="absolute inset-0 bg-gradient-to-r from-wedding-cream/90 via-wedding-gold/60 to-wedding-cream/90 rounded-full transition-all duration-500 group-hover/btn:from-wedding-gold/70 group-hover/btn:via-wedding-cream/80 group-hover/btn:to-wedding-gold/70"></div>
             
-            {/* Subtle border */}
-            <div className="absolute inset-0 rounded-full border border-wedding-gold/50 group-hover/btn:border-wedding-gold/70 transition-colors duration-300"></div>
+            {/* Delicate border */}
+            <div className="absolute inset-0 rounded-full border border-wedding-gold/40 group-hover/btn:border-wedding-gold/60 transition-colors duration-300"></div>
             
             {/* Sparkle particles on hover */}
             <div className="absolute top-1 right-2 w-1 h-1 bg-white rounded-full opacity-0 group-hover/btn:opacity-100 group-hover/btn:animate-ping transition-all duration-300"></div>
             <div className="absolute bottom-1 left-3 w-0.5 h-0.5 bg-white rounded-full opacity-0 group-hover/btn:opacity-100 group-hover/btn:animate-ping transition-all duration-500" style={{ animationDelay: '0.2s' }}></div>
             
             {/* Button content */}
-            <div className="relative flex items-center gap-2 px-6 py-3 text-white font-semibold text-sm tracking-wide">
-              <Crown size={16} className="text-white drop-shadow-md group-hover/btn:rotate-12 transition-transform duration-300" />
+            <div className="relative flex items-center gap-2 px-6 py-3 text-wedding-maroon font-semibold text-sm tracking-wide">
+              <Crown size={16} className="text-wedding-maroon drop-shadow-sm group-hover/btn:rotate-12 transition-transform duration-300" />
               <span className="text-shadow-sm">Discover Our Family</span>
               <motion.div
-                className="text-white"
+                className="text-wedding-maroon"
                 animate={{ x: [0, 2, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
               >
