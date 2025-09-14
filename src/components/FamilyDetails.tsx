@@ -162,11 +162,11 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
               transition: { duration: 0.1 }
             }}
           >
-            {/* Elegant light gradient with hover shift */}
-            <div className="absolute inset-0 bg-gradient-to-r from-wedding-cream/90 via-wedding-gold/60 to-wedding-cream/90 rounded-full transition-all duration-500 group-hover/btn:from-wedding-gold/70 group-hover/btn:via-wedding-cream/80 group-hover/btn:to-wedding-gold/70"></div>
+            {/* Elegant medium-tone gradient with hover shift */}
+            <div className="absolute inset-0 bg-gradient-to-r from-wedding-blush/80 via-wedding-gold/80 to-wedding-blush/80 rounded-full transition-all duration-500 group-hover/btn:from-wedding-gold/85 group-hover/btn:via-wedding-blush/70 group-hover/btn:to-wedding-gold/85"></div>
             
-            {/* Delicate border */}
-            <div className="absolute inset-0 rounded-full border border-wedding-gold/40 group-hover/btn:border-wedding-gold/60 transition-colors duration-300"></div>
+            {/* Refined border */}
+            <div className="absolute inset-0 rounded-full border border-wedding-gold/60 group-hover/btn:border-wedding-gold/80 transition-colors duration-300"></div>
             
             {/* Sparkle particles on hover */}
             <div className="absolute top-1 right-2 w-1 h-1 bg-white rounded-full opacity-0 group-hover/btn:opacity-100 group-hover/btn:animate-ping transition-all duration-300"></div>
