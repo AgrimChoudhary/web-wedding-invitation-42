@@ -143,19 +143,54 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
           </div>
         )}
 
-        {/* View Details Button */}
+        {/* Royal Enhanced View Details Button */}
         <div className="flex items-center justify-center">
-          <button
+          <motion.button
              onClick={(e) => {
                e.stopPropagation();
                handleShowFamily(family);
              }}
-            className="bg-wedding-gold/10 text-wedding-maroon border border-wedding-gold/30 hover:bg-wedding-gold/20 hover:border-wedding-gold/50 transition-all duration-300 px-4 py-2 rounded-full flex items-center gap-2 cursor-pointer"
+            className="royal-family-button group/btn relative overflow-hidden"
+            whileHover={{ 
+              scale: 1.05, 
+              y: -2,
+              transition: { duration: 0.2, ease: "easeOut" }
+            }}
+            whileTap={{ 
+              scale: 0.98,
+              y: 0,
+              transition: { duration: 0.1 }
+            }}
           >
-            <Users size={14} /> 
-            <span className="text-sm font-medium">View Family Details</span>
-            <Sparkles size={12} className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </button>
+            {/* Golden gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-r from-wedding-gold/90 via-wedding-gold to-wedding-gold/90 rounded-full"></div>
+            
+            {/* Embossed border effect */}
+            <div className="absolute inset-0 rounded-full border-2 border-wedding-gold/40 shadow-[inset_0_2px_4px_rgba(255,255,255,0.3),inset_0_-2px_4px_rgba(0,0,0,0.1)]"></div>
+            
+            {/* Hover glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-wedding-gold/60 via-wedding-gold/80 to-wedding-gold/60 rounded-full opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300 blur-[1px]"></div>
+            
+            {/* Sparkle particles on hover */}
+            <div className="absolute top-1 right-2 w-1 h-1 bg-white rounded-full opacity-0 group-hover/btn:opacity-100 group-hover/btn:animate-ping transition-all duration-300"></div>
+            <div className="absolute bottom-1 left-3 w-0.5 h-0.5 bg-white rounded-full opacity-0 group-hover/btn:opacity-100 group-hover/btn:animate-ping transition-all duration-500" style={{ animationDelay: '0.2s' }}></div>
+            
+            {/* Button content */}
+            <div className="relative flex items-center gap-2 px-6 py-3 text-white font-semibold text-sm tracking-wide">
+              <Crown size={16} className="text-white drop-shadow-md group-hover/btn:rotate-12 transition-transform duration-300" />
+              <span className="text-shadow-sm">Discover Our Family</span>
+              <motion.div
+                className="text-white"
+                animate={{ x: [0, 2, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                →
+              </motion.div>
+            </div>
+            
+            {/* Subtle pulse animation */}
+            <div className="absolute inset-0 rounded-full bg-wedding-gold/30 animate-ping opacity-20" style={{ animationDuration: '3s' }}></div>
+          </motion.button>
         </div>
       </div>
     </motion.div>
@@ -279,9 +314,47 @@ const FamilyDetails: React.FC<FamilyDetailsProps> = ({
           animation: luxury-glow 3s ease infinite;
         }
 
+        .royal-family-button {
+          position: relative;
+          border-radius: 9999px;
+          cursor: pointer;
+          box-shadow: 
+            0 4px 14px 0 rgba(212,175,55,0.4),
+            0 2px 6px 0 rgba(139,69,19,0.2),
+            inset 0 1px 0 rgba(255,255,255,0.4);
+          transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .royal-family-button:hover {
+          box-shadow: 
+            0 8px 25px 0 rgba(212,175,55,0.6),
+            0 4px 12px 0 rgba(139,69,19,0.3),
+            inset 0 1px 0 rgba(255,255,255,0.5),
+            0 0 20px rgba(212,175,55,0.3);
+        }
+
+        .royal-family-button:active {
+          box-shadow: 
+            0 2px 8px 0 rgba(212,175,55,0.5),
+            0 1px 4px 0 rgba(139,69,19,0.25),
+            inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .royal-family-button:focus {
+          outline: none;
+          box-shadow: 
+            0 4px 14px 0 rgba(212,175,55,0.4),
+            0 2px 6px 0 rgba(139,69,19,0.2),
+            0 0 0 3px rgba(212,175,55,0.4);
+        }
+
         @keyframes luxury-glow {
           0%, 100% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
+        }
+
+        .text-shadow-sm {
+          text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
       `}</style>
       
