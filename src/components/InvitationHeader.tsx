@@ -137,8 +137,8 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
     <header className="relative w-full flex flex-col items-center pt-6 pb-4 sm:pt-8 sm:pb-6 overflow-hidden">
       <div className="w-full max-w-4xl px-4">
         
-        {/* Enhanced Ganesha Section - Frame always visible, image appears after transition */}
-        <div className="flex flex-col items-center mb-10 sm:mb-12 opacity-0 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+        {/* Enhanced Ganesha Section - Frame always visible, image appears instantly */}
+        <div className="flex flex-col items-center mb-10 sm:mb-12">
           {/* Religious Card with Ganesha */}
           <div className="relative group">
             {/* Multiple glowing layers */}
