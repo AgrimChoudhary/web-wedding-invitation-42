@@ -6,7 +6,6 @@ import { FallingHearts, FireworksDisplay } from './AnimatedElements';
 import { Star, Music, Heart, Crown, Sparkles } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import AnimatedGuestName from './AnimatedGuestName';
-import ganeshaImage from '../assets/ganesha-optimized.jpg';
 
 interface InvitationHeaderProps {
   brideName?: string;
@@ -173,10 +172,10 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
                 {/* Only show the image after transition completes */}
                 {showGaneshaImage && (
                   <img 
-                    src={ganeshaImage} 
+                    src="https://xieiyoyiuhzrhwqhfmuq.supabase.co/storage/v1/object/public/images/for%20links%20only/b0b6e6c1-770d-4a6e-8f9c-7f3bdcd7c3a4.png" 
                     alt="Lord Ganesha" 
                     className="w-full h-full object-contain animate-floating relative z-10 opacity-0 animate-fade-in"
-                    loading="eager"
+                    loading="lazy"
                     style={{ animationDelay: '0.2s' }}
                   />
                 )}
