@@ -36,7 +36,7 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
   const isMobile = useIsMobile();
   
   // Optimized Ganesha image URL
-  const ganeshaImageUrl = "https://xieiyoyiuhzrhwqhfmuq.supabase.co/storage/v1/object/public/other%20images/a3236bd1-0ba5-41b5-a422-ef2a60c43cd4-min%20(1)_11zon.png";
+  const ganeshaImageUrl = "/lovable-uploads/a3236bd1-0ba5-41b5-a422-ef2a60c43cd4.png";
   
   // Preload Ganesha image for instant loading
   const { loadedImages } = useImagePreloader([ganeshaImageUrl]);
