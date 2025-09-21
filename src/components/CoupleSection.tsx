@@ -51,25 +51,6 @@ const CoupleSection: React.FC = () => {
                 <div className={`absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-700 ${isHovered ? 'opacity-30' : 'opacity-60'}`}></div>
                 
                 <div className="absolute inset-0 pointer-events-none">
-                  <div className="absolute top-3 left-3 w-12 h-12 md:w-16 md:h-16">
-                    <img 
-                      src="/lovable-uploads/a3236bd1-0ba5-41b5-a422-ef2a60c43cd4.png" 
-                      alt="Kalash decoration" 
-                      className="w-full h-full object-contain opacity-40"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
-                  <div className="absolute top-3 right-3 w-12 h-12 md:w-16 md:h-16">
-                    <img 
-                      src="/lovable-uploads/a3236bd1-0ba5-41b5-a422-ef2a60c43cd4.png" 
-                      alt="Om symbol" 
-                      className="w-full h-full object-contain opacity-40"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
-                  
                   <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-wedding-gold/30"></div>
                   <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-wedding-gold/30"></div>
                   <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-wedding-gold/30"></div>
