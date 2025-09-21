@@ -5,6 +5,7 @@ import { usePlatform } from '../context/PlatformContext';
 import { FallingHearts, FireworksDisplay } from './AnimatedElements';
 import { Star, Music, Heart, Crown, Sparkles } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useImagePreloader } from '@/hooks/useImagePreloader';
 import AnimatedGuestName from './AnimatedGuestName';
 
 interface InvitationHeaderProps {
@@ -32,8 +33,14 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
   const [showConfetti, setShowConfetti] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const [clickCount, setClickCount] = useState(0);
-  const [showGaneshaImage, setShowGaneshaImage] = useState(false);
   const isMobile = useIsMobile();
+  
+  // Optimized Ganesha image URL
+  const ganeshaImageUrl = "https://xieiyoyiuhzrhwqhfmuq.supabase.co/storage/v1/object/public/other%20images/a3236bd1-0ba5-41b5-a422-ef2a60c43cd4-min%20(1)_11zon.png";
+  
+  // Preload Ganesha image for instant loading
+  const { loadedImages } = useImagePreloader([ganeshaImageUrl]);
+  const isGaneshaLoaded = loadedImages[ganeshaImageUrl];
   
   // Use names from props if provided, otherwise use from weddingData
   const displayGroomName = groomName || weddingData.couple.groomFirstName;
@@ -85,12 +92,6 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
   };
   
   useEffect(() => {
-    // Show Ganesha image after the transition animation completes
-    // This creates the effect of the image moving into position
-    const ganeshaImageTimer = setTimeout(() => {
-      setShowGaneshaImage(true);
-    }, 4500); // 4.5s to ensure transition is fully complete
-    
     // Auto-play visual effects on load for a more immersive experience
     const initialTimer = setTimeout(() => {
       setShowHearts(true);
@@ -99,7 +100,7 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
         setTimeout(() => setShowFireworks(false), 3000);
       }, 1500);
       setTimeout(() => setShowHearts(false), 3000);
-    }, 6000); // Delay initial effects until after Ganesha appears
+    }, 2000); // Reduced delay since Ganesha loads instantly now
     
     // Send INVITATION_VIEWED message to parent platform
     if (guestId) {
@@ -113,7 +114,6 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
     }
     
     return () => {
-      clearTimeout(ganeshaImageTimer);
       clearTimeout(initialTimer);
     };
   }, [guestId, weddingData.events]);
@@ -165,20 +165,26 @@ const InvitationHeader: React.FC<InvitationHeaderProps> = ({
                 <span className="text-xs">ॐ</span>
               </div>
               
-              {/* Ganesha Image container - Frame always visible, image shows after transition */}
+              {/* Ganesha Image container - Optimized for instant loading */}
               <div className="relative w-32 h-32 sm:w-36 sm:h-36">
                 <div className="absolute inset-0 bg-gradient-to-r from-orange-200/20 via-yellow-200/30 to-orange-200/20 rounded-full animate-pulse-soft blur-sm"></div>
                 
-                {/* Only show the image after transition completes */}
-                {showGaneshaImage && (
-                  <img 
-                    src="https://xieiyoyiuhzrhwqhfmuq.supabase.co/storage/v1/object/public/images/for%20links%20only/b0b6e6c1-770d-4a6e-8f9c-7f3bdcd7c3a4.png" 
-                    alt="Lord Ganesha" 
-                    className="w-full h-full object-contain animate-floating relative z-10 opacity-0 animate-fade-in"
-                    loading="lazy"
-                    style={{ animationDelay: '0.2s' }}
-                  />
+                {/* Loading state while image preloads */}
+                {!isGaneshaLoaded && (
+                  <div className="w-full h-full flex items-center justify-center relative z-10">
+                    <div className="w-16 h-16 border-4 border-orange-300/30 border-t-orange-500 rounded-full animate-spin"></div>
+                  </div>
                 )}
+                
+                {/* Optimized Ganesha image - shows instantly when loaded */}
+                <img 
+                  src={ganeshaImageUrl}
+                  alt="Lord Ganesha" 
+                  className={`w-full h-full object-contain animate-floating relative z-10 transition-opacity duration-300 ${
+                    isGaneshaLoaded ? 'opacity-100' : 'opacity-0'
+                  }`}
+                  loading="eager"
+                />
                 
                 {/* Enhanced decorative elements - Always visible */}
                 <Star 
